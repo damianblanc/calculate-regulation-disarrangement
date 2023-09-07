@@ -1,5 +1,7 @@
 com/bymatech/calculateregulationdisarrangement/service/FCICalculationService.class
 com/bymatech/calculateregulationdisarrangement/util/Constants.class
+com/bymatech/calculateregulationdisarrangement/domain/SpeciePosition$SpeciePositionBuilder.class
+com/bymatech/calculateregulationdisarrangement/domain/FCIRegulation$FCIRegulationBuilder.class
 com/bymatech/calculateregulationdisarrangement/domain/FCIRegulation.class
 com/bymatech/calculateregulationdisarrangement/exception/FailedValidationException.class
 com/bymatech/calculateregulationdisarrangement/dto/RegulationLagOutcomeVO.class

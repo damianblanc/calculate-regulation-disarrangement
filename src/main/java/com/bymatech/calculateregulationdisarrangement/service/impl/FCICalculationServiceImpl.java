@@ -14,17 +14,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Comprehends FCI regulation operations implementation
+ */
 @Service
 public class FCICalculationServiceImpl implements FCICalculationService {
-    @Override
-    public RegulationLagOutcomeVO calculateDisarrangement(FCIPosition fciPosition) {
-        Map<SpecieType, Double> composition = fciPosition.getRegulation().getComposition();
 
-        calculateDisarrangementPreconditions(composition);
-        Map<SpecieType, Double> summarizedPosition = getSummarizedPosition(groupPositionBySpecieType(fciPosition.getPosition()));
+    @Override
+    public RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition) {
+        Map<SpecieType, Double> fciRegulationComposition = fciPosition.getFciRegulation().getComposition();
+        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition = groupPositionBySpecieType(fciPosition.getFciPositionList());
+
+        calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
+        Map<SpecieType, Double> summarizedPosition = getSummarizedPosition(fciSpecieTypePosition);
         Map<SpecieType, Double> percentagePosition = calculatePercentagePosition(summarizedPosition);
-        Map<SpecieType, Double> disarrangementPosition = calculateDisarrangementPosition(composition, percentagePosition);
-        return new RegulationLagOutcomeVO(disarrangementPosition,summarizedPosition);
+        Map<SpecieType, Double> disarrangementPositionPercentage = calculateDisarrangementPosition(fciRegulationComposition, percentagePosition);
+        Map<SpecieType, Double> disarrangementPositionValued = calculateDisarrangementValuedPosition(disarrangementPositionPercentage, summarizedPosition);
+
+        return new RegulationLagOutcomeVO(disarrangementPositionPercentage, disarrangementPositionValued, percentagePosition, summarizedPosition);
+    }
+
+    private Map<SpecieType, Double> calculateDisarrangementValuedPosition(Map<SpecieType, Double> disarrangementPositionPercentage,
+                                                                          Map<SpecieType, Double> summarizedPosition) {
+        Double totalSummarizedPosition = summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
+        return disarrangementPositionPercentage.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue() * totalSummarizedPosition / 100))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Map<SpecieType, Double> calculateDisarrangementPosition(Map<SpecieType, Double> composition, Map<SpecieType, Double> percentagePosition) {
@@ -60,13 +75,30 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         return position.stream().collect(Collectors.groupingBy(SpeciePosition::getSpecieType));
     }
 
-    private void calculateDisarrangementPreconditions(Map<SpecieType, Double> composition) {
-        Double percentageSumReduction = composition.values().stream()
-                .reduce(Double::sum)
-                .orElseThrow(() -> new FailedValidationException(ExceptionMessage.INTERNAL_PERCENTAGE_SUM_REDUCTION.msg));
+    /**
+     * Performs required business validations before processing FCI position for disarrangement searching
+     * @param fciRegulationComposition Comprehends FCI Specie Type and their percentages definition
+     * @param fciSpecieTypePosition Comprehends incoming FCI current Specie Type position
+     *
+     * Expected Validations:
+     * fciRegulationComposition must close to 100%
+     * All Specie type indicated in FCI Regulation Percentage composition are expected to be received for processing
+     */
+    private void calculateDisarrangementPreconditions(Map<SpecieType, Double> fciRegulationComposition,
+                                                      Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition) {
+        Double percentageSumReduction = fciRegulationComposition.values().stream().reduce(Double::sum).orElseThrow();
 
+        /** fciRegulationComposition must close to 100% */
         if (!Constants.TOTAL_PERCENTAGE.equals(percentageSumReduction)) {
             throw new FailedValidationException(ExceptionMessage.TOTAL_PERCENTAGE.msg);
         }
+
+        /** All Specie type indicated in FCI Regulation Percentage composition are expected to be received for processing */
+        fciRegulationComposition.keySet().forEach(fciRegulationSpecieType -> {
+            if (fciSpecieTypePosition.keySet().stream()
+                    .noneMatch(fciPositionSpecieType -> fciPositionSpecieType == fciRegulationSpecieType)) {
+                throw new IllegalArgumentException(String.format(ExceptionMessage.REGULATION_SPECIE_TYPE_DOES_NOT_MATCH.msg, fciRegulationSpecieType));
+            }
+        });
     }
 }

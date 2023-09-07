@@ -14,7 +14,8 @@ import java.util.Map;
 public class RegulationLagOutcomeVO {
 
     private Map<SpecieType, Double> regulationLags;
-
     private Map<SpecieType, Double> valuedLags;
+    private Map<SpecieType, Double> percentagePosition;
+    private Map<SpecieType, Double> valuedPosition;
 
 }

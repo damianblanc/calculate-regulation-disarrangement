@@ -10,5 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FCICalculationService {
 
-    RegulationLagOutcomeVO calculateDisarrangement(FCIPosition fciPosition);
+    RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition);
+
 }

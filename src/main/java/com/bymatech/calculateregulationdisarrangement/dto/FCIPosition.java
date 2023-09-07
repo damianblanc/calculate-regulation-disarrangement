@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FCIPosition {
 
-    private FCIRegulation regulation;
-    private List<SpeciePosition> position;
+    private FCIRegulation fciRegulation;
+    private List<SpeciePosition> fciPositionList;
 }

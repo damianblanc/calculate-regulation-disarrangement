@@ -52,6 +52,27 @@
 			<artifactId>junit-vintage-engine</artifactId>
 			<version>5.10.0</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.diffplug.guava</groupId>
+			<artifactId>guava-core</artifactId>
+			<version>19.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.diffplug.guava</groupId>
+			<artifactId>guava-collect</artifactId>
+			<version>19.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

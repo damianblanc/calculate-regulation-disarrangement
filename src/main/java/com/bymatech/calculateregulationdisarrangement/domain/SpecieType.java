@@ -1,6 +1,8 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
-public class SpecieType {
-    private String name;
-    private String description;
+public enum SpecieType {
+
+    MARKET_SHARE,
+    BOND,
+    CASH;
 }

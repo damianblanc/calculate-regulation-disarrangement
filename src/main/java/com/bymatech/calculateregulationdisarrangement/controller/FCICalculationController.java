@@ -16,8 +16,19 @@ public class FCICalculationController {
     @Autowired
     private FCICalculationService fciCalculationService;
 
+    @PostMapping("/calculate-disarrangement/percentages")
+    public RegulationLagOutcomeVO calculateDisarrangementPercentages(@RequestBody FCIPosition fciPosition) {
+        return fciCalculationService.calculatePositionDisarrangement(fciPosition);
+    }
+
+    @PostMapping("/calculate-disarrangement/valued")
+    public RegulationLagOutcomeVO calculateDisarrangementValued(@RequestBody FCIPosition fciPosition) {
+        return fciCalculationService.calculatePositionDisarrangement(fciPosition);
+    }
+
     @PostMapping("/calculate-disarrangement")
     public RegulationLagOutcomeVO calculateDisarrangement(@RequestBody FCIPosition fciPosition) {
-        return fciCalculationService.calculateDisarrangement(fciPosition);
+        return fciCalculationService.calculatePositionDisarrangement(fciPosition);
     }
+
 }

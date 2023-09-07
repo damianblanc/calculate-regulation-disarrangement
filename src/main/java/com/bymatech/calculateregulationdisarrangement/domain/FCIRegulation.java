@@ -22,4 +22,34 @@ public class FCIRegulation {
     private String name;
     private Map<SpecieType, Double> composition;
 
+
+    /**
+     * Instanciates builder for FCIRegulation
+     */
+    public static FCIRegulationBuilder builder() {
+        return new FCIRegulationBuilder();
+    }
+
+    public static class FCIRegulationBuilder {
+        private String name;
+        private Map<SpecieType, Double> composition;
+
+        public FCIRegulationBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public FCIRegulationBuilder withComposition(Map<SpecieType, Double> composition) {
+            this.composition = composition;
+            return this;
+        }
+
+        public FCIRegulation build() {
+            FCIRegulation fciRegulation = new FCIRegulation();
+            fciRegulation.setName(name);
+            fciRegulation.setComposition(composition);
+            return fciRegulation;
+        }
+    }
+
 }
