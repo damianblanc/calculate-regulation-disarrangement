@@ -42,8 +42,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<SpecieType, Double> calculateDisarrangementPosition(Map<SpecieType, Double> composition, Map<SpecieType, Double> percentagePosition) {
-        return percentagePosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), composition.get(entry.getKey()) - entry.getValue()))
+    private Map<SpecieType, Double> calculateDisarrangementPosition(Map<SpecieType, Double> fciRegulationComposition, Map<SpecieType, Double> percentagePosition) {
+        return percentagePosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() - fciRegulationComposition.get(entry.getKey())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -53,7 +53,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     private Map<SpecieType, Double> calculatePercentageBySpecieType(Map<SpecieType, Double> summarizedPosition, Double totalValuedPosition) {
-        return summarizedPosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() / totalValuedPosition))
+        return summarizedPosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() / totalValuedPosition * 100))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

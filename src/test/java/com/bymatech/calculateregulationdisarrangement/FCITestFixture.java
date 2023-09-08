@@ -6,16 +6,18 @@ import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Defines all FCI Regulation Data for testing purposes
  */
 public class FCITestFixture {
+
+   protected FCIPosition fciPosition1;
+   protected FCIRegulation fciRegulation1;
+   protected List<SpeciePosition> speciePositionList1;
+
 
    protected static String fCIRegulationName1 = "Alpha Mix Rent FCI";
    protected static Map<SpecieType, Double> regulationComposition1 = createRegulationComposition1();
@@ -25,28 +27,28 @@ public class FCITestFixture {
    protected static String speciePositionName1 = "GGAL";
    protected static SpecieType speciePositionType1 = SpecieType.MARKET_SHARE;
    protected static Double speciePositionPrice1 = 3.15;
-   protected static Integer speciePositionQuantity1 = 200;
+   protected static Integer speciePositionQuantity1 = 1500;
 
    protected static String speciePositionName2 = "YPF";
    protected static SpecieType speciePositionType2 = SpecieType.MARKET_SHARE;
    protected static Double speciePositionPrice2 = 8.5;
-   protected static Integer speciePositionQuantity2 = 600;
+   protected static Integer speciePositionQuantity2 = 6000;
 
    /** BOND */
    protected static String speciePositionName3 = "GD30";
    protected static SpecieType speciePositionType3 = SpecieType.BOND;
    protected static Double speciePositionPrice3 = 0.6;
-   protected static Integer speciePositionQuantity3 = 4000;
+   protected static Integer speciePositionQuantity3 = 40000;
 
    protected static String speciePositionName4 = "AL30";
    protected static SpecieType speciePositionType4 = SpecieType.BOND;
    protected static Double speciePositionPrice4 = 1.4;
-   protected static Integer speciePositionQuantity4 = 3000;
+   protected static Integer speciePositionQuantity4 = 30000;
 
    /** CASH */
    protected static String speciePositionName5 = "CASH";
    protected static SpecieType speciePositionType5 = SpecieType.CASH;
-   protected static Double speciePositionPrice5 = 250000.00;
+   protected static Double speciePositionPrice5 = 25000.00;
    protected static Integer speciePositionQuantity5 = 1;
 
    /**

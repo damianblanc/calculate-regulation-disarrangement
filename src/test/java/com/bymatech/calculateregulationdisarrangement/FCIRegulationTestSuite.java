@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         locations = "classpath:application-integrationtest.properties")
 public class FCIRegulationTestSuite extends FCITestFixture {
 
-    private FCIPosition fciPosition1;
-    private FCIRegulation fciRegulation1;
-    private List<SpeciePosition> speciePositionList1;
-
     @Autowired
     private MockMvc mockmvc;
-
-//    @MockBean
-//    private User userMock;
 
     @Autowired
     private FCICalculationController userController;
@@ -55,20 +49,6 @@ public class FCIRegulationTestSuite extends FCITestFixture {
     @Autowired
     ObjectMapper objectMapper;
 
-
-    @Before
-    public void setUp() {
-        fciRegulation1 = createFCIRegulation1();
-        speciePositionList1 = createSpeciePositionList1();
-        fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
-    }
-
-
-//    @Before
-//    private void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//        createUser();
-//    }
 
     @Test()
     public void forceFciRegulationPercentageCompositionFailTest() throws Exception {
@@ -115,6 +95,11 @@ public class FCIRegulationTestSuite extends FCITestFixture {
         fciRegulation1 = createFCIRegulation1();
         speciePositionList1 = createSpeciePositionList1();
         fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
+        String expectedContent =
+        "{\"regulationLags\":{\"MARKET_SHARE\":7.979212813085702,\"BOND\":-5.017890611688529,\"CASH\":-2.9613222013971736},\n" +
+        "         \"valuedLags\":{\"MARKET_SHARE\":11707.499999999998,\"BOND\":-7362.4999999999945,\"CASH\":-4345.000000000003},\n" +
+        "         \"percentagePosition\":{\"MARKET_SHARE\":37.9792128130857,\"BOND\":44.98210938831147,\"CASH\":17.038677798602826},\n" +
+        "         \"valuedPosition\":{\"MARKET_SHARE\":55725.0,\"BOND\":66000.0,\"CASH\":25000.0}}";
 
         String content = objectMapper.writeValueAsString(fciPosition1);
         mockmvc.perform(
@@ -122,12 +107,8 @@ public class FCIRegulationTestSuite extends FCITestFixture {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(content))
+                .andExpect(MockMvcResultMatchers.content().json(expectedContent))
                 .andDo(MockMvcResultHandlers.print());
-        //{"regulationLags":{"CASH":19.04700186787634,"BOND":49.97484084931194,"MARKET_SHARE":29.978157282811726},
-        // "valuedLags":{"CASH":49966.0,"BOND":131099.0,"MARKET_SHARE":78641.7},
-        // "percentagePosition":{"CASH":0.952998132123661,"BOND":0.025159150688064652,"MARKET_SHARE":0.02184271718827431},
-        // "valuedPosition":{"CASH":250000.0,"BOND":6600.0,"MARKET_SHARE":5730.0}}
     }
 
 }
