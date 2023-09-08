@@ -2,16 +2,12 @@ package com.bymatech.calculateregulationdisarrangement;
 
 import com.bymatech.calculateregulationdisarrangement.controller.FCICalculationController;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +21,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(SpringRunner.class)
@@ -95,11 +89,6 @@ public class FCIRegulationTestSuite extends FCITestFixture {
         fciRegulation1 = createFCIRegulation1();
         speciePositionList1 = createSpeciePositionList1();
         fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
-        String expectedContent =
-        "{\"regulationLags\":{\"MARKET_SHARE\":7.979212813085702,\"BOND\":-5.017890611688529,\"CASH\":-2.9613222013971736},\n" +
-        "         \"valuedLags\":{\"MARKET_SHARE\":11707.499999999998,\"BOND\":-7362.4999999999945,\"CASH\":-4345.000000000003},\n" +
-        "         \"percentagePosition\":{\"MARKET_SHARE\":37.9792128130857,\"BOND\":44.98210938831147,\"CASH\":17.038677798602826},\n" +
-        "         \"valuedPosition\":{\"MARKET_SHARE\":55725.0,\"BOND\":66000.0,\"CASH\":25000.0}}";
 
         String content = objectMapper.writeValueAsString(fciPosition1);
         mockmvc.perform(
@@ -107,8 +96,133 @@ public class FCIRegulationTestSuite extends FCITestFixture {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(expectedContent))
+                .andExpect(MockMvcResultMatchers.content().json(getExpectedContent()))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void calculateDisarrangementVerboseTest() throws Exception {
+        fciRegulation1 = createFCIRegulation1();
+        speciePositionList1 = createSpeciePositionList1();
+        fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
+
+        String content = objectMapper.writeValueAsString(fciPosition1);
+        mockmvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/calculate-disarrangement/verbose")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(getExceptedVerboseContent()))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void calculateDisarrangementPercentagesTest() throws Exception {
+        fciRegulation1 = createFCIRegulation1();
+        speciePositionList1 = createSpeciePositionList1();
+        fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
+
+        String content = objectMapper.writeValueAsString(fciPosition1);
+        mockmvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/calculate-disarrangement/percentages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("{\"CASH\":-2.9613222013971736,\"BOND\":-5.017890611688529,\"MARKET_SHARE\":7.979212813085702}"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void calculateDisarrangementValuedTest() throws Exception {
+        fciRegulation1 = createFCIRegulation1();
+        speciePositionList1 = createSpeciePositionList1();
+        fciPosition1 = createFCIPosition(fciRegulation1, speciePositionList1);
+
+        String content = objectMapper.writeValueAsString(fciPosition1);
+        mockmvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/calculate-disarrangement/valued")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("{\"CASH\":-4345.000000000003,\"BOND\":-7362.4999999999945,\"MARKET_SHARE\":11707.499999999998}"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+
+    private static String getExpectedContent() {
+        return "{\"regulationLags\":{\"MARKET_SHARE\":7.979212813085702,\"BOND\":-5.017890611688529,\"CASH\":-2.9613222013971736},\n" +
+        "         \"valuedLags\":{\"MARKET_SHARE\":11707.499999999998,\"BOND\":-7362.4999999999945,\"CASH\":-4345.000000000003},\n" +
+        "         \"percentagePosition\":{\"MARKET_SHARE\":37.9792128130857,\"BOND\":44.98210938831147,\"CASH\":17.038677798602826},\n" +
+        "         \"valuedPosition\":{\"MARKET_SHARE\":55725.0,\"BOND\":66000.0,\"CASH\":25000.0}}";
+    }
+
+    private static String getExceptedVerboseContent() {
+       return "{\n" +
+                "  \"regulationLagOutcome\": {\n" +
+                "    \"regulationLags\": {\n" +
+                "      \"CASH\": -2.9613222013971736,\n" +
+                "      \"BOND\": -5.017890611688529,\n" +
+                "      \"MARKET_SHARE\": 7.979212813085702\n" +
+                "    },\n" +
+                "    \"valuedLags\": {\n" +
+                "      \"CASH\": -4345.000000000003,\n" +
+                "      \"BOND\": -7362.4999999999945,\n" +
+                "      \"MARKET_SHARE\": 11707.499999999998\n" +
+                "    },\n" +
+                "    \"percentagePosition\": {\n" +
+                "      \"CASH\": 17.038677798602826,\n" +
+                "      \"BOND\": 44.98210938831147,\n" +
+                "      \"MARKET_SHARE\": 37.9792128130857\n" +
+                "    },\n" +
+                "    \"valuedPosition\": {\n" +
+                "      \"CASH\": 25000.0,\n" +
+                "      \"BOND\": 66000.0,\n" +
+                "      \"MARKET_SHARE\": 55725.0\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"fciPosition\": {\n" +
+                "    \"fciRegulation\": {\n" +
+                "      \"name\": \"Alpha Mix Rent FCI\",\n" +
+                "      \"composition\": {\n" +
+                "        \"MARKET_SHARE\": 30.0,\n" +
+                "        \"BOND\": 50.0,\n" +
+                "        \"CASH\": 20.0\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"fciPositionList\": [\n" +
+                "      {\n" +
+                "        \"name\": \"GGAL\",\n" +
+                "        \"specieType\": \"MARKET_SHARE\",\n" +
+                "        \"price\": 3.15,\n" +
+                "        \"quantity\": 1500\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"name\": \"YPF\",\n" +
+                "        \"specieType\": \"MARKET_SHARE\",\n" +
+                "        \"price\": 8.5,\n" +
+                "        \"quantity\": 6000\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"name\": \"GD30\",\n" +
+                "        \"specieType\": \"BOND\",\n" +
+                "        \"price\": 0.6,\n" +
+                "        \"quantity\": 40000\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"name\": \"AL30\",\n" +
+                "        \"specieType\": \"BOND\",\n" +
+                "        \"price\": 1.4,\n" +
+                "        \"quantity\": 30000\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"name\": \"CASH\",\n" +
+                "        \"specieType\": \"CASH\",\n" +
+                "        \"price\": 25000.0,\n" +
+                "        \"quantity\": 1\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}";
     }
 
 }

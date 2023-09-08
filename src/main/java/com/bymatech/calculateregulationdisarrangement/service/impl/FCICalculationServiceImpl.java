@@ -4,6 +4,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO;
+import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
@@ -26,12 +27,28 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition = groupPositionBySpecieType(fciPosition.getFciPositionList());
 
         calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
+
         Map<SpecieType, Double> summarizedPosition = getSummarizedPosition(fciSpecieTypePosition);
         Map<SpecieType, Double> percentagePosition = calculatePercentagePosition(summarizedPosition);
         Map<SpecieType, Double> disarrangementPositionPercentage = calculateDisarrangementPosition(fciRegulationComposition, percentagePosition);
         Map<SpecieType, Double> disarrangementPositionValued = calculateDisarrangementValuedPosition(disarrangementPositionPercentage, summarizedPosition);
 
         return new RegulationLagOutcomeVO(disarrangementPositionPercentage, disarrangementPositionValued, percentagePosition, summarizedPosition);
+    }
+
+    @Override
+    public RegulationLagVerboseVO calculatePositionDisarrangementVerbose(FCIPosition fciPosition) {
+        return new RegulationLagVerboseVO(calculatePositionDisarrangement(fciPosition), fciPosition);
+    }
+
+    @Override
+    public Map<SpecieType, Double> calculatePositionDisarrangementPercentages(FCIPosition fciPosition) {
+        return calculatePositionDisarrangement(fciPosition).getRegulationLags();
+    }
+
+    @Override
+    public Map<SpecieType, Double> calculatePositionDisarrangementValued(FCIPosition fciPosition) {
+        return calculatePositionDisarrangement(fciPosition).getValuedLags();
     }
 
     private Map<SpecieType, Double> calculateDisarrangementValuedPosition(Map<SpecieType, Double> disarrangementPositionPercentage,
