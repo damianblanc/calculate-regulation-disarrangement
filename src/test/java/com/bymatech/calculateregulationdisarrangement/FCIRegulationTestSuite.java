@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement;
 
-import com.bymatech.calculateregulationdisarrangement.controller.FCICalculationController;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
@@ -29,16 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = CalculateRegulationDisarrangementApplication.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 public class FCIRegulationTestSuite extends FCITestFixture {
 
     @Autowired
     private MockMvc mockmvc;
-
-    @Autowired
-    private FCICalculationController userController;
 
     @Autowired
     ObjectMapper objectMapper;

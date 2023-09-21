@@ -20,22 +20,22 @@ public class FCICalculationController {
     @Autowired
     private FCICalculationService fciCalculationService;
 
-    @PostMapping("/calculate-disarrangement/percentages")
+    @PostMapping(path="/calculate-disarrangement/percentages", consumes="application/json", produces="application/json")
     public Map<SpecieType, Double> calculateDisarrangementPercentages(@RequestBody FCIPosition fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementPercentages(fciPosition);
     }
 
-    @PostMapping("/calculate-disarrangement/valued")
+    @PostMapping(path="/calculate-disarrangement/valued", consumes="application/json", produces="application/json")
     public Map<SpecieType, Double> calculateDisarrangementValued(@RequestBody FCIPosition fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementValued(fciPosition);
     }
 
-    @PostMapping("/calculate-disarrangement")
+    @PostMapping(path="/calculate-disarrangement", consumes="application/json", produces="application/json")
     public RegulationLagOutcomeVO calculateDisarrangement(@RequestBody FCIPosition fciPosition) {
         return fciCalculationService.calculatePositionDisarrangement(fciPosition);
     }
 
-    @PostMapping("/calculate-disarrangement/verbose")
+    @PostMapping(path="/calculate-disarrangement/verbose", consumes="application/json", produces="application/json")
     public RegulationLagVerboseVO calculateDisarrangementVerbose(@RequestBody FCIPosition fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementVerbose(fciPosition);
     }

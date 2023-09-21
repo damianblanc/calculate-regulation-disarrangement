@@ -21,5 +21,4 @@ public interface FCICalculationService {
     Map<SpecieType, Double> calculatePositionDisarrangementPercentages(FCIPosition fciPosition);
 
     Map<SpecieType, Double> calculatePositionDisarrangementValued(FCIPosition fciPosition);
-
 }

@@ -7,8 +7,11 @@ import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,14 +24,17 @@ import java.util.stream.Collectors;
 @Service
 public class FCICalculationServiceImpl implements FCICalculationService {
 
+    @Autowired
+    private FCIPositionService fciPositionService;
+
     @Override
     public RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition) {
         Map<SpecieType, Double> fciRegulationComposition = fciPosition.getFciRegulation().getComposition();
-        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition = groupPositionBySpecieType(fciPosition.getFciPositionList());
+        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition = fciPositionService.groupPositionBySpecieType(fciPosition.getFciPositionList());
 
         calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
 
-        Map<SpecieType, Double> summarizedPosition = getSummarizedPosition(fciSpecieTypePosition);
+        Map<SpecieType, Double> summarizedPosition = fciPositionService.getSummarizedPosition(fciSpecieTypePosition);
         Map<SpecieType, Double> percentagePosition = calculatePercentagePosition(summarizedPosition);
         Map<SpecieType, Double> disarrangementPositionPercentage = calculateDisarrangementPosition(fciRegulationComposition, percentagePosition);
         Map<SpecieType, Double> disarrangementPositionValued = calculateDisarrangementValuedPosition(disarrangementPositionPercentage, summarizedPosition);
@@ -65,31 +71,13 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     private Map<SpecieType, Double> calculatePercentagePosition(Map<SpecieType, Double> summarizedPosition) {
-        Double totalValuedPosition = calculateTotalValuedPosition(summarizedPosition);
+        Double totalValuedPosition = fciPositionService.calculateTotalValuedPosition(summarizedPosition);
         return calculatePercentageBySpecieType(summarizedPosition, totalValuedPosition);
     }
 
     private Map<SpecieType, Double> calculatePercentageBySpecieType(Map<SpecieType, Double> summarizedPosition, Double totalValuedPosition) {
         return summarizedPosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() / totalValuedPosition * 100))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Double calculateTotalValuedPosition(Map<SpecieType, Double> summarizedPosition) {
-        return summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
-    }
-
-    private Map<SpecieType, Double> getSummarizedPosition( Map<SpecieType, List<SpeciePosition>> position) {
-        return position.entrySet().stream()
-                .map(entry ->
-                        Map.entry(entry.getKey(),
-                                entry.getValue().stream()
-                                        .map(SpeciePosition::valuePosition)
-                                        .reduce(Double::sum).orElseThrow(IllegalArgumentException::new)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Map<SpecieType, List<SpeciePosition>> groupPositionBySpecieType(List<SpeciePosition> position) {
-        return position.stream().collect(Collectors.groupingBy(SpeciePosition::getSpecieType));
     }
 
     /**

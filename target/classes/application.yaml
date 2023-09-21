@@ -1,2 +1,10 @@
 server:
-  port: 9080
+  port: 8098
+
+application:
+  security:
+    jwt:
+      secret-key: A37DD6A898EFAC35DCEC7BA1A9FCF
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

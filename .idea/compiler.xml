@@ -10,9 +10,13 @@
         <module name="calculate-regulation-disarrangement" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="calculate-fci-regulation-disarrangement" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="calculate-fci-regulation-disarrangement" options="-parameters" />
       <module name="calculate-regulation-disarrangement" options="-parameters" />
     </option>
   </component>
