@@ -24,7 +24,7 @@ public class BymaMarketController {
 
     @GetMapping("/bonds")
     public BymaBondResponse getBonds() throws Exception {
-        return bymaService.getBonds(BymaBondAuthBean.create());
+        return bymaService.getBonds(BymaBondAuthBean.create(1));
     }
 
     @GetMapping("/bonds/prices")

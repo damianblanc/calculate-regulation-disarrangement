@@ -1,4 +1,4 @@
-package com.bymatech.calculateregulationdisarrangement.service;
+package com.bymatech.calculateregulationdisarrangement.service.http;
 
 import com.bymatech.calculateregulationdisarrangement.dto.BymaCedearResponse;
 import retrofit2.Call;

@@ -1,11 +1,14 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
-import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
 import com.bymatech.calculateregulationdisarrangement.domain.OperationAdvice;
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.service.*;
+import com.bymatech.calculateregulationdisarrangement.service.BymaService;
+import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisor;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
+import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class FCIPositionAdvisorServiceImpl implements FCIPositionAdvisorService {
+public class FCIPositionAdvisorPriceUniformlyDistributionService implements FCIPositionAdvisor {
 
     @Autowired
     private FCICalculationService fciCalculationService;
@@ -27,7 +30,7 @@ public class FCIPositionAdvisorServiceImpl implements FCIPositionAdvisorService 
     private BymaService bymaService;
 
     @Override
-    public Map<SpecieType, Collection<OperationAdviceVO>> advicePositionByPrice(AdviceCalculationCriteria criteria, FCIPosition fciPosition) {
+    public Map<SpecieType, Collection<OperationAdviceVO>> advice(FCIPosition fciPosition) {
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
 
         RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionDisarrangement(fciPosition);
@@ -35,7 +38,8 @@ public class FCIPositionAdvisorServiceImpl implements FCIPositionAdvisorService 
         percentagePosition.forEach((specieType, speciePercentage) -> {
             if (SpecieType.BOND == specieType) {
                 OrderType orderType = Objects.requireNonNull(OrderType.valueOfSign(speciePercentage));
-                bymaService.getBondsOrderByPrice(orderType).stream().limit(5).forEach(e ->
+                bymaService.getBondsOrderByPriceFilteredBySpecieList(orderType, fciPosition.getFciPositionList())
+                        .stream().limit(5).forEach(e ->
                         setSpecieTypeAdvice(calculatePercentageOverPriceToCoverValued(fciPosition, speciePercentage),
                                 e, orderType.getOperationAdvice(), specieTypeAdvices));
             }
@@ -62,8 +66,4 @@ public class FCIPositionAdvisorServiceImpl implements FCIPositionAdvisorService 
         return CalculationServiceHelper.calculatePercentageOverTotalValued(speciePercentage, totalValuedPosition);
     }
 
-    @Override
-    public Map<SpecieType, List<OperationAdviceVO>> advicePositionSellingByHighestPriceOverAverageBased(FCIPosition fciPosition) {
-        return null;
-    }
 }

@@ -24,29 +24,38 @@ public class FCITestFixture {
 
    /** Specie Position Definition */
    /** SHARE MARKET */
-   protected static String speciePositionName1 = "GGAL";
+   protected static String speciePositionName1 = "BANCO GALICIA";
+
+   protected static String speciePositionSymbol1 = "GGAL";
    protected static SpecieType speciePositionType1 = SpecieType.MARKET_SHARE;
    protected static Double speciePositionPrice1 = 3.15;
    protected static Integer speciePositionQuantity1 = 1500;
 
-   protected static String speciePositionName2 = "YPF";
+   protected static String speciePositionName2 = "YPF ESTATAL";
+
+   protected static String speciePositionSymbol2 = "YPF";
    protected static SpecieType speciePositionType2 = SpecieType.MARKET_SHARE;
    protected static Double speciePositionPrice2 = 8.5;
    protected static Integer speciePositionQuantity2 = 6000;
 
    /** BOND */
-   protected static String speciePositionName3 = "GD30";
+   protected static String speciePositionName3 = "GLOBAL BOND GD41";
+
+   protected static String speciePositionSymbol3 = "GD41";
    protected static SpecieType speciePositionType3 = SpecieType.BOND;
    protected static Double speciePositionPrice3 = 0.6;
    protected static Integer speciePositionQuantity3 = 40000;
 
-   protected static String speciePositionName4 = "AL30";
+   protected static String speciePositionName4 = "LOCAL BOND T3X4";
+   protected static String speciePositionSymbol4 = "T3X4";
    protected static SpecieType speciePositionType4 = SpecieType.BOND;
    protected static Double speciePositionPrice4 = 1.4;
    protected static Integer speciePositionQuantity4 = 30000;
 
    /** CASH */
    protected static String speciePositionName5 = "CASH";
+
+   protected static String speciePositionSymbol5 = "CASH";
    protected static SpecieType speciePositionType5 = SpecieType.CASH;
    protected static Double speciePositionPrice5 = 25000.00;
    protected static Integer speciePositionQuantity5 = 1;
@@ -86,19 +95,20 @@ public class FCITestFixture {
    /** @noinspection DataFlowIssue*/
    protected List<SpeciePosition> createSpeciePositionList1() {
       return List.of(
-         SpeciePosition.builder().withName(speciePositionName1).withSpecieType(speciePositionType1).withPrice(speciePositionPrice1).withQuantity(speciePositionQuantity1).build(),
-         SpeciePosition.builder().withName(speciePositionName2).withSpecieType(speciePositionType2).withPrice(speciePositionPrice2).withQuantity(speciePositionQuantity2).build(),
-         SpeciePosition.builder().withName(speciePositionName3).withSpecieType(speciePositionType3).withPrice(speciePositionPrice3).withQuantity(speciePositionQuantity3).build(),
-         SpeciePosition.builder().withName(speciePositionName4).withSpecieType(speciePositionType4).withPrice(speciePositionPrice4).withQuantity(speciePositionQuantity4).build(),
-         SpeciePosition.builder().withName(speciePositionName5).withSpecieType(speciePositionType5).withPrice(speciePositionPrice5).withQuantity(speciePositionQuantity5).build());
+            SpeciePosition.builder().name(speciePositionName1).symbol(speciePositionSymbol1).specieType(speciePositionType1).price(speciePositionPrice1).quantity(speciePositionQuantity1).build(),
+            SpeciePosition.builder().name(speciePositionName2).symbol(speciePositionSymbol2).specieType(speciePositionType2).price(speciePositionPrice2).quantity(speciePositionQuantity2).build(),
+            SpeciePosition.builder().name(speciePositionName3).symbol(speciePositionSymbol3).specieType(speciePositionType3).price(speciePositionPrice3).quantity(speciePositionQuantity3).build(),
+            SpeciePosition.builder().name(speciePositionName4).symbol(speciePositionSymbol4).specieType(speciePositionType4).price(speciePositionPrice4).quantity(speciePositionQuantity4).build(),
+            SpeciePosition.builder().name(speciePositionName5).symbol(speciePositionSymbol5).specieType(speciePositionType5).price(speciePositionPrice5).quantity(speciePositionQuantity5).build());
+
    }
 
    /** @noinspection DataFlowIssue*/
    protected List<SpeciePosition> createSpeciePositionList2() {
       return List.of(
-              SpeciePosition.builder().withName(speciePositionName1).withSpecieType(speciePositionType1).withPrice(speciePositionPrice1).withQuantity(speciePositionQuantity1).build(),
-              SpeciePosition.builder().withName(speciePositionName2).withSpecieType(speciePositionType2).withPrice(speciePositionPrice2).withQuantity(speciePositionQuantity2).build(),
-              SpeciePosition.builder().withName(speciePositionName3).withSpecieType(speciePositionType3).withPrice(speciePositionPrice3).withQuantity(speciePositionQuantity3).build(),
-              SpeciePosition.builder().withName(speciePositionName4).withSpecieType(speciePositionType4).withPrice(speciePositionPrice4).withQuantity(speciePositionQuantity4).build());
+            SpeciePosition.builder().name(speciePositionName1).symbol(speciePositionSymbol1).specieType(speciePositionType1).price(speciePositionPrice1).quantity(speciePositionQuantity1).build(),
+            SpeciePosition.builder().name(speciePositionName2).symbol(speciePositionSymbol2).specieType(speciePositionType2).price(speciePositionPrice2).quantity(speciePositionQuantity2).build(),
+            SpeciePosition.builder().name(speciePositionName3).symbol(speciePositionSymbol3).specieType(speciePositionType3).price(speciePositionPrice3).quantity(speciePositionQuantity3).build(),
+            SpeciePosition.builder().name(speciePositionName4).symbol(speciePositionSymbol4).specieType(speciePositionType4).price(speciePositionPrice4).quantity(speciePositionQuantity4).build());
    }
 }

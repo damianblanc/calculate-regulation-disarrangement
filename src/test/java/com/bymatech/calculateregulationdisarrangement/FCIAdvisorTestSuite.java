@@ -59,7 +59,7 @@ public class FCIAdvisorTestSuite extends FCITestFixture {
     }
 
     private String getExpectedContent() {
-        return "{\"BOND\":[{\"specieName\":\"O.N. ARCOR S.A.I.C. CLASE 18\",\"operationAdvice\":\"SELL\",\"quantity\":0},{\"specieName\":\"O.N. PAN AMERICAN ENERGY LLC S. AR CLASE 12\",\"operationAdvice\":\"SELL\",\"quantity\":0},{\"specieName\":\"O.N. VISTA OIL & GAS ARG 3\",\"operationAdvice\":\"SELL\",\"quantity\":0},{\"specieName\":\"O.N. PAMPA ENERGIA S.A. CLASE 9\",\"operationAdvice\":\"SELL\",\"quantity\":0},{\"specieName\":\"O.N. MASTELLONE HERMANOS CLASE G\",\"operationAdvice\":\"SELL\",\"quantity\":0}]}";
+        return "{\"BOND\":[{\"specieName\":\"BONO EXT. GLOBAL U$S STEP UP VTO. 9/7/2041\",\"operationAdvice\":\"SELL\",\"quantity\":1},{\"specieName\":\"BONO DEL TESORO NAC. AJ. CER 3.75% VTO. 14/04/24\",\"operationAdvice\":\"SELL\",\"quantity\":83}]}";
     }
 }
 

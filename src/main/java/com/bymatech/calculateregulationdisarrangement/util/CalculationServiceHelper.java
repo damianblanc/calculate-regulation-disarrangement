@@ -1,4 +1,4 @@
-package com.bymatech.calculateregulationdisarrangement.service;
+package com.bymatech.calculateregulationdisarrangement.util;
 
 /**
  * Helper class to concentrate calculations

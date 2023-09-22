@@ -1,16 +1,18 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
+import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.service.BymaHttpService;
+import com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.BymaService;
-import com.bymatech.calculateregulationdisarrangement.service.BymaAPIServiceGenerator;
+import com.bymatech.calculateregulationdisarrangement.service.http.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
 public class BymaServiceImpl implements BymaService {
 
     public List<BymaCedearResponse> getCedears(@Body BymaCedearAuthBean bymaCedearAuthBean) {
-        BymaHttpService service = BymaAPIServiceGenerator.createService(BymaHttpService.class);
+        BymaHttpService service = impl.BymaAPIServiceGenerator.createService(BymaHttpService.class);
         Call<List<BymaCedearResponse>> callSync = service.getCedears(bymaCedearAuthBean);
 
         try {
@@ -33,8 +35,21 @@ public class BymaServiceImpl implements BymaService {
     }
 
     @Override
+    public List<BymaBondResponse.BymaBondResponseElement> getTotalBonds() {
+        BymaBondResponse marketBonds = getBonds(BymaBondAuthBean.create(1));
+        List<BymaBondResponse.BymaBondResponseElement> bonds = new ArrayList<>(marketBonds.getBymaBondResponses());
+
+        for (int i = 2; i <= marketBonds.getContent().getPageCount(); i++) {
+            List<BymaBondResponse.BymaBondResponseElement> bymaBondResponses = getBonds(BymaBondAuthBean.create(i)).getBymaBondResponses();
+            bonds.addAll(bymaBondResponses);
+        }
+
+        return bonds;
+    }
+
+    @Override
     public BymaBondResponse getBonds(@Body BymaBondAuthBean bymaBondAuthBean) {
-        BymaHttpService service = BymaAPIServiceGenerator.createService(BymaHttpService.class);
+        BymaHttpService service = impl.BymaAPIServiceGenerator.createService(BymaHttpService.class);
         Call<BymaBondResponse> callSync = service.getBonds(bymaBondAuthBean);
 
         try {
@@ -48,8 +63,17 @@ public class BymaServiceImpl implements BymaService {
 
     @Override
     public List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPrice(OrderType orderType) {
-        List<BymaBondResponse.BymaBondResponseElement> bonds = getBonds(BymaBondAuthBean.create()).getBymaBondResponses().stream().sorted(Comparator.comparing(BymaBondResponse.BymaBondResponseElement::getPrice)).toList();
+        List<BymaBondResponse.BymaBondResponseElement> bonds =
+                getTotalBonds().stream().sorted(Comparator.comparing(BymaBondResponse.BymaBondResponseElement::getPrice)).toList();
         return orderType == OrderType.DESC ? bonds : bonds.stream().sorted(Collections.reverseOrder()).toList();
+    }
+
+    @Override
+    public List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPriceFilteredBySpecieList(OrderType orderType, List<SpeciePosition> speciesPosition) {
+        return getBondsOrderByPrice(orderType).stream()
+                .filter(bond -> speciesPosition.stream()
+                        .anyMatch(specie -> specie.getSymbol().equals(bond.getSymbol())))
+                .toList();
     }
 
     @Override

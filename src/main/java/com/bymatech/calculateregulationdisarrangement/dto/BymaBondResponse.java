@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.dto;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,10 +56,11 @@ public class BymaBondResponse {
     private List<BymaBondResponseElement> bymaBondResponses = new ArrayList<>();
 
 
-    private class Content {
+    @Getter
+    public class Content {
         @SerializedName("page_number")
         @Expose
-        private Integer pageNumber;
+        private Integer pageNumber = 0;
 
         @SerializedName("page_count")
         @Expose
@@ -66,7 +68,7 @@ public class BymaBondResponse {
 
         @SerializedName("page_size")
         @Expose
-        private Integer pageSize;
+        private Integer pageSize = 1;
 
         @SerializedName("total_elements_count")
         @Expose
@@ -119,7 +121,7 @@ public class BymaBondResponse {
         private String intCorr;
         @SerializedName("rentaAnual")
         @Expose
-        private String annuallyRent;
+        private String annualRent;
         @SerializedName("isin")
         @Expose
         private String isin;
