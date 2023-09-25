@@ -1,52 +1,60 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.google.common.collect.ImmutableMap;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Slf4j
 /**
  * Represents FCI Regulation Composition by defining each {@link SpecieType} and its percentage
  */
+@Entity
+@Table(name = "FCIRegulation")
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Slf4j
+@Builder
 public class FCIRegulation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "NAME")
     private String name;
-    private Map<SpecieType, Double> composition;
 
+    @Column(name = "SYMBOL")
+    private String symbol;
 
-    /**
-     * Instanciates builder for FCIRegulation
-     */
-    public static FCIRegulationBuilder builder() {
-        return new FCIRegulationBuilder();
+    @Column(name = "composition")
+//    @OneToMany(mappedBy = "fciRegulationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(mappedBy = "fciRegulationId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<FCIComposition> composition;
+
+    public Map<String, Double> getFCIRegulationComposition() {
+        return composition.stream()
+            .map(c -> Map.entry(c.getSpecieType(), c.getPercentage()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public static class FCIRegulationBuilder {
-        private String name;
-        private Map<SpecieType, Double> composition;
+    public Map<SpecieType, Double> getCompositionAsSpecieType() {
+       return composition.stream().map(c -> Map.entry(SpecieType.valueOf(c.getSpecieType()), c.getPercentage()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-        public FCIRegulationBuilder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public FCIRegulationBuilder withComposition(Map<SpecieType, Double> composition) {
-            this.composition = composition;
-            return this;
-        }
-
-        public FCIRegulation build() {
-            FCIRegulation fciRegulation = new FCIRegulation();
-            fciRegulation.setName(name);
-            fciRegulation.setComposition(composition);
-            return fciRegulation;
-        }
+    public static Map<String, Double> getCompositionAsString(Map<SpecieType, Double> composition) {
+        return composition.entrySet().stream().map(entry -> Map.entry(entry.getKey().name(), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 }

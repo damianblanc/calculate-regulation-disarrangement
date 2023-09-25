@@ -1,13 +1,17 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
+import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -25,12 +31,17 @@ import java.util.stream.Collectors;
 public class FCICalculationServiceImpl implements FCICalculationService {
 
     @Autowired
+    private FCIRegulationCRUDService fciRegulationCRUDService;
+
+    @Autowired
     private FCIPositionService fciPositionService;
 
     @Override
     public RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition) {
-        Map<SpecieType, Double> fciRegulationComposition = fciPosition.getFciRegulation().getComposition();
-        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition = fciPositionService.groupPositionBySpecieType(fciPosition.getFciPositionList());
+        FCIRegulation persistedFCIRegulation = fciRegulationCRUDService.findOrCreateFCIRegulation(fciPosition.getFciRegulation());
+        Map<SpecieType, Double> fciRegulationComposition = persistedFCIRegulation.getCompositionAsSpecieType();
+        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition =
+                fciPositionService.groupPositionBySpecieType(fciPosition.getFciPositionList());
 
         calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
 
@@ -106,4 +117,5 @@ public class FCICalculationServiceImpl implements FCICalculationService {
             }
         });
     }
+
 }

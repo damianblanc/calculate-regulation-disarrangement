@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
@@ -8,6 +9,8 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Defines all FCI Regulation Data for testing purposes
@@ -20,7 +23,9 @@ public class FCITestFixture {
 
 
    protected static String fCIRegulationName1 = "Alpha Mix Rent FCI";
-   protected static Map<SpecieType, Double> regulationComposition1 = createRegulationComposition1();
+
+   protected static String fCIRegulationSymbol1 = "AMR23";
+   protected static Map<SpecieType, Double> regulationComposition1 = createRegulationComposition();
 
    /** Specie Position Definition */
    /** SHARE MARKET */
@@ -63,7 +68,7 @@ public class FCITestFixture {
    /**
     * Creates a Regulation Composition to establish its Specie Type percentages
     */
-   private static Map<SpecieType, Double> createRegulationComposition1() {
+   private static Map<SpecieType, Double> createRegulationComposition() {
       return ImmutableMap.<SpecieType, Double>builder()
               .put(SpecieType.MARKET_SHARE, 30.00)
               .put(SpecieType.BOND, 50.00)
@@ -79,16 +84,22 @@ public class FCITestFixture {
    }
 
    protected FCIRegulation createFCIRegulation1() {
-      return createFCIRegulation(fCIRegulationName1, regulationComposition1);
+      return createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, regulationComposition1);
    }
 
    /**
     * Creates a FCIRegulation to establish its percentage composition
     */
-   protected FCIRegulation createFCIRegulation(String fCIRegulationName, Map<SpecieType, Double> regulationComposition) {
-      return FCIRegulation.builder().withName(fCIRegulationName)
-              .withComposition(regulationComposition)
-              .build();
+   protected FCIRegulation createFCIRegulation(String fCIRegulationName, String symbol, Map<SpecieType, Double> regulationComposition) {
+      FCIRegulation fciRegulation = FCIRegulation.builder().name(fCIRegulationName).symbol(symbol).build();
+
+      Set<FCIComposition> fciComposition = regulationComposition.entrySet().stream()
+              .map(e -> FCIComposition.builder().specieType(e.getKey().name()).percentage(e.getValue()).build())
+              .collect(Collectors.toUnmodifiableSet());
+
+      fciRegulation.setComposition(fciComposition);
+
+      return fciRegulation;
    }
 
 
