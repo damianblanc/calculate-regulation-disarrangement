@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum AdviceCalculationCriteria {
 
-    PRICE_UNIFORMLY_DISTRIBUTION_LIMIT_5_ELEMENTS("price_uniformly_distribution_limit_5_elements", 5),
+    PRICE_UNIFORMLY_DISTRIBUTION("price_uniformly_distribution", 5),
     ;
 
 

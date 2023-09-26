@@ -1,10 +1,14 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
+import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
+import com.bymatech.calculateregulationdisarrangement.domain.AdvisorCriteriaParameter;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
+import com.bymatech.calculateregulationdisarrangement.dto.AdviceCriteriaParameterDefinition;
+import com.bymatech.calculateregulationdisarrangement.dto.PriceUniformlyDistributionCriteriaParameterDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public interface FCIPositionAdviceService {
@@ -21,5 +25,11 @@ public interface FCIPositionAdviceService {
     List<String> getAllAdvices();
 
     List<FCIPositionAdvice> listAllAdvices();
+
+    AdvisorCriteriaParameter createCriteriaDefinition(AdviceCriteriaParameterDefinition criteriaParameterDefinition);
+
+    AdvisorCriteriaParameter findCriteriaParameterDefinitionByName(AdviceCalculationCriteria criteria);
+
+    PriceUniformlyDistributionCriteriaParameterDTO getParameters(AdviceCalculationCriteria criteria) throws JsonProcessingException;
 
 }

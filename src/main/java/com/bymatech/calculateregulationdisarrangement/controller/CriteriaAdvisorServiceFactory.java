@@ -21,7 +21,7 @@ public class CriteriaAdvisorServiceFactory {
 
     public FCIPositionAdvisorService select(AdviceCalculationCriteria criteria) {
         services = ImmutableMap.<AdviceCalculationCriteria, FCIPositionAdvisorService>builder()
-                .put(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION_LIMIT_5_ELEMENTS,
+                .put(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION,
                         fciPositionAdvisorPriceUniformlyDistributionService)
                 .build();
         return services.get(criteria);

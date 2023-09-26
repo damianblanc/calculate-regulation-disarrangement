@@ -26,10 +26,10 @@ public class FCIRegulation {
     @Column(name = "fci_regulation_id")
     private Integer id;
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "SYMBOL")
+    @Column(name = "symbol")
     private String symbol;
 
     @Column(name = "composition")
