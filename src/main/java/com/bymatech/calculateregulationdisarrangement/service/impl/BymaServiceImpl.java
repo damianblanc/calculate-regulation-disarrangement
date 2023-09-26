@@ -3,9 +3,8 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService;
-import com.bymatech.calculateregulationdisarrangement.service.BymaService;
-import com.bymatech.calculateregulationdisarrangement.service.http.impl;
+import com.bymatech.calculateregulationdisarrangement.service.BymaHttpService;
+import com.bymatech.calculateregulationdisarrangement.service.http.BymaAPIServiceGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
@@ -19,10 +18,10 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class BymaServiceImpl implements BymaService {
+public class BymaServiceImpl implements BymaHttpService {
 
     public List<BymaCedearResponse> getCedears(@Body BymaCedearAuthBean bymaCedearAuthBean) {
-        BymaHttpService service = impl.BymaAPIServiceGenerator.createService(BymaHttpService.class);
+        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service = BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
         Call<List<BymaCedearResponse>> callSync = service.getCedears(bymaCedearAuthBean);
 
         try {
@@ -49,7 +48,7 @@ public class BymaServiceImpl implements BymaService {
 
     @Override
     public BymaBondResponse getBonds(@Body BymaBondAuthBean bymaBondAuthBean) {
-        BymaHttpService service = impl.BymaAPIServiceGenerator.createService(BymaHttpService.class);
+        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service = BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
         Call<BymaBondResponse> callSync = service.getBonds(bymaBondAuthBean);
 
         try {

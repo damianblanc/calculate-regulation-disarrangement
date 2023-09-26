@@ -4,9 +4,9 @@ import com.bymatech.calculateregulationdisarrangement.domain.OperationAdvice;
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.service.BymaService;
+import com.bymatech.calculateregulationdisarrangement.service.BymaHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
-import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisor;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.google.common.collect.ArrayListMultimap;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class FCIPositionAdvisorPriceUniformlyDistributionService implements FCIPositionAdvisor {
+public class FCIPositionAdvisorPriceUniformlyDistributionService implements FCIPositionAdvisorService {
 
     @Autowired
     private FCICalculationService fciCalculationService;
@@ -27,7 +27,7 @@ public class FCIPositionAdvisorPriceUniformlyDistributionService implements FCIP
     private FCIPositionService fciPositionService;
 
     @Autowired
-    private BymaService bymaService;
+    private BymaHttpService bymaService;
 
     @Override
     public Map<SpecieType, Collection<OperationAdviceVO>> advice(FCIPosition fciPosition) {

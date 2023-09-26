@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,8 +48,8 @@ public class FCIRegulationTestSuite extends FCITestFixture {
                 .put(SpecieType.BOND, 50.00)
                 .put(SpecieType.CASH, 10.00).build();
 
-        FCIRegulation fciRegulation = createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, fCIRegulationWrongComposition);
-        FCIPosition fciPosition = createFCIPosition(fciRegulation, createSpeciePositionList1());
+        FCIRegulationDTO fciRegulationDTO = createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, fCIRegulationWrongComposition);
+        FCIPosition fciPosition = createFCIPosition(fciRegulationDTO, createSpeciePositionList1());
 
         String content = objectMapper.writeValueAsString(fciPosition);
         Throwable exception = assertThrows(jakarta.servlet.ServletException.class, () -> postCalculateDisarrangement(content));

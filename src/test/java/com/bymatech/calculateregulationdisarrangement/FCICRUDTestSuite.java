@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
- * Tests all CRUD operations over {@link com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation}
+ * Tests all CRUD operations over {@link FCIRegulation}
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK,

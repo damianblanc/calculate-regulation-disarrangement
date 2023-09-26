@@ -5,6 +5,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class FCITestFixture {
 
    protected FCIPosition fciPosition1;
-   protected FCIRegulation fciRegulation1;
+   protected FCIRegulationDTO fciRegulation1;
    protected List<SpeciePosition> speciePositionList1;
 
 
@@ -79,19 +80,19 @@ public class FCITestFixture {
     * Creates a FCIPosition that comprehends a FCIRegulation & FCISpeciePosition
     * An FCIPosition represents what it is needed to be posted in order to process
     */
-   protected FCIPosition createFCIPosition(FCIRegulation fciRegulation, List<SpeciePosition> speciePositionList) {
-      return new FCIPosition(fciRegulation, speciePositionList);
+   protected FCIPosition createFCIPosition(FCIRegulationDTO fciRegulationDTO, List<SpeciePosition> speciePositionList) {
+      return new FCIPosition(fciRegulationDTO, speciePositionList);
    }
 
-   protected FCIRegulation createFCIRegulation1() {
+   protected FCIRegulationDTO createFCIRegulation1() {
       return createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, regulationComposition1);
    }
 
    /**
     * Creates a FCIRegulation to establish its percentage composition
     */
-   protected FCIRegulation createFCIRegulation(String fCIRegulationName, String symbol, Map<SpecieType, Double> regulationComposition) {
-      FCIRegulation fciRegulation = FCIRegulation.builder().name(fCIRegulationName).symbol(symbol).build();
+   protected FCIRegulationDTO createFCIRegulation(String fCIRegulationName, String symbol, Map<SpecieType, Double> regulationComposition) {
+      FCIRegulationDTO fciRegulation = FCIRegulationDTO.builder().name(fCIRegulationName).symbol(symbol).build();
 
       Set<FCIComposition> fciComposition = regulationComposition.entrySet().stream()
               .map(e -> FCIComposition.builder().specieType(e.getKey().name()).percentage(e.getValue()).build())

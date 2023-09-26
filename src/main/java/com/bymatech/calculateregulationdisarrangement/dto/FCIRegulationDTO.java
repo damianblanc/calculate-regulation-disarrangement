@@ -1,17 +1,16 @@
-package com.bymatech.calculateregulationdisarrangement.domain;
+package com.bymatech.calculateregulationdisarrangement.dto;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
+import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Represents FCI Regulation Composition by defining each {@link SpecieType} and its percentage
- */
-@Entity
-@Table(name = "FCIRegulation")
 @Setter
 @Getter
 @AllArgsConstructor
@@ -19,11 +18,11 @@ import java.util.stream.Collectors;
 @ToString
 @Slf4j
 @Builder
-public class FCIRegulation {
+public class FCIRegulationDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "fci_regulation_id")
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "NAME")
@@ -40,16 +39,16 @@ public class FCIRegulation {
 
     @Column(name = "advices")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FCIPositionAdvice> FCIPositionAdvices = new ArrayList<>();
+    private Set<FCIPositionAdvice> FCIPositionAdvices;
 
     public Map<String, Double> getFCIRegulationComposition() {
         return composition.stream()
-            .map(c -> Map.entry(c.getSpecieType(), c.getPercentage()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .map(c -> Map.entry(c.getSpecieType(), c.getPercentage()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Map<SpecieType, Double> getCompositionAsSpecieType() {
-       return composition.stream().map(c -> Map.entry(SpecieType.valueOf(c.getSpecieType()), c.getPercentage()))
+        return composition.stream().map(c -> Map.entry(SpecieType.valueOf(c.getSpecieType()), c.getPercentage()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -57,5 +56,4 @@ public class FCIRegulation {
         return composition.entrySet().stream().map(entry -> Map.entry(entry.getKey().name(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
-
 }

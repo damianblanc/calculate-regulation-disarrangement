@@ -4,7 +4,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCr
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVO;
-import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisor;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 public class FCIAdviceController {
 
     @Autowired
-    private FCIPositionAdvisor fciPositionAdvisor;
+    private FCIPositionAdvisorService fciPositionAdvisor;
 
-    private ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisor> services;
+    private ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisorService> services;
 
     @Autowired
     private CriteriaAdvisorServiceFactory criteriaAdvisorServiceFactory;

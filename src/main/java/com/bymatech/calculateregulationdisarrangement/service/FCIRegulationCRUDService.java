@@ -1,10 +1,12 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Comprehends CRUD operations over {@link FCIRegulation}
@@ -46,11 +48,11 @@ public interface FCIRegulationCRUDService {
      * Finds or Creates a FCIRegulation indicated by its symbol
      * @return created FCIRegulation
      */
-    FCIRegulation findOrCreateFCIRegulation(FCIRegulation fciRegulation);
+    FCIRegulation findOrCreateFCIRegulation(FCIRegulationDTO fciRegulationDTO);
 
     /**
      * List all FCIRegulations available
      * @return All created FCIRegulations
      */
-    List<FCIRegulation> listFCIRegulations();
+    Set<FCIRegulation> listFCIRegulations();
 }

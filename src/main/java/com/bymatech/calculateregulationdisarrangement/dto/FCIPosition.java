@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FCIPosition {
 
-    private FCIRegulation fciRegulation;
+    private FCIRegulationDTO fciRegulationDTO;
     private List<SpeciePosition> fciPositionList;
 }

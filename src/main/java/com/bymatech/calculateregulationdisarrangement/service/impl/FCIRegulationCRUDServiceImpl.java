@@ -1,25 +1,25 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
+import com.bymatech.calculateregulationdisarrangement.repository.FCIPositionAdviceRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Persistence;
+import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Comprehends CRUD operations over {@link FCIRegulation}
@@ -29,6 +29,9 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
 
     @Autowired
     private FCIRegulationRepository fciRegulationRepository;
+
+    @Autowired
+    private FCIPositionAdviceService fciPositionAdviceService;
 
     @Override
 //    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
@@ -84,13 +87,19 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
     }
 
     @Override
-    public FCIRegulation findOrCreateFCIRegulation(FCIRegulation fciRegulation) {
-        return fciRegulationRepository.findBySymbol(fciRegulation.getSymbol())
-                .orElse(fciRegulationRepository.save(fciRegulation));
+    public FCIRegulation findOrCreateFCIRegulation(@NotNull FCIRegulationDTO fciRegulationDTO) {
+        return fciRegulationRepository.findBySymbol(fciRegulationDTO.getSymbol())
+            .orElseGet(() -> fciRegulationRepository.save(FCIRegulation.builder()
+                    .name(fciRegulationDTO.getName())
+                    .symbol(fciRegulationDTO.getSymbol())
+                    .composition(fciRegulationDTO.getComposition())
+                    .build()));
     }
 
     @Override
-    public List<FCIRegulation> listFCIRegulations() {
-        return fciRegulationRepository.findAll();
+    public Set<FCIRegulation> listFCIRegulations() {
+        return fciRegulationRepository.findAll().stream()
+                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
+                .collect(Collectors.toSet());
     }
 }

@@ -2,7 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.service.BymaService;
+import com.bymatech.calculateregulationdisarrangement.service.BymaHttpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import java.util.List;
 public class BymaMarketController {
 
     @Autowired
-    private BymaService bymaService;
+    private BymaHttpService bymaService;
 
     @GetMapping("/cedears")
     public List<BymaCedearResponse> getCedears() throws Exception {
