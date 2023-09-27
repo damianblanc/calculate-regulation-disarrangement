@@ -61,7 +61,7 @@ public class BymaServiceImpl implements BymaHttpService {
     }
 
     @Override
-    public List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPrice(OrderType orderType) {
+    public List<BymaBondResponse.BymaBondResponseElement> getBondsOrderedByPrice(OrderType orderType) {
         List<BymaBondResponse.BymaBondResponseElement> bonds =
                 getTotalBonds().stream().sorted(Comparator.comparing(BymaBondResponse.BymaBondResponseElement::getPrice)).toList();
         return orderType == OrderType.DESC ? bonds : bonds.stream().sorted(Collections.reverseOrder()).toList();
@@ -69,7 +69,7 @@ public class BymaServiceImpl implements BymaHttpService {
 
     @Override
     public List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPriceFilteredBySpecieList(OrderType orderType, List<SpeciePosition> speciesPosition) {
-        return getBondsOrderByPrice(orderType).stream()
+        return getBondsOrderedByPrice(orderType).stream()
                 .filter(bond -> speciesPosition.stream()
                         .anyMatch(specie -> specie.getSymbol().equals(bond.getSymbol())))
                 .toList();
@@ -77,9 +77,40 @@ public class BymaServiceImpl implements BymaHttpService {
 
     @Override
     public List<SpecieCurrentPriceVO> getBondsOrderByPriceVO(OrderType orderType) {
-        return getBondsOrderByPrice(orderType).stream()
+        return getBondsOrderedByPrice(orderType).stream()
                 .map(bond -> new SpecieCurrentPriceVO(bond.getDescription(), Double.valueOf(bond.getPrice())))
                 .toList();
     }
 
+    @Override
+    public BymaEquityResponse getEquities(BymaEquityAuthBean bymaEquityAuthBean) {
+        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service =
+                BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
+        Call<BymaEquityResponse> callSync = service.getEquities(bymaEquityAuthBean);
+
+        try {
+            Response<BymaEquityResponse> response = callSync.execute();
+            return response.body();
+        } catch (Exception ex) {
+            log.warn(ex.getMessage());
+        }
+        return BymaEquityResponse.create();
+    }
+
+    @Override
+    public List<BymaEquityResponse.BymaEquityResponseElement> getEquityOrderByPriceFilteredBySpecieList(OrderType orderType, List<SpeciePosition> speciesPosition) {
+        return getEquityOrderedByPrice(orderType).stream()
+                .filter(equity -> speciesPosition.stream()
+                        .anyMatch(specie -> specie.getSymbol().equals(equity.getSymbol())))
+                .toList();
+    }
+
+    @Override
+    public List<BymaEquityResponse.BymaEquityResponseElement> getEquityOrderedByPrice(OrderType orderType) {
+        BymaEquityResponse marketEquities = getEquities(BymaEquityAuthBean.create());
+        List<BymaEquityResponse.BymaEquityResponseElement> equities =
+                marketEquities.getBymaEquityResponses().stream().sorted(Comparator.comparing(
+                        BymaEquityResponse.BymaEquityResponseElement::getTrade)).toList();
+        return orderType == OrderType.DESC ? equities : equities.stream().sorted(Collections.reverseOrder()).toList();
+    }
 }

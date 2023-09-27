@@ -1,7 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
@@ -33,14 +32,14 @@ public class FCITestFixture {
    protected static String speciePositionName1 = "BANCO GALICIA";
 
    protected static String speciePositionSymbol1 = "GGAL";
-   protected static SpecieType speciePositionType1 = SpecieType.MARKET_SHARE;
+   protected static SpecieType speciePositionType1 = SpecieType.EQUITY;
    protected static Double speciePositionPrice1 = 3.15;
    protected static Integer speciePositionQuantity1 = 1500;
 
    protected static String speciePositionName2 = "YPF ESTATAL";
 
    protected static String speciePositionSymbol2 = "YPF";
-   protected static SpecieType speciePositionType2 = SpecieType.MARKET_SHARE;
+   protected static SpecieType speciePositionType2 = SpecieType.EQUITY;
    protected static Double speciePositionPrice2 = 8.5;
    protected static Integer speciePositionQuantity2 = 6000;
 
@@ -71,7 +70,7 @@ public class FCITestFixture {
     */
    private static Map<SpecieType, Double> createRegulationComposition() {
       return ImmutableMap.<SpecieType, Double>builder()
-              .put(SpecieType.MARKET_SHARE, 30.00)
+              .put(SpecieType.EQUITY, 30.00)
               .put(SpecieType.BOND, 50.00)
               .put(SpecieType.CASH, 20.00).build();
    }

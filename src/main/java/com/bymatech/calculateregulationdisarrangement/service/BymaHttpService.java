@@ -17,9 +17,15 @@ public interface BymaHttpService {
 
     BymaBondResponse getBonds(@Body BymaBondAuthBean bymaBondAuthBean);
 
-    List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPrice(OrderType orderType);
+    List<BymaBondResponse.BymaBondResponseElement> getBondsOrderedByPrice(OrderType orderType);
 
     List<BymaBondResponse.BymaBondResponseElement> getBondsOrderByPriceFilteredBySpecieList(OrderType orderType, List<SpeciePosition> speciesPosition);
 
     List<SpecieCurrentPriceVO> getBondsOrderByPriceVO(OrderType orderType);
+
+    BymaEquityResponse getEquities(@Body BymaEquityAuthBean bymaEquityAuthBean);
+
+    List<BymaEquityResponse.BymaEquityResponseElement> getEquityOrderedByPrice(OrderType orderType);
+
+    List<BymaEquityResponse.BymaEquityResponseElement> getEquityOrderByPriceFilteredBySpecieList(OrderType orderType, List<SpeciePosition> speciesPosition);
 }

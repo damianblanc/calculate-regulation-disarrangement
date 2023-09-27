@@ -16,4 +16,7 @@ public interface BymaHttpService {
         @POST("vanoms-be-core/rest/api/bymadata/free/bnown/seriesHistoricas/iamc/bonos")
         Call<BymaBondResponse> getBonds(@Body BymaBondAuthBean bymaBondAuthBean);
 
+        @POST("vanoms-be-core/rest/api/bymadata/free/leading-equity")
+        Call<BymaEquityResponse> getEquities(@Body BymaEquityAuthBean bymaEquityAuthBean);
+
 }

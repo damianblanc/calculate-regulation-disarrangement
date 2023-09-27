@@ -5,15 +5,14 @@ import lombok.Getter;
 @Getter
 public enum AdviceCalculationCriteria {
 
-    PRICE_UNIFORMLY_DISTRIBUTION("price_uniformly_distribution", 5),
+    PRICE_UNIFORMLY_DISTRIBUTION("price_uniformly_distribution"),
+    VOLUME_MAX_TRADING("volume_max_trading"),
     ;
 
 
     private String label;
-    private Integer limit = 5;
 
-    AdviceCalculationCriteria(String label, Integer limit) {
+    AdviceCalculationCriteria(String label) {
         this.label = label;
-        this.limit = limit;
     }
 }

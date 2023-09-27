@@ -2,7 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
-import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionAdvisorPriceUniformlyDistributionService;
+import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaPriceUniformDistributionService;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,12 +17,12 @@ public class CriteriaAdvisorServiceFactory {
     private ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisorService> services;
 
     @Autowired
-    private FCIPositionAdvisorPriceUniformlyDistributionService fciPositionAdvisorPriceUniformlyDistributionService;
+    private FCIPositionCriteriaPriceUniformDistributionService fciPositionCriteriaPriceUniformDistributionService;
 
     public FCIPositionAdvisorService select(AdviceCalculationCriteria criteria) {
         services = ImmutableMap.<AdviceCalculationCriteria, FCIPositionAdvisorService>builder()
                 .put(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION,
-                        fciPositionAdvisorPriceUniformlyDistributionService)
+                        fciPositionCriteriaPriceUniformDistributionService)
                 .build();
         return services.get(criteria);
     }

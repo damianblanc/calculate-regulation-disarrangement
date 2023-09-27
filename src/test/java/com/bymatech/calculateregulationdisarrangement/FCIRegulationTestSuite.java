@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
@@ -44,7 +43,7 @@ public class FCIRegulationTestSuite extends FCITestFixture {
     @Test()
     public void forceFciRegulationPercentageCompositionFailTest() throws Exception {
         ImmutableMap<SpecieType, Double> fCIRegulationWrongComposition = ImmutableMap.<SpecieType, Double>builder()
-                .put(SpecieType.MARKET_SHARE, 30.00)
+                .put(SpecieType.EQUITY, 30.00)
                 .put(SpecieType.BOND, 50.00)
                 .put(SpecieType.CASH, 10.00).build();
 

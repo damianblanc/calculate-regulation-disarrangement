@@ -127,7 +127,7 @@ public class FCICRUDTestSuite {
     private FCIRegulation createFCIRegulationBean() {
         FCIRegulation fciRegulation = FCIRegulation.builder().id(1).name("Alpha Mix Rent FCI").symbol("ALFA").build();
         FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).specieType(SpecieType.BOND.name()).build();
-        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).specieType(SpecieType.MARKET_SHARE.name()).build();
+        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).specieType(SpecieType.EQUITY.name()).build();
         FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).specieType(SpecieType.CASH.name()).build();
         Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
         fciRegulation.setComposition(fciCompositionList);
