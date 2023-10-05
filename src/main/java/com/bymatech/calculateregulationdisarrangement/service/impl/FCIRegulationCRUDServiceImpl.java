@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,28 +35,7 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
     private FCIPositionAdviceService fciPositionAdviceService;
 
     @Override
-//    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public FCIRegulation createFCIRegulation(FCIRegulation fciRegulation) {
-//        EntityManagerFactory emf= Persistence.createEntityManagerFactory("fciRegulationFactory");
-//        EntityManager em = emf.createEntityManager();
-//        FCIRegulation fciRegulationA = FCIRegulation.builder().name("Alpha Mix Rent FCI").symbol("ALFA").build();
-//        em.getTransaction().begin();
-//        em.persist(fciRegulationA);
-//        em.flush();
-//        em.refresh(fciRegulationA);
-//
-////        fciRegulationRepository.save(fciRegulationA);
-//        FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).specieType(SpecieType.BOND.name()).build();
-////        FCIComposition fciCompositionShareMarket = FCIComposition.builder().fciRegulation(fciRegulationA).percentage(50.0).specieType(SpecieType.MARKET_SHARE.name()).build();
-////        FCIComposition fciCompositionCash = FCIComposition.builder().fciRegulation(fciRegulationA).percentage(20.0).specieType(SpecieType.CASH.name()).build();
-////        Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
-//        Set<FCIComposition> composition = fciRegulationA.getComposition();
-//        composition.add(fciCompositionBond);
-//
-////        Set.of(fciCompositionBond));
-////        fciRegulationA.setComposition(Set.of(fciCompositionBond));
-//        em.persist(fciRegulationA);
-////        fciRegulationA.setComposition(fciCompositionList);
         return fciRegulationRepository.save(fciRegulation);
     }
 
@@ -77,8 +57,10 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
 
     @Override
     public FCIRegulation findFCIRegulation(String symbol) {
-        return fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
                 String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+        fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices());
+        return  fciRegulation;
     }
 
     @Override
@@ -99,6 +81,7 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
     @Override
     public Set<FCIRegulation> listFCIRegulations() {
         return fciRegulationRepository.findAll().stream()
+                .sorted(Comparator.comparingInt(FCIRegulation::getId))
                 .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
                 .collect(Collectors.toSet());
     }

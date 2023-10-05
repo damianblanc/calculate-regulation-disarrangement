@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
 import com.bymatech.calculateregulationdisarrangement.domain.AdvisorCriteriaParameter;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.AdviceCriteriaParameterDefinition;
 import com.bymatech.calculateregulationdisarrangement.dto.PriceUniformlyDistributionCriteriaParameterDTO;
 import com.bymatech.calculateregulationdisarrangement.repository.AdviceCriteriaParameterRepository;
@@ -32,11 +33,12 @@ public class FCIPositionAdviceServiceImpl implements FCIPositionAdviceService {
     private AdviceCriteriaParameterRepository adviceCriteriaParameterRepository;
 
     @Override
-    public FCIPositionAdvice registerAdvice(String advice, String owner) {
+    public FCIPositionAdvice registerAdvice(FCIRegulation fciRegulation, String advice, String owner) {
         return fciPositionAdviceRepository.save(FCIPositionAdvice.builder()
                 .owner(owner)
                 .timestamp(Timestamp.from(Instant.now()))
-                .advice(advice).build());
+                .advice(advice)
+                .fciRegulation(fciRegulation).build());
     }
 
     @Override
@@ -61,7 +63,7 @@ public class FCIPositionAdviceServiceImpl implements FCIPositionAdviceService {
     @Override
     public AdvisorCriteriaParameter findCriteriaParameterDefinitionByName(AdviceCalculationCriteria criteria) {
         return adviceCriteriaParameterRepository.findByName(criteria.name()).orElseThrow(() ->
-                new EntityNotFoundException(String.format(ExceptionMessage.ADVISE_CRITERIA_NOT_DEFINED.msg, criteria.name())));
+                new EntityNotFoundException(String.format(ExceptionMessage.ADVISE_CRITERIA_PARAMETER_NOT_DEFINED.msg, criteria.name())));
     }
 
     @Override

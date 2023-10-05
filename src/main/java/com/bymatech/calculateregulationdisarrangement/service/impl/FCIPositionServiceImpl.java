@@ -24,7 +24,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         return summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
     }
 
-    public Map<SpecieType, Double> getSummarizedPosition( Map<SpecieType, List< SpeciePosition >> position) {
+    public Map<SpecieType, Double> getSummarizedPosition(Map<SpecieType, List< SpeciePosition >> position) {
         return position.entrySet().stream()
                 .map(entry ->
                         Map.entry(entry.getKey(),

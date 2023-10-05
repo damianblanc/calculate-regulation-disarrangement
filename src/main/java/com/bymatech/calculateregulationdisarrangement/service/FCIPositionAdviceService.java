@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
 import com.bymatech.calculateregulationdisarrangement.domain.AdvisorCriteriaParameter;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.AdviceCriteriaParameterDefinition;
 import com.bymatech.calculateregulationdisarrangement.dto.PriceUniformlyDistributionCriteriaParameterDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,7 +21,7 @@ public interface FCIPositionAdviceService {
      * @param owner process executor requester
      * @return Registered advice
      */
-    FCIPositionAdvice registerAdvice(String advice, String owner);
+    FCIPositionAdvice registerAdvice(FCIRegulation fciRegulation, String advice, String owner);
 
     List<String> getAllAdvices();
 

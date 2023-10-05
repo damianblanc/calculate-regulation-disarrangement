@@ -5,8 +5,11 @@ import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.AdviceCriteriaParameterDefinition;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVO;
+import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
+import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaPriceUniformDistributionService;
+import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaVolumeMaxTradingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1")
 public class FCIAdviceController {
 
-    @Autowired
-    private FCIPositionAdvisorService fciPositionAdvisor;
 
     private ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisorService> services;
 
@@ -36,7 +37,7 @@ public class FCIAdviceController {
             @RequestBody FCIPosition fciPosition, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
-                .advice(fciPosition);
+                .advice(fciPosition).getOperationAdviceVO();
     }
 
     @PostMapping("/calculate-disarrangement/advice/criteria/{criteria}/specie-type/{specieType}")
@@ -48,10 +49,16 @@ public class FCIAdviceController {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @PostMapping("/calculate-disarrangement/advice/criteria/{criteria}/verbose")
+    public OperationAdviceVerboseVO advicePositionByCriteriaVerbose(
+            @RequestBody FCIPosition fciPosition, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
+        return criteriaAdvisorServiceFactory
+                .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
+                .advice(fciPosition);
+    }
+
     @PostMapping("/advice/criteria/parameter-definition")
     public void createAdviceCriteriaParameterDefinition(@RequestBody AdviceCriteriaParameterDefinition criteriaParameterDefinition) {
         fciPositionAdviceService.createCriteriaDefinition(criteriaParameterDefinition);
     }
-
-
 }

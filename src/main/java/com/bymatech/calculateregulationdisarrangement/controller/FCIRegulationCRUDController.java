@@ -5,7 +5,6 @@ import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -35,6 +34,7 @@ public class FCIRegulationCRUDController {
         return fciRegulationCRUDService.findFCIRegulation(symbol);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/fci")
     public Set<FCIRegulation> listFCIRegulations() {
         return fciRegulationCRUDService.listFCIRegulations();

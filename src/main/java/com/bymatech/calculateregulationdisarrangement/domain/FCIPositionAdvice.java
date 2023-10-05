@@ -31,7 +31,7 @@ public class FCIPositionAdvice {
     /**
      * JSON formatted Advice processing outcome
      */
-    @Column(name = "advice")
+    @Column(name = "advice", columnDefinition = "TEXT")
     private String advice;
 
     @ManyToOne(fetch = FetchType.EAGER)
