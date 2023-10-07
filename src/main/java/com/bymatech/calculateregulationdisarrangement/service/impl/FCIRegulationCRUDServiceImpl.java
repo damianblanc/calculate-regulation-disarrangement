@@ -81,8 +81,7 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
     @Override
     public Set<FCIRegulation> listFCIRegulations() {
         return fciRegulationRepository.findAll().stream()
-                .sorted(Comparator.comparingInt(FCIRegulation::getId))
-                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
+//                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
                 .collect(Collectors.toSet());
     }
 }

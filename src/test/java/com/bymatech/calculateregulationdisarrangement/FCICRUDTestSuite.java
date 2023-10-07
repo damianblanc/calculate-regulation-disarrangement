@@ -80,7 +80,7 @@ public class FCICRUDTestSuite {
 
         FCIRegulation fciRegulation = objectMapper.readValue(creationContent, FCIRegulation.class);
         fciRegulation.setName("Alpha Mix Rent FCI ARG");
-        fciRegulation.getComposition().removeIf(e -> e.getSpecieType().equals(SpecieType.BOND.name()));
+        fciRegulation.getComposition().removeIf(e -> e.getSpecieType().equals(SpecieType.Bond.name()));
         String contentToUpdate = objectMapper.writeValueAsString(fciRegulation);
 
         String updatingContent = mockmvc.perform(MockMvcRequestBuilders.put("/api/v1/fci")
@@ -126,9 +126,9 @@ public class FCICRUDTestSuite {
 
     private FCIRegulation createFCIRegulationBean() {
         FCIRegulation fciRegulation = FCIRegulation.builder().id(1).name("Alpha Mix Rent FCI").symbol("ALFA").build();
-        FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).specieType(SpecieType.BOND.name()).build();
-        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).specieType(SpecieType.EQUITY.name()).build();
-        FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).specieType(SpecieType.CASH.name()).build();
+        FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).specieType(SpecieType.Bond.name()).build();
+        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).specieType(SpecieType.Equity.name()).build();
+        FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).specieType(SpecieType.Cash.name()).build();
         Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
         fciRegulation.setComposition(fciCompositionList);
         return fciRegulation;

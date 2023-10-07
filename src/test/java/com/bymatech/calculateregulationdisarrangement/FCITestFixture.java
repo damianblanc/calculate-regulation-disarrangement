@@ -32,14 +32,14 @@ public class FCITestFixture {
    protected static String speciePositionName1 = "BANCO GALICIA";
 
    protected static String speciePositionSymbol1 = "GGAL";
-   protected static SpecieType speciePositionType1 = SpecieType.EQUITY;
+   protected static SpecieType speciePositionType1 = SpecieType.Equity;
    protected static Double speciePositionPrice1 = 3.15;
    protected static Integer speciePositionQuantity1 = 1500;
 
    protected static String speciePositionName2 = "YPF ESTATAL";
 
    protected static String speciePositionSymbol2 = "YPF";
-   protected static SpecieType speciePositionType2 = SpecieType.EQUITY;
+   protected static SpecieType speciePositionType2 = SpecieType.Equity;
    protected static Double speciePositionPrice2 = 8.5;
    protected static Integer speciePositionQuantity2 = 6000;
 
@@ -47,13 +47,13 @@ public class FCITestFixture {
    protected static String speciePositionName3 = "GLOBAL BOND GD41";
 
    protected static String speciePositionSymbol3 = "GD41";
-   protected static SpecieType speciePositionType3 = SpecieType.BOND;
+   protected static SpecieType speciePositionType3 = SpecieType.Bond;
    protected static Double speciePositionPrice3 = 0.6;
    protected static Integer speciePositionQuantity3 = 40000;
 
    protected static String speciePositionName4 = "LOCAL BOND T3X4";
    protected static String speciePositionSymbol4 = "T3X4";
-   protected static SpecieType speciePositionType4 = SpecieType.BOND;
+   protected static SpecieType speciePositionType4 = SpecieType.Bond;
    protected static Double speciePositionPrice4 = 1.4;
    protected static Integer speciePositionQuantity4 = 30000;
 
@@ -61,7 +61,7 @@ public class FCITestFixture {
    protected static String speciePositionName5 = "CASH";
 
    protected static String speciePositionSymbol5 = "CASH";
-   protected static SpecieType speciePositionType5 = SpecieType.CASH;
+   protected static SpecieType speciePositionType5 = SpecieType.Cash;
    protected static Double speciePositionPrice5 = 25000.00;
    protected static Integer speciePositionQuantity5 = 1;
 
@@ -70,9 +70,9 @@ public class FCITestFixture {
     */
    private static Map<SpecieType, Double> createRegulationComposition() {
       return ImmutableMap.<SpecieType, Double>builder()
-              .put(SpecieType.EQUITY, 30.00)
-              .put(SpecieType.BOND, 50.00)
-              .put(SpecieType.CASH, 20.00).build();
+              .put(SpecieType.Equity, 30.00)
+              .put(SpecieType.Bond, 50.00)
+              .put(SpecieType.Cash, 20.00).build();
    }
 
    /**

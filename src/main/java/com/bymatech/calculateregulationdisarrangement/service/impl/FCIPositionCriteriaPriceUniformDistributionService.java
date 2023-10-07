@@ -45,9 +45,9 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
 
         ImmutableMap<SpecieType, Function<SpecieData, Multimap<SpecieType, OperationAdviceVO>>> specieTypeProcess =
                 ImmutableMap.<SpecieType, Function<SpecieData, Multimap<SpecieType, OperationAdviceVO>>>builder()
-                .put(SpecieType.BOND, this::bond)
-                .put(SpecieType.EQUITY, this::equity)
-                        .put(SpecieType.CASH, this::cash)
+                .put(SpecieType.Bond, this::bond)
+                .put(SpecieType.Equity, this::equity)
+                        .put(SpecieType.Cash, this::cash)
                 .build();
 
         PriceUniformlyDistributionCriteriaParameterDTO parameters =
@@ -89,7 +89,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                                             specieData.getFciPositionList(),
                                             specieData.getSpeciePercentage(), specieData.getParameters().getElementQuantity()),
                                     e.getSymbol(), e.getTrade(), specieData.getOrderType().getOperationAdvice());
-                            specieTypeAdvices.put(SpecieType.EQUITY, operationAdviceVO);
+                            specieTypeAdvices.put(SpecieType.Equity, operationAdviceVO);
                         }
                 );
         return specieTypeAdvices;
@@ -120,7 +120,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                                         canAdviceBonds.size(),
                                         specieData.getParameters().getElementQuantity())),
                         e.getSymbol(), e.getPrice(), specieData.getOrderType().getOperationAdvice());
-                        specieTypeAdvices.put(SpecieType.BOND, operationAdviceVO);
+                        specieTypeAdvices.put(SpecieType.Bond, operationAdviceVO);
                     }
                 );
         return specieTypeAdvices;
@@ -141,8 +141,8 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
 //                specieData.getFciPositionList(),
 //                specieData.getSpeciePercentage(), specieData.getParameters().getElementQuantity());
         OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(valuedAdvice,
-                SpecieType.CASH.name(), String.valueOf(valuedAdvice), specieData.getOrderType().getOperationAdvice());
-        specieTypeAdvices.put(SpecieType.CASH, operationAdviceVO);
+                SpecieType.Cash.name(), String.valueOf(valuedAdvice), specieData.getOrderType().getOperationAdvice());
+        specieTypeAdvices.put(SpecieType.Cash, operationAdviceVO);
         return specieTypeAdvices;
     }
 

@@ -1,10 +1,10 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
 public enum SpecieType {
-    EQUITY,
-    BOND,
+    Equity,
+    Bond,
 
-    CEDEAR,
-    CASH,
+    Cedear,
+    Cash,
     ;
 }

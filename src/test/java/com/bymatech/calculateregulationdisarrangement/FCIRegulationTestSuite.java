@@ -43,9 +43,9 @@ public class FCIRegulationTestSuite extends FCITestFixture {
     @Test()
     public void forceFciRegulationPercentageCompositionFailTest() throws Exception {
         ImmutableMap<SpecieType, Double> fCIRegulationWrongComposition = ImmutableMap.<SpecieType, Double>builder()
-                .put(SpecieType.EQUITY, 30.00)
-                .put(SpecieType.BOND, 50.00)
-                .put(SpecieType.CASH, 10.00).build();
+                .put(SpecieType.Equity, 30.00)
+                .put(SpecieType.Bond, 50.00)
+                .put(SpecieType.Cash, 10.00).build();
 
         FCIRegulationDTO fciRegulationDTO = createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, fCIRegulationWrongComposition);
         FCIPosition fciPosition = createFCIPosition(fciRegulationDTO, createSpeciePositionList1());
@@ -67,7 +67,7 @@ public class FCIRegulationTestSuite extends FCITestFixture {
         String content = objectMapper.writeValueAsString(fciPosition);
         Throwable exception = assertThrows(jakarta.servlet.ServletException.class, () -> postCalculateDisarrangement(content));
         assertEquals(exception.getCause().getClass(), IllegalArgumentException.class);
-        assertEquals(exception.getCause().getMessage(), String.format(ExceptionMessage.REGULATION_SPECIE_TYPE_DOES_NOT_MATCH.msg, SpecieType.CASH));
+        assertEquals(exception.getCause().getMessage(), String.format(ExceptionMessage.REGULATION_SPECIE_TYPE_DOES_NOT_MATCH.msg, SpecieType.Cash));
     }
 
     private void postCalculateDisarrangement(String content) throws Exception {
