@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,5 +20,5 @@ public class OperationAdviceVerboseVO {
 
     private RegulationLagOutcomeVO regulationLagOutcomeVO;
 
-    private Map<SpecieType, Collection<OperationAdviceVO>> operationAdviceVO;
+    private List<OperationAdviceSpecieType> operationAdvicesVO;
 }

@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceSpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVO;
 import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaPriceUniformDistributionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,15 +36,16 @@ public class AdvisorSchedulerService {
 
 //    @Scheduled(fixedRate = 1000)
 //    @Scheduled(fixedDelayString = "${schedule.advice.position.fixed.delay.seconds:2}000")
-    public Map<SpecieType, Collection<OperationAdviceVO>> advicePosition() throws Exception {
+    public List<OperationAdviceSpecieType> advicePosition() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date now = new Date();
         String strDate = sdf.format(now);
         System.out.println("Fixed Delay scheduler:: " + strDate);
 
         FCIPosition fciPosition = createFCIPosition();
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findOrCreateFCIRegulation(fciPosition.getFciRegulationDTO());
-        Map<SpecieType, Collection<OperationAdviceVO>> advice = fciPositionCriteriaPriceUniformDistributionService.advice(fciPosition).getOperationAdviceVO();
+        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation("AMR23");
+
+       List<OperationAdviceSpecieType> advice = fciPositionCriteriaPriceUniformDistributionService.advice("AMR23", fciPosition).getOperationAdvicesVO();
         FCIPositionAdviceService.registerAdvice(fciRegulation, objectMapper.writeValueAsString(advice), BYMA_AUTOMATED_ADVISOR);
         List<String> allAdvices = FCIPositionAdviceService.getAllAdvices();
         return advice;

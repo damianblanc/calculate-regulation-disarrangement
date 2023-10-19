@@ -22,7 +22,6 @@ public interface FCIRegulationCRUDService {
 
     /**
      * Deletes a FCIRegulation indicated by its symbol
-     * @return
      */
     FCIRegulation deleteFCIRegulation(String symbol);
 

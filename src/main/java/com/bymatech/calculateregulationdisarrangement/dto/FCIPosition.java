@@ -11,7 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FCIPosition {
-
-    private FCIRegulationDTO fciRegulationDTO;
-    private List<SpeciePosition> fciPositionList;
+    private List<SpeciePosition> position;
 }

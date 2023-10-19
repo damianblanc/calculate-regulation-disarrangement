@@ -75,13 +75,15 @@ public class FCIRegulationCRUDServiceImpl  implements FCIRegulationCRUDService {
                     .name(fciRegulationDTO.getName())
                     .symbol(fciRegulationDTO.getSymbol())
                     .composition(fciRegulationDTO.getComposition())
+                    .compositionWithIds(fciRegulationDTO.getComposition())
                     .build()));
     }
 
     @Override
     public Set<FCIRegulation> listFCIRegulations() {
-        return fciRegulationRepository.findAll().stream()
-//                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
+        Set<FCIRegulation> fciRegulations = fciRegulationRepository.findAll().stream()
+                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
                 .collect(Collectors.toSet());
+       return fciRegulations.stream().peek(r -> r.setCompositionWithIds(r.getComposition())).collect(Collectors.toSet());
     }
 }

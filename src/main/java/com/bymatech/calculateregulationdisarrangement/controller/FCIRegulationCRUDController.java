@@ -34,7 +34,6 @@ public class FCIRegulationCRUDController {
         return fciRegulationCRUDService.findFCIRegulation(symbol);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/fci")
     public Set<FCIRegulation> listFCIRegulations() {
         return fciRegulationCRUDService.listFCIRegulations();

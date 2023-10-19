@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -38,10 +39,13 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     private BymaHttpService bymaHttpService;
     @Autowired
     private FCIPositionAdviceService fciPositionAdviceService;
+    @Autowired
+    private FCIRegulationCRUDService fciRegulationCRUDService;
 
     @Override
-    public OperationAdviceVerboseVO advice(FCIPosition fciPosition) throws JsonProcessingException {
+    public OperationAdviceVerboseVO advice(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
+        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(symbol);
 
         ImmutableMap<SpecieType, Function<SpecieData, Multimap<SpecieType, OperationAdviceVO>>> specieTypeProcess =
                 ImmutableMap.<SpecieType, Function<SpecieData, Multimap<SpecieType, OperationAdviceVO>>>builder()
@@ -53,37 +57,43 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
         PriceUniformlyDistributionCriteriaParameterDTO parameters =
                 fciPositionAdviceService.getParameters(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION);
 
-        RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionDisarrangement(fciPosition);
+        RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionDisarrangement(symbol, fciPosition);
         Map<SpecieType, Double> percentagePosition = regulationLagOutcomeVO.getRegulationLags();
 
         percentagePosition.forEach((specieType, speciePercentage) ->
             specieTypeAdvices.putAll(specieTypeProcess.get(specieType).apply(
                     SpecieData.builder()
                             .orderType(Objects.requireNonNull(OrderType.valueOfSign(speciePercentage)))
-                            .fciPositionList(CalculationServiceHelper.getFciPositionListFilteredBySpecieType(fciPosition.getFciPositionList(), specieType))
+                            .fciPositionList(CalculationServiceHelper.getFciPositionListFilteredBySpecieType(fciPosition.getPosition(), specieType))
                             .parameters(parameters).speciePercentage(speciePercentage)
                             .regulationSpeciePercentage(regulationLagOutcomeVO.getRegulationPercentage().get(specieType))
                             .regulationSpecieValued(regulationLagOutcomeVO.getRegulationValued().get(specieType))
                             .summarizedPosition(CalculationServiceHelper.summarizePositionList(regulationLagOutcomeVO.getRegulationValued()))
                             .build())));
 
+        AtomicInteger index = new AtomicInteger();
+        List<OperationAdviceSpecieType> operationAdviceSpecieTypes = specieTypeAdvices.asMap().entrySet().stream()
+                .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
+
         return OperationAdviceVerboseVO.builder()
-                .fciRegulationComposition(fciPosition.getFciRegulationDTO().getComposition())
+                .fciRegulationComposition(fciRegulation.getComposition())
                 .regulationLagOutcomeVO(regulationLagOutcomeVO)
-                .operationAdviceVO(specieTypeAdvices.asMap())
+                .operationAdvicesVO(operationAdviceSpecieTypes)
                 .build();
     }
 
     @Override
-    public OperationAdviceVerboseVO adviceVerbose(FCIPosition fciPosition) throws JsonProcessingException {
-        return advice(fciPosition);
+    public OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
+        return advice(symbol, fciPosition);
     }
 
     private Multimap<SpecieType, OperationAdviceVO> equity(SpecieData specieData) {
+        AtomicInteger index = new AtomicInteger();
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
         bymaHttpService.getEquityOrderByPriceFilteredBySpecieList(specieData.getOrderType(), specieData.getFciPositionList())
                 .stream().limit(specieData.getParameters().getElementQuantity()).forEach(e -> {
                             OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(
+                                    index,
                                     calculatePercentageOverPriceToCoverValued(
                                             specieData.getSummarizedPosition(),
                                             specieData.getFciPositionList(),
@@ -97,10 +107,12 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
 
 
     private Multimap<SpecieType, OperationAdviceVO> bond(SpecieData specieData) {
+        AtomicInteger index = new AtomicInteger();
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
         Supplier<Stream<BymaBondResponse.BymaBondResponseElement>> limitedBonds = supplyLimitedBonds(specieData);
         Set<BymaBondResponse.BymaBondResponseElement> canAdviceBonds = limitedBonds.get().filter(e ->
                 setSpecieTypeAdvice(
+                        index,
                         calculatePercentageOverPriceToCoverValued(
                                 specieData.getSummarizedPosition(),
                                 specieData.getFciPositionList(),
@@ -112,6 +124,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
 
         canAdviceBonds.forEach(e -> {
                     OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(
+                        index,
                         calculatePercentageOverPriceToCoverValued(
                                 specieData.getSummarizedPosition(),
                                 specieData.getFciPositionList(),
@@ -134,21 +147,22 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     }
 
     private Multimap<SpecieType, OperationAdviceVO> cash(SpecieData specieData) {
+        AtomicInteger index = new AtomicInteger();
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
-        Double valuedAdvice = Math.abs(CalculationServiceHelper.calculatePercentageOverTotalValued(specieData.getSpeciePercentage(), specieData.summarizedPosition));
+            Double valuedAdvice = Math.abs(CalculationServiceHelper.calculatePercentageOverTotalValued(specieData.getSpeciePercentage(), specieData.summarizedPosition));
 //        Double valuedAdvice = calculatePercentageOverPriceToCoverValued(
 //                specieData.getSummarizedPosition(),
 //                specieData.getFciPositionList(),
 //                specieData.getSpeciePercentage(), specieData.getParameters().getElementQuantity());
-        OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(valuedAdvice,
+        OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(index, valuedAdvice,
                 SpecieType.Cash.name(), String.valueOf(valuedAdvice), specieData.getOrderType().getOperationAdvice());
         specieTypeAdvices.put(SpecieType.Cash, operationAdviceVO);
         return specieTypeAdvices;
     }
 
-    private static OperationAdviceVO setSpecieTypeAdvice(Double percentageOverPriceToCoverValued, String symbol, String price,
+    private static OperationAdviceVO setSpecieTypeAdvice(AtomicInteger index, Double percentageOverPriceToCoverValued, String symbol, String price,
                                             OperationAdvice operationAdvice) {
-        return new OperationAdviceVO(symbol, operationAdvice,
+        return new OperationAdviceVO(index.getAndIncrement(), symbol, operationAdvice,
                 CalculationServiceHelper.calculateSpecieQuantityToCover(percentageOverPriceToCoverValued, Double.valueOf(price)),
                 Double.valueOf(price));
     }

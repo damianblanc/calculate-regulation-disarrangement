@@ -80,7 +80,7 @@ public class FCITestFixture {
     * An FCIPosition represents what it is needed to be posted in order to process
     */
    protected FCIPosition createFCIPosition(FCIRegulationDTO fciRegulationDTO, List<SpeciePosition> speciePositionList) {
-      return new FCIPosition(fciRegulationDTO, speciePositionList);
+      return new FCIPosition(speciePositionList);
    }
 
    protected FCIRegulationDTO createFCIRegulation1() {

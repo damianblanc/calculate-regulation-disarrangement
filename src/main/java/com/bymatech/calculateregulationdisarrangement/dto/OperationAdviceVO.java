@@ -9,6 +9,8 @@ import org.apache.commons.lang3.builder.EqualsExclude;
 @AllArgsConstructor
 public class OperationAdviceVO {
 
+    private Integer id;
+
     private String specieName;
 
     private OperationAdvice operationAdvice;

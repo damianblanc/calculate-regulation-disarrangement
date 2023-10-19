@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO;
@@ -14,11 +15,11 @@ import java.util.Map;
 @Service
 public interface FCICalculationService {
 
-    RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition);
+    RegulationLagOutcomeVO calculatePositionDisarrangement(String symbol, FCIPosition fciPosition);
 
-    RegulationLagVerboseVO calculatePositionDisarrangementVerbose(FCIPosition fciPosition);
+    RegulationLagVerboseVO calculatePositionDisarrangementVerbose(String symbol, FCIPosition fciPosition);
 
-    Map<SpecieType, Double> calculatePositionDisarrangementPercentages(FCIPosition fciPosition);
+    Map<SpecieType, Double> calculatePositionDisarrangementPercentages(String symbol, FCIPosition fciPosition);
 
-    Map<SpecieType, Double> calculatePositionDisarrangementValued(FCIPosition fciPosition);
+    Map<SpecieType, Double> calculatePositionDisarrangementValued(String symbol, FCIPosition fciPosition);
 }

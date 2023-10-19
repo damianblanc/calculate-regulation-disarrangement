@@ -30,6 +30,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIAdviceController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/CriteriaAdvisorServiceFactory.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/AdviceCalculationCriteria.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIRegulationComponentController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/BymaCedearAuthBean.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/Role.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/exception/FailedValidationException.java
@@ -41,6 +42,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIPosition.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionAdviceService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/PrimaryHttpService.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/config/ErrorController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/Retrieval.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PriceUniformlyDistributionCriteriaParameterDTO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/BymaMarketController.java
@@ -56,8 +58,10 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIRegulationCRUDService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/BymaEquityAuthBean.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SpecieCurrentPriceVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIRegulationComponentService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIRegulationCRUDController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/FCIRegulation.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/config/ApplicationPropertiesConfigBean.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/OrderType.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCIRegulationComponentImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/AdvisorCriteriaParameter.java

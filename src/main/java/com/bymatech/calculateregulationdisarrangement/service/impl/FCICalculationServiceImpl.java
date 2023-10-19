@@ -16,7 +16,6 @@ import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,15 +33,15 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     private FCIPositionService fciPositionService;
 
     @Override
-    public RegulationLagOutcomeVO calculatePositionDisarrangement(FCIPosition fciPosition) {
-        FCIRegulation persistedFCIRegulation = fciRegulationCRUDService.findOrCreateFCIRegulation(fciPosition.getFciRegulationDTO());
+    public RegulationLagOutcomeVO calculatePositionDisarrangement(String symbol, FCIPosition fciPosition) {
+        FCIRegulation persistedFCIRegulation = fciRegulationCRUDService.findFCIRegulation(symbol);
         Map<SpecieType, Double> fciRegulationComposition = persistedFCIRegulation.getCompositionAsSpecieType();
         Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition =
-                fciPositionService.groupPositionBySpecieType(fciPosition.getFciPositionList());
+                fciPositionService.groupPositionBySpecieType(fciPosition.getPosition());
 
         calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
 
-        Map<SpecieType, Double> regulationPercentage = fciPosition.getFciRegulationDTO().getCompositionAsSpecieType();
+        Map<SpecieType, Double> regulationPercentage = persistedFCIRegulation.getCompositionAsSpecieType();
         Map<SpecieType, Double> summarizedPosition = fciPositionService.getSummarizedPosition(fciSpecieTypePosition);
         Map<SpecieType, Double> regulationValuedOverPosition = calculateRegulationValuedOverPosition(regulationPercentage, summarizedPosition);
         Map<SpecieType, Double> percentagePosition = calculatePercentagePosition(summarizedPosition);
@@ -64,18 +63,18 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     @Override
-    public RegulationLagVerboseVO calculatePositionDisarrangementVerbose(FCIPosition fciPosition) {
-        return new RegulationLagVerboseVO(calculatePositionDisarrangement(fciPosition), fciPosition);
+    public RegulationLagVerboseVO calculatePositionDisarrangementVerbose(String symbol, FCIPosition fciPosition) {
+        return new RegulationLagVerboseVO(calculatePositionDisarrangement(symbol, fciPosition), fciPosition);
     }
 
     @Override
-    public Map<SpecieType, Double> calculatePositionDisarrangementPercentages(FCIPosition fciPosition) {
-        return calculatePositionDisarrangement(fciPosition).getRegulationLags();
+    public Map<SpecieType, Double> calculatePositionDisarrangementPercentages(String symbol, FCIPosition fciPosition) {
+        return calculatePositionDisarrangement(symbol, fciPosition).getRegulationLags();
     }
 
     @Override
-    public Map<SpecieType, Double> calculatePositionDisarrangementValued(FCIPosition fciPosition) {
-        return calculatePositionDisarrangement(fciPosition).getRegulationValuedLags();
+    public Map<SpecieType, Double> calculatePositionDisarrangementValued(String symbol, FCIPosition fciPosition) {
+        return calculatePositionDisarrangement(symbol, fciPosition).getRegulationValuedLags();
     }
 
     private Map<SpecieType, Double> calculateDisarrangementValuedPosition(Map<SpecieType, Double> disarrangementPositionPercentage,

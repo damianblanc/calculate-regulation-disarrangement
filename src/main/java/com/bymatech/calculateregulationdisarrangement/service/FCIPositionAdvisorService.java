@@ -9,8 +9,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 public interface FCIPositionAdvisorService {
 
-    OperationAdviceVerboseVO advice(FCIPosition fciPosition) throws JsonProcessingException;
+    /**
+     * Advices symbol indicated FCI and given position with implemented criteria
+     * @param symbol FCI Regulation Symbol
+     * @param fciPosition current position
+     * @return A composition of disarrangement, fci lags and advices
+     * @throws JsonProcessingException
+     */
+    OperationAdviceVerboseVO advice(String symbol, FCIPosition fciPosition) throws JsonProcessingException;
 
-    OperationAdviceVerboseVO adviceVerbose(FCIPosition fciPosition) throws JsonProcessingException;
+    OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPosition fciPosition) throws JsonProcessingException;
 
 }

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class FCIPositionCriteriaVolumeMaxTradingService implements FCIPositionAdvisorService {
     @Override
-    public OperationAdviceVerboseVO advice(FCIPosition fciPosition) throws JsonProcessingException {
+    public OperationAdviceVerboseVO advice(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
         return null;
     }
 
     @Override
-    public OperationAdviceVerboseVO adviceVerbose(FCIPosition fciPosition) throws JsonProcessingException {
+    public OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
         return null;
     }
 }

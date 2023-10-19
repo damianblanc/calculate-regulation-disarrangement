@@ -135,6 +135,11 @@
 			<artifactId>spring-cloud-starter-config</artifactId>
 			<version>4.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.51</version>
+		</dependency>
 	</dependencies>
 
 	<build>
