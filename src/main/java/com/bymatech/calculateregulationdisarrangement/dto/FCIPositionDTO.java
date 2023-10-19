@@ -10,6 +10,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FCIPosition {
+public class FCIPositionDTO {
     private List<SpeciePosition> position;
 }

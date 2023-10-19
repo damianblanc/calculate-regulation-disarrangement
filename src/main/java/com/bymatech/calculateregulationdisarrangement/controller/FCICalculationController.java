@@ -1,7 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
@@ -18,22 +18,22 @@ public class FCICalculationController {
     private FCICalculationService fciCalculationService;
 
     @PostMapping(path="/calculate-disarrangement/fci/{symbol}/percentages", consumes="application/json", produces="application/json")
-    public Map<SpecieType, Double> calculateDisarrangementPercentages(@PathVariable String symbol, @RequestBody FCIPosition fciPosition) {
+    public Map<SpecieType, Double> calculateDisarrangementPercentages(@PathVariable String symbol, @RequestBody FCIPositionDTO fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementPercentages(symbol, fciPosition);
     }
 
     @PostMapping(path="/calculate-disarrangement/fci/{symbol}/valued", consumes="application/json", produces="application/json")
-    public Map<SpecieType, Double> calculateDisarrangementValued(@PathVariable String symbol, @RequestBody FCIPosition fciPosition) {
+    public Map<SpecieType, Double> calculateDisarrangementValued(@PathVariable String symbol, @RequestBody FCIPositionDTO fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementValued(symbol, fciPosition);
     }
 
     @PostMapping(path="/calculate-disarrangement/fci/{symbol}", consumes="application/json", produces="application/json")
-    public RegulationLagOutcomeVO calculateDisarrangement(@PathVariable String symbol, @RequestBody FCIPosition fciPosition) {
+    public RegulationLagOutcomeVO calculateDisarrangement(@PathVariable String symbol, @RequestBody FCIPositionDTO fciPosition) {
         return fciCalculationService.calculatePositionDisarrangement(symbol, fciPosition);
     }
 
     @PostMapping(path="/calculate-disarrangement/fci/{symbol}/verbose", consumes="application/json", produces="application/json")
-    public RegulationLagVerboseVO calculateDisarrangementVerbose(@PathVariable String symbol, @RequestBody FCIPosition fciPosition) {
+    public RegulationLagVerboseVO calculateDisarrangementVerbose(@PathVariable String symbol, @RequestBody FCIPositionDTO fciPosition) {
         return fciCalculationService.calculatePositionDisarrangementVerbose(symbol, fciPosition);
     }
 

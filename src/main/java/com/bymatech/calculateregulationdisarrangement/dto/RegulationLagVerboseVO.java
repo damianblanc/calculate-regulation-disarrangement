@@ -9,5 +9,5 @@ public class RegulationLagVerboseVO {
 
     RegulationLagOutcomeVO regulationLagOutcome;
 
-    FCIPosition fciPosition;
+    FCIPositionDTO fciPosition;
 }

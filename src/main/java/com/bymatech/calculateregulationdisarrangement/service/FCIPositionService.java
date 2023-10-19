@@ -1,11 +1,13 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Groups operations needed on FCI Position
@@ -20,4 +22,8 @@ public interface FCIPositionService {
     Double calculateTotalValuedPosition(Map<SpecieType, Double> summarizedPosition);
 
     Map<SpecieType, Double> getSummarizedPosition( Map<SpecieType, List<SpeciePosition>> position);
+
+    Set<FCIPosition> listPositionsByFCIRegulationSymbol(String symbol);
+
+    FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition);
 }

@@ -9,7 +9,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
-public class FCIRegulationCRUDController {
+public class FCIRegulationController {
 
     @Autowired
     private FCIRegulationCRUDService fciRegulationCRUDService;

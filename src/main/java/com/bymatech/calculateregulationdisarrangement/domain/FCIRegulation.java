@@ -1,7 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +40,10 @@ public class FCIRegulation {
 //    @OneToMany(mappedBy = "fciRegulationId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FCIComposition> composition;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<FCIPosition> positions;
+
 
     private transient Set<FCIComposition> compositionWithIds;
 

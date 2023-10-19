@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionDTO;
 import com.bymatech.calculateregulationdisarrangement.service.*;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +44,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     private FCIRegulationCRUDService fciRegulationCRUDService;
 
     @Override
-    public OperationAdviceVerboseVO advice(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
+    public OperationAdviceVerboseVO advice(String symbol, FCIPositionDTO fciPosition) throws JsonProcessingException {
         Multimap<SpecieType, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(symbol);
 
@@ -83,7 +84,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     }
 
     @Override
-    public OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPosition fciPosition) throws JsonProcessingException {
+    public OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPositionDTO fciPosition) throws JsonProcessingException {
         return advice(symbol, fciPosition);
     }
 

@@ -1,7 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
@@ -10,10 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -30,7 +26,7 @@ public class FCIAdviceController {
 
     @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}")
     public List<OperationAdviceSpecieType> advicePositionByCriteria(
-            @RequestBody FCIPosition fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
+            @RequestBody FCIPositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
                 .advice(symbol, fciPosition).getOperationAdvicesVO();
@@ -47,7 +43,7 @@ public class FCIAdviceController {
 
     @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}/verbose")
     public OperationAdviceVerboseVO advicePositionByCriteriaVerbose(
-            @RequestBody FCIPosition fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
+            @RequestBody FCIPositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
                 .advice(symbol, fciPosition);
