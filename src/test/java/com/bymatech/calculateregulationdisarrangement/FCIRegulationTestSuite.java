@@ -1,7 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement;
 
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionDTO;
+import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
@@ -48,7 +48,7 @@ public class FCIRegulationTestSuite extends FCITestFixture {
                 .put(SpecieType.Cash, 10.00).build();
 
         FCIRegulationDTO fciRegulationDTO = createFCIRegulation(fCIRegulationName1, fCIRegulationSymbol1, fCIRegulationWrongComposition);
-        FCIPositionDTO fciPosition = createFCIPosition(fciRegulationDTO, createSpeciePositionList1());
+        FCISpeciePositionDTO fciPosition = createFCIPosition(fciRegulationDTO, createSpeciePositionList1());
 
         String content = objectMapper.writeValueAsString(fciPosition);
         Throwable exception = assertThrows(jakarta.servlet.ServletException.class, () -> postCalculateDisarrangement(content));
@@ -62,7 +62,7 @@ public class FCIRegulationTestSuite extends FCITestFixture {
     @Test()
     public void forceFciRegulationSpecieTypeCompositionFailTest() throws Exception {
         fciRegulation1 = createFCIRegulation1();
-        FCIPositionDTO fciPosition = createFCIPosition(fciRegulation1, createSpeciePositionList2());
+        FCISpeciePositionDTO fciPosition = createFCIPosition(fciRegulation1, createSpeciePositionList2());
 
         String content = objectMapper.writeValueAsString(fciPosition);
         Throwable exception = assertThrows(jakarta.servlet.ServletException.class, () -> postCalculateDisarrangement(content));

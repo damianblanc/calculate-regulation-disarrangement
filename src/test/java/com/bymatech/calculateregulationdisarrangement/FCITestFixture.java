@@ -3,7 +3,7 @@ package com.bymatech.calculateregulationdisarrangement;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionDTO;
+import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import com.google.common.collect.ImmutableMap;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class FCITestFixture {
 
-   protected FCIPositionDTO fciPosition1;
+   protected FCISpeciePositionDTO fciPosition1;
    protected FCIRegulationDTO fciRegulation1;
    protected List<SpeciePosition> speciePositionList1;
 
@@ -79,8 +79,8 @@ public class FCITestFixture {
     * Creates a FCIPosition that comprehends a FCIRegulation & FCISpeciePosition
     * An FCIPosition represents what it is needed to be posted in order to process
     */
-   protected FCIPositionDTO createFCIPosition(FCIRegulationDTO fciRegulationDTO, List<SpeciePosition> speciePositionList) {
-      return new FCIPositionDTO(speciePositionList);
+   protected FCISpeciePositionDTO createFCIPosition(FCIRegulationDTO fciRegulationDTO, List<SpeciePosition> speciePositionList) {
+      return new FCISpeciePositionDTO(speciePositionList);
    }
 
    protected FCIRegulationDTO createFCIRegulation1() {

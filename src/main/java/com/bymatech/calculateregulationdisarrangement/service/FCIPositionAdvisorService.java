@@ -1,6 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionDTO;
+import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVerboseVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -16,8 +16,8 @@ public interface FCIPositionAdvisorService {
      * @return A composition of disarrangement, fci lags and advices
      * @throws JsonProcessingException
      */
-    OperationAdviceVerboseVO advice(String symbol, FCIPositionDTO fciPosition) throws JsonProcessingException;
+    OperationAdviceVerboseVO advice(String symbol, FCISpeciePositionDTO fciPosition) throws JsonProcessingException;
 
-    OperationAdviceVerboseVO adviceVerbose(String symbol, FCIPositionDTO fciPosition) throws JsonProcessingException;
+    OperationAdviceVerboseVO adviceVerbose(String symbol, FCISpeciePositionDTO fciPosition) throws JsonProcessingException;
 
 }

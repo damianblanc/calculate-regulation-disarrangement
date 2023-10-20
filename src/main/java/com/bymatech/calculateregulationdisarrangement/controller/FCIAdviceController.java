@@ -26,7 +26,7 @@ public class FCIAdviceController {
 
     @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}")
     public List<OperationAdviceSpecieType> advicePositionByCriteria(
-            @RequestBody FCIPositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
+            @RequestBody FCISpeciePositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
                 .advice(symbol, fciPosition).getOperationAdvicesVO();
@@ -43,7 +43,7 @@ public class FCIAdviceController {
 
     @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}/verbose")
     public OperationAdviceVerboseVO advicePositionByCriteriaVerbose(
-            @RequestBody FCIPositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
+            @RequestBody FCISpeciePositionDTO fciPosition, @PathVariable String symbol, @PathVariable String criteria) throws IllegalArgumentException, JsonProcessingException {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
                 .advice(symbol, fciPosition);

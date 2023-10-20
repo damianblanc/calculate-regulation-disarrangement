@@ -4,20 +4,23 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FCIPositionServiceImpl implements FCIPositionService {
+
+    private final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     private FCIRegulationRepository fciRegulationRepository;
@@ -45,21 +48,31 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition) {
+    public FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition) throws JsonProcessingException  {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+        fciPosition.setCreatedOn();
+        fciPosition.setOverview(fciPosition);
         fciRegulation.getPositions().add(fciPosition);
         fciRegulationRepository.save(fciRegulation);
         return fciPosition;
     }
 
     @Override
-    public Set<FCIPosition> listPositionsByFCIRegulationSymbol(String symbol) {
+    public Set<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        return fciRegulation.getPositions();
+        Set<FCIPosition> positions = fciRegulation.getPositions();
+        return positions.stream().map(p ->
+                FCIPositionVO.builder()
+                        .id(p.getId())
+                        .fciSymbol(fciRegulation.getSymbol())
+                        .timestamp(p.getCreatedOn(DATE_TIME_FORMAT))
+                        .overview(p.getOverview())
+                        .jsonPosition(p.getJsonPosition())
+                        .build()).collect(Collectors.toSet());
     }
 
 }
