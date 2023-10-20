@@ -60,6 +60,16 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
+    public FCIPosition findFCIPositionById(String symbol, Integer id) {
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+        return fciRegulation.getPositions().stream().filter(p -> p.getId().equals(id)).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, symbol, id)));
+    }
+
+    @Override
     public Set<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
                 .orElseThrow(() -> new EntityNotFoundException(

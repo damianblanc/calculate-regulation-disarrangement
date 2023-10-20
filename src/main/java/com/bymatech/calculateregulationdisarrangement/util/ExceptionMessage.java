@@ -11,6 +11,8 @@ public enum ExceptionMessage {
 
     ADVISE_CRITERIA_PARAMETER_NOT_DEFINED("Indicated advise Criteria parameters are not configured - [%s]"),
     FCI_REGULATION_ENTITY_NOT_FOUND("FCI Regulation cannot be found with symbol [%s]"),
+
+    FCI_POSITION_ENTITY_NOT_FOUND("FCI Regulation Position [%s] cannot be found with id [%s]")
     ;
 
     public final String msg;

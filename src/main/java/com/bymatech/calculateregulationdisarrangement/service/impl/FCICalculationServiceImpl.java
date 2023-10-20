@@ -1,11 +1,10 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
-import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagOutcomeVO;
-import com.bymatech.calculateregulationdisarrangement.dto.RegulationLagVerboseVO;
+import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
@@ -13,6 +12,7 @@ import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDS
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,13 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 
     @Autowired
     private FCIPositionService fciPositionService;
+
+
+    @Override
+    public RegulationLagOutcomeVO calculatePositionBiasById(String symbol, String id) throws JsonProcessingException {
+        FCIPosition fciPosition = fciPositionService.findFCIPositionById(symbol, Integer.valueOf(id));
+        return calculatePositionDisarrangement(symbol, new FCISpeciePositionDTO(fciPosition.getSpeciePositions(fciPosition)));
+    }
 
     @Override
     public RegulationLagOutcomeVO calculatePositionDisarrangement(String symbol, FCISpeciePositionDTO fciPosition) {
@@ -75,6 +82,34 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     @Override
     public Map<SpecieType, Double> calculatePositionDisarrangementValued(String symbol, FCISpeciePositionDTO fciPosition) {
         return calculatePositionDisarrangement(symbol, fciPosition).getRegulationValuedLags();
+    }
+
+    @Override
+    public FCIPositionPercentageVO calculatePositionBiasPercentages(String symbol, String id) throws JsonProcessingException {
+        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getPositionPercentageBias();
+        return new FCIPositionPercentageVO(m.entrySet().stream()
+                .map(e -> new FCIPercentageDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+    }
+
+    @Override
+    public FCIPositionValuedVO calculatePositionBiasValued(String symbol, String id) throws JsonProcessingException {
+        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getPositionValuedBias();
+        return new FCIPositionValuedVO(m.entrySet().stream()
+                .map(e -> new FCIValuedDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+    }
+
+    @Override
+    public FCIRegulationPercentageVO calculateRegulationPercentages(String symbol, String id) throws JsonProcessingException {
+        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getRegulationPercentage();
+        return new FCIRegulationPercentageVO(m.entrySet().stream()
+                .map(e -> new FCIPercentageDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+    }
+
+    @Override
+    public FCIRegulationValuedVO calculateRegulationValued(String symbol, String id) throws JsonProcessingException {
+        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getRegulationValued();
+        return new FCIRegulationValuedVO(m.entrySet().stream()
+                .map(e -> new FCIValuedDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     private Map<SpecieType, Double> calculateDisarrangementValuedPosition(Map<SpecieType, Double> disarrangementPositionPercentage,

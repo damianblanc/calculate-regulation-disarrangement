@@ -28,4 +28,11 @@ public interface FCIPositionService {
     Set<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol);
 
     FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition) throws JsonProcessingException;
+
+    /**
+     * Finds a Position in FCI Regulation position list
+     * @param symbol FCI Regulation Symbol
+     * @param id Position id
+     */
+    FCIPosition findFCIPositionById(String symbol, Integer id);
 }

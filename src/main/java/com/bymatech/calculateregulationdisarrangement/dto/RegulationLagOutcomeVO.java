@@ -15,8 +15,8 @@ public class RegulationLagOutcomeVO {
 
     private Map<SpecieType, Double> regulationLags;
     private Map<SpecieType, Double> regulationValuedLags;
-    private Map<SpecieType, Double> positionPercentageDisarrangement;
-    private Map<SpecieType, Double> positionValuedDisarrangement;
+    private Map<SpecieType, Double> positionPercentageBias;
+    private Map<SpecieType, Double> positionValuedBias;
     private Map<SpecieType, Double> regulationPercentage;
     private Map<SpecieType, Double> regulationValued;
 
