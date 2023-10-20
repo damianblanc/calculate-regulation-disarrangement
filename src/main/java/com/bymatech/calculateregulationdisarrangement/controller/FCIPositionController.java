@@ -23,6 +23,10 @@ public class FCIPositionController {
         return fciPositionService.createFCIPosition(symbol, fciPosition);
     }
 
+    @GetMapping("/fci/{symbol}/position/{id}")
+    public FCIPosition findFCIPositionByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable String id) {
+        return fciPositionService.findFCIPositionById(symbol, Integer.valueOf(id));
+    }
 
     @GetMapping("/fci/{symbol}/position")
     public Set<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) {
