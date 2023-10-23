@@ -12,7 +12,11 @@ public enum ExceptionMessage {
     ADVISE_CRITERIA_PARAMETER_NOT_DEFINED("Indicated advise Criteria parameters are not configured - [%s]"),
     FCI_REGULATION_ENTITY_NOT_FOUND("FCI Regulation cannot be found with symbol [%s]"),
 
-    FCI_POSITION_ENTITY_NOT_FOUND("FCI Regulation Position [%s] cannot be found with id [%s]")
+    FCI_POSITION_ENTITY_NOT_FOUND("FCI Regulation Position [%s] cannot be found with id [%s]"),
+
+    SPECIE_TYPE_ENTITY_NOT_FOUND("Specie Type Group cannot be found with name [%s]"),
+
+    SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND("Specie Type cannot be found with name [%s]"),
     ;
 
     public final String msg;
