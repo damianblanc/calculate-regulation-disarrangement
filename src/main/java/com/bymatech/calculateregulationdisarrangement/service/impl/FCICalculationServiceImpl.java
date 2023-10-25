@@ -1,9 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
@@ -13,9 +10,12 @@ import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHel
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hibernate.sql.ast.tree.expression.Over;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,33 +34,68 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 
 
     @Override
-    public RegulationLagOutcomeVO calculatePositionBiasById(String symbol, String id) throws JsonProcessingException {
-        FCIPosition fciPosition = fciPositionService.findFCIPositionById(symbol, Integer.valueOf(id));
-        return calculatePositionDisarrangement(symbol, new FCISpeciePositionDTO(fciPosition.getSpeciePositions(fciPosition)));
+    public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
+        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
+        FCIPosition fciPosition = fciPositionService.findFCIPositionById(fciRegulationSymbol, Integer.valueOf(fciPositionId));
+        List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition);
+        updateCurrentMarketPriceToPosition(fciPosition, refresh);
+
+        /** Preconditions */
+        Map<FCISpecieType, Double> fciRegulationCompositionBySpecieType = fciRegulation.getCompositionAsSpecieType();
+        Map<FCISpecieType, List<FCISpeciePosition>> groupedPositionBySpecieType = fciPositionService.groupPositionBySpecieType(fciSpeciePositions);
+        analyseBiasPreconditions(fciRegulationCompositionBySpecieType, groupedPositionBySpecieType);
+
+        /** Position grouping calculation */
+        Map<FCISpecieType, Double> valuedPositionBySpecieType = fciPositionService.getValuedPositionBySpecieType(groupedPositionBySpecieType);
+        Map<FCISpecieType, Double> percentagePositionBySpecieType = calculatePercentagePositionBySpecieType(valuedPositionBySpecieType);
+
+        /** Regulation grouping calculation */
+        Map<FCISpecieType, Double> percentageRegulationBySpecieType = fciRegulation.getCompositionAsSpecieType();
+        Map<FCISpecieType, Double> valuedRegulationBySpecieType = calculateValuedRegulationBySpecieType(percentageRegulationBySpecieType, valuedPositionBySpecieType);
+
+        /** Biases grouping calculation */
+        Map<FCISpecieType, Double> biasPercentagePositionBySpecieType = calculatePercentagePositionBias(percentageRegulationBySpecieType, percentagePositionBySpecieType);
+        Map<FCISpecieType, Double> biasValuedPositionBySpecieType = calculateValuedPositionBias(biasPercentagePositionBySpecieType, valuedRegulationBySpecieType);
+
+        /** Summarization */
+        Double totalSummarizedPosition = valuedPositionBySpecieType.values().stream().reduce(Double::sum).orElseThrow();
+
+        /** FCI Specie Type over Position */
+        Map<FCISpecieType, Double> specieTypePercentageWeightRelativeToPosition = calculateSpecieTypePercentageOverPosition(valuedPositionBySpecieType, totalSummarizedPosition);
+        Map<FCISpecieType, Double> specieTypeValueWeightRelativeToPosition = calculateSpecieTypeValueOverPosition(valuedPositionBySpecieType, totalSummarizedPosition);
+
+        /** FCI Specie over Specie Type */
+        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToFCISpecieType = calculateSpeciePercentageOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType);
+        Map<FCISpeciePosition, Double> specieValueWeightRelativeToFCISpecieType = calculateSpecieValueOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType);
+
+        /** FCI Specie over Position */
+        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToPosition = calculateSpeciePercentageOverPosition(fciSpeciePositions, totalSummarizedPosition);
+        Map<FCISpeciePosition, Double> specieValueWeightRelativeToPosition = calculateSpecieValueOverPosition(fciSpeciePositions, totalSummarizedPosition);
+
+        return new RegulationLagOutcomeVO(
+                biasPercentagePositionBySpecieType,
+                biasValuedPositionBySpecieType,
+                percentagePositionBySpecieType,
+                valuedPositionBySpecieType,
+                percentageRegulationBySpecieType,
+                valuedRegulationBySpecieType,
+                specieTypePercentageWeightRelativeToPosition,
+                specieTypeValueWeightRelativeToPosition,
+                speciePercentageWeightRelativeToFCISpecieType,
+                specieValueWeightRelativeToFCISpecieType,
+                speciePercentageWeightRelativeToPosition,
+                specieValueWeightRelativeToPosition);
     }
 
-    @Override
-    public RegulationLagOutcomeVO calculatePositionDisarrangement(String symbol, FCISpeciePositionDTO fciPosition) {
-        FCIRegulation persistedFCIRegulation = fciRegulationCRUDService.findFCIRegulation(symbol);
-        Map<SpecieType, Double> fciRegulationComposition = persistedFCIRegulation.getCompositionAsSpecieType();
-        Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition =
-                fciPositionService.groupPositionBySpecieType(fciPosition.getPosition());
-
-        calculateDisarrangementPreconditions(fciRegulationComposition, fciSpecieTypePosition);
-
-        Map<SpecieType, Double> regulationPercentage = persistedFCIRegulation.getCompositionAsSpecieType();
-        Map<SpecieType, Double> summarizedPosition = fciPositionService.getSummarizedPosition(fciSpecieTypePosition);
-        Map<SpecieType, Double> regulationValuedOverPosition = calculateRegulationValuedOverPosition(regulationPercentage, summarizedPosition);
-        Map<SpecieType, Double> percentagePosition = calculatePercentagePosition(summarizedPosition);
-        Map<SpecieType, Double> disarrangementPositionPercentage = calculateDisarrangementPosition(fciRegulationComposition, percentagePosition);
-        Map<SpecieType, Double> disarrangementPositionValued = calculateDisarrangementValuedPosition(disarrangementPositionPercentage, summarizedPosition);
-
-        return new RegulationLagOutcomeVO(disarrangementPositionPercentage, disarrangementPositionValued,
-                percentagePosition, summarizedPosition, regulationPercentage, regulationValuedOverPosition);
+    private List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition, @NotNull Boolean refresh) throws Exception {
+        if (refresh) {
+            return fciPositionService.updateCurrentMarketPriceToPosition(fciPosition, true);
+        }
+      return fciPositionService.updateCurrentMarketPriceToPosition(fciPosition);
     }
 
-    private Map<SpecieType, Double> calculateRegulationValuedOverPosition(Map<SpecieType, Double> regulationPercentage,
-                                                                          Map<SpecieType, Double> summarizedPosition) {
+    private Map<FCISpecieType, Double> calculateValuedRegulationBySpecieType(Map<FCISpecieType, Double> regulationPercentage,
+                                                                             Map<FCISpecieType, Double> summarizedPosition) {
         Double totalPosition = CalculationServiceHelper.summarizePositionList(summarizedPosition);
         return regulationPercentage.entrySet().stream().map(entry ->
                         Map.entry(
@@ -70,67 +105,133 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     @Override
-    public RegulationLagVerboseVO calculatePositionDisarrangementVerbose(String symbol, FCISpeciePositionDTO fciPosition) {
-        return new RegulationLagVerboseVO(calculatePositionDisarrangement(symbol, fciPosition), fciPosition);
-    }
-
-    @Override
-    public Map<SpecieType, Double> calculatePositionDisarrangementPercentages(String symbol, FCISpeciePositionDTO fciPosition) {
-        return calculatePositionDisarrangement(symbol, fciPosition).getRegulationLags();
-    }
-
-    @Override
-    public Map<SpecieType, Double> calculatePositionDisarrangementValued(String symbol, FCISpeciePositionDTO fciPosition) {
-        return calculatePositionDisarrangement(symbol, fciPosition).getRegulationValuedLags();
-    }
-
-    @Override
-    public FCIPositionPercentageVO calculatePositionBiasPercentages(String symbol, String id) throws JsonProcessingException {
-        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getPositionPercentageBias();
+    public FCIPositionPercentageVO calculatePositionBiasPercentages(String fciRegulationSymbol, String fciPositionId,  Boolean refresh) throws Exception {
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionPercentageBias();
         return new FCIPositionPercentageVO(m.entrySet().stream()
-                .map(e -> new FCIPercentageDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIPercentageDTO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override
-    public FCIPositionValuedVO calculatePositionBiasValued(String symbol, String id) throws JsonProcessingException {
-        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getPositionValuedBias();
+    public FCIPositionValuedVO calculatePositionBiasValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionValuedBias();
         return new FCIPositionValuedVO(m.entrySet().stream()
-                .map(e -> new FCIValuedDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIValuedVO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override
-    public FCIRegulationPercentageVO calculateRegulationPercentages(String symbol, String id) throws JsonProcessingException {
-        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getRegulationPercentage();
+    public FCIRegulationPercentageVO calculateRegulationPercentages(String fciRegulationSymbol, String fciPositionId) throws Exception {
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getRegulationPercentage();
         return new FCIRegulationPercentageVO(m.entrySet().stream()
-                .map(e -> new FCIPercentageDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIPercentageDTO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override
-    public FCIRegulationValuedVO calculateRegulationValued(String symbol, String id) throws JsonProcessingException {
-        Map<SpecieType, Double> m = calculatePositionBiasById(symbol, id).getRegulationValued();
+    public FCIRegulationValuedVO calculateRegulationValued(String fciRegulationSymbol, String fciPositionId) throws Exception {
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getRegulationValued();
         return new FCIRegulationValuedVO(m.entrySet().stream()
-                .map(e -> new FCIValuedDTO(e.getKey().name(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIValuedVO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
-    private Map<SpecieType, Double> calculateDisarrangementValuedPosition(Map<SpecieType, Double> disarrangementPositionPercentage,
-                                                                          Map<SpecieType, Double> summarizedPosition) {
-        Double totalSummarizedPosition = summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
-        return disarrangementPositionPercentage.entrySet().stream()
+
+    /* Specie Type over Position */
+    private Map<FCISpecieType, Double> calculateSpecieTypePercentageOverPosition(Map<FCISpecieType, Double> valuedPositionBySpecieType, Double totalSummarizedPosition) {
+        return valuedPositionBySpecieType.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(),
+                        entry.getValue() * totalSummarizedPosition / 100))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Map<FCISpecieType, Double> calculateSpecieTypeValueOverPosition(Map<FCISpecieType, Double> valuedPositionBySpecieType, Double totalSummarizedPosition) throws JsonProcessingException {
+        return valuedPositionBySpecieType.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(),
+                                (entry.getValue() * totalSummarizedPosition / 100) * totalSummarizedPosition))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /* Specie over Specie Type */
+    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
+        return fciSpeciePositions.stream()
+                .map(fciSpeciePosition -> {
+                    Double fciSpecieTypeValued = valuedPositionBySpecieType.get(fciSpeciePosition.getFciSpecieType());
+                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued * 100);
+                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private  Map<FCISpeciePosition, Double> calculateSpecieValueOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
+        return fciSpeciePositions.stream()
+                .map(fciSpeciePosition -> {
+                    Double fciSpecieTypeValued = valuedPositionBySpecieType.get(fciSpeciePosition.getFciSpecieType());
+                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued);
+                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /* Specie over Position */
+    /**
+     * Calculates each specie percentage relative weight over to {@link FCIPosition}
+     * @param speciesInPosition List of {@link FCISpeciePosition} contained in Position
+     * @param  totalSummarizedPosition Represents total valued position as sum of individual valued contained species
+     * @return A List of species with their relative percentage over position
+     */
+    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition) {
+        return speciesInPosition.stream()
+                .map(fciSpeciePosition -> Map.entry(fciSpeciePosition,
+                        fciSpeciePosition.valuePosition() * totalSummarizedPosition / 100))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * Calculates each specie value relative weight over to {@link FCIPosition}
+     * @param speciesInPosition List of {@link FCISpeciePosition} contained in Position
+     * @param  totalSummarizedPosition Represents total valued position as sum of individual valued contained species
+     * @return A List of species with their relative percentage over position
+     */
+    private Map<FCISpeciePosition, Double> calculateSpecieValueOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition) {
+        return speciesInPosition.stream()
+                .map(fciSpeciePosition -> Map.entry(fciSpeciePosition,
+                                (fciSpeciePosition.valuePosition() * totalSummarizedPosition / 100) * totalSummarizedPosition))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * Calculates Percentage Position biases for each Position {@link FCISpecieType}
+     * @param percentageRegulationBySpecieType Defined percentages for {@link FCIRegulation}
+     * @param percentagePositionBySpecieType Percentage {@link FCIPosition} grouped by {@link FCISpecieType}
+     * @return Differences among FCIRegulation and FCIPosition composition specie types
+     */
+    private Map<FCISpecieType, Double> calculatePercentagePositionBias(
+            Map<FCISpecieType, Double> percentageRegulationBySpecieType,
+            Map<FCISpecieType, Double> percentagePositionBySpecieType) {
+        return percentagePositionBySpecieType.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue() - percentageRegulationBySpecieType.get(entry.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * Calculates Value Position biases for each Position {@link FCISpecieType}
+     * @param biasPercentagePositionBySpecieType Defined percentages for {@link FCIRegulation}
+     * @param valuedRegulationBySpecieType Valued {@link FCIPosition} grouped by {@link FCISpecieType}
+     * @return Differences among FCIRegulation and FCIPosition composition specie types
+     */
+    private Map<FCISpecieType, Double> calculateValuedPositionBias(Map<FCISpecieType, Double> biasPercentagePositionBySpecieType,
+                                                                   Map<FCISpecieType, Double> valuedRegulationBySpecieType) {
+        Double totalSummarizedPosition = valuedRegulationBySpecieType.values().stream().reduce(Double::sum).orElseThrow();
+        return biasPercentagePositionBySpecieType.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getValue() * totalSummarizedPosition / 100))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<SpecieType, Double> calculateDisarrangementPosition(Map<SpecieType, Double> fciRegulationComposition, Map<SpecieType, Double> percentagePosition) {
-        return percentagePosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() - fciRegulationComposition.get(entry.getKey())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    private Map<FCISpecieType, Double> calculatePercentagePositionBySpecieType(Map<FCISpecieType, Double> valuedPositionBySpecieType) {
+        Double totalValuedPosition = fciPositionService.calculateTotalValuedPosition(valuedPositionBySpecieType);
+        return calculatePercentageBySpecieType(valuedPositionBySpecieType, totalValuedPosition);
     }
 
-    private Map<SpecieType, Double> calculatePercentagePosition(Map<SpecieType, Double> summarizedPosition) {
+    private Map<FCISpecieType, Double> calculateValuedPosition(Map<FCISpecieType, Double> summarizedPosition) {
         Double totalValuedPosition = fciPositionService.calculateTotalValuedPosition(summarizedPosition);
         return calculatePercentageBySpecieType(summarizedPosition, totalValuedPosition);
     }
 
-    private Map<SpecieType, Double> calculatePercentageBySpecieType(Map<SpecieType, Double> summarizedPosition, Double totalValuedPosition) {
+
+    private Map<FCISpecieType, Double> calculatePercentageBySpecieType(Map<FCISpecieType, Double> summarizedPosition, Double totalValuedPosition) {
         return summarizedPosition.entrySet().stream().map(entry -> Map.entry(entry.getKey(), entry.getValue() / totalValuedPosition * 100))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -144,8 +245,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
      * fciRegulationComposition must close to 100%
      * All Specie type indicated in FCI Regulation Percentage composition are expected to be received for processing
      */
-    private void calculateDisarrangementPreconditions(Map<SpecieType, Double> fciRegulationComposition,
-                                                      Map<SpecieType, List<SpeciePosition>> fciSpecieTypePosition) {
+    private void analyseBiasPreconditions(Map<FCISpecieType, Double> fciRegulationComposition,
+                                          Map<FCISpecieType, List<FCISpeciePosition>> fciSpecieTypePosition) {
         Double percentageSumReduction = fciRegulationComposition.values().stream().reduce(Double::sum).orElseThrow();
 
         /** fciRegulationComposition must close to 100% */

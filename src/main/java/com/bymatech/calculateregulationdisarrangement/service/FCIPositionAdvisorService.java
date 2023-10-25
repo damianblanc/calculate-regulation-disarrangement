@@ -11,13 +11,13 @@ public interface FCIPositionAdvisorService {
 
     /**
      * Advices symbol indicated FCI and given position with implemented criteria
-     * @param symbol FCI Regulation Symbol
-     * @param fciPosition current position
+     * @param fciRegulationSymbol FCI Regulation Symbol
+     * @param fciPositionId current position
      * @return A composition of disarrangement, fci lags and advices
      * @throws JsonProcessingException
      */
-    OperationAdviceVerboseVO advice(String symbol, FCISpeciePositionDTO fciPosition) throws JsonProcessingException;
+    OperationAdviceVerboseVO advice(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
-    OperationAdviceVerboseVO adviceVerbose(String symbol, FCISpeciePositionDTO fciPosition) throws JsonProcessingException;
+    OperationAdviceVerboseVO adviceVerbose(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
 }

@@ -28,8 +28,10 @@ public class FCIComposition {
 //    @JoinColumn(name = "fci_regulation_id", insertable = false, updatable = false)
 //    private FCIRegulation fciRegulation;
 
-    @Column(name = "specie_type")
-    private String specieType;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "fciComposition")
+    private FCISpecieType fciSpecieType;
 
     @Column(name = "percentage")
     private Double percentage;

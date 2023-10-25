@@ -62,31 +62,31 @@ public class FCIPosition {
         return this.jsonPosition;
     }
 
-    public List<SpeciePosition> getSpeciePositions(FCIPosition fciPosition) throws JsonProcessingException {
+    public static List<FCISpeciePosition> getSpeciePositions(FCIPosition fciPosition) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        ArrayList<SpeciePosition> speciePositions = new ArrayList<>();
+        ArrayList<FCISpeciePosition> FCISpeciePositions = new ArrayList<>();
             Iterator<JsonNode> elements = mapper.readTree(fciPosition.jsonPosition).elements();
             elements.forEachRemaining(e -> {
                         try {
-                            speciePositions.add(mapper.treeToValue(e, SpeciePosition.class));
+                            FCISpeciePositions.add(mapper.treeToValue(e, FCISpeciePosition.class));
                         } catch (JsonProcessingException ex) {
                             throw new RuntimeException(ex);
                         };
                     });
-        return speciePositions;
+        return FCISpeciePositions;
     }
 
     public void setOverview(FCIPosition fciPosition) throws JsonProcessingException {
-        List<SpeciePosition> speciePositions = getSpeciePositions(fciPosition);
+        List<FCISpeciePosition> FCISpeciePositions = getSpeciePositions(fciPosition);
         StringBuffer specieTypeSums = new StringBuffer();
 
-        Map<SpecieType, DoubleSummaryStatistics> m =
-                speciePositions.stream().collect(groupingBy(SpeciePosition::getSpecieType,
-                        summarizingDouble(SpeciePosition::valuePosition)));
+        Map<FCISpecieType, DoubleSummaryStatistics> m =
+                FCISpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
+                        summarizingDouble(FCISpeciePosition::valuePosition)));
 
-        m.forEach((key, value) -> specieTypeSums.append(key.name()).append(": ").append(value.getSum()).append(" "));
+        m.forEach((key, value) -> specieTypeSums.append(key.getName()).append(": ").append(value.getSum()).append(" "));
         Double totalPosition = m.values().stream().map(DoubleSummaryStatistics::getSum).reduce(Double::sum).orElseThrow();
 
-        this.overview = String.format("Species:%d - Valued: %.2f - Totals: %s", speciePositions.size(), totalPosition, specieTypeSums);
+        this.overview = String.format("Species:%d - Valued: %.2f - Totals: %s", FCISpeciePositions.size(), totalPosition, specieTypeSums);
     }
 }

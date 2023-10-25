@@ -1,6 +1,8 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,8 +17,11 @@ import lombok.Getter;
         */
 @Getter
 @AllArgsConstructor
-public class BymaEquityAuthBean {
+public class MarketEquityAuthBean {
 
+    @SerializedName("page_number")
+    @Expose
+    private Integer pageNumber = 0;
     private boolean excludeZeroPxAndQty = true;
     private boolean T2 = true;
     private boolean T1 = false;
@@ -24,7 +29,7 @@ public class BymaEquityAuthBean {
     @JsonProperty("Content_Type")
     private String contentType = "application/json";
 
-    public static BymaEquityAuthBean create() {
-        return new BymaEquityAuthBean(true, true, false, false, "\"application/json\"");
+    public static MarketEquityAuthBean create(Integer pageNumber) {
+        return new MarketEquityAuthBean(pageNumber, true, true, false, false, "\"application/json\"");
     }
 }

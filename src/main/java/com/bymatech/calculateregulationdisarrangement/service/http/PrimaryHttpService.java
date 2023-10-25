@@ -1,6 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service.http;
 
-import com.bymatech.calculateregulationdisarrangement.dto.BymaCedearResponse;
+import com.bymatech.calculateregulationdisarrangement.dto.MarketCedearResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -11,5 +11,5 @@ public interface PrimaryHttpService {
 
     @Headers("")
     @GET("/rest/instruments/details")
-    Call<List<BymaCedearResponse>> getAllSpecies();
+    Call<List<MarketCedearResponse>> getAllSpecies();
 }

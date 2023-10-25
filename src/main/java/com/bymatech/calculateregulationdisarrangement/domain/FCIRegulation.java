@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents FCI Regulation Composition by defining each {@link SpecieType} and its percentage
+ * Represents FCI Regulation Composition by defining each {@link SpecieTypeGroupEnum} and its percentage
  */
 @Entity
 @Table(name = "FCIRegulation")
@@ -57,8 +57,8 @@ public class FCIRegulation {
 //            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 //    }
 //
-    public Map<SpecieType, Double> getCompositionAsSpecieType() {
-       return composition.stream().map(c -> Map.entry(SpecieType.valueOf(c.getSpecieType()), c.getPercentage()))
+    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
+        return composition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 //

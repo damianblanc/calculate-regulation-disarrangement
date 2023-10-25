@@ -18,6 +18,11 @@ public class FCISpecieType {
 
     private String description;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "fciSpecieType")
+    private FCIComposition fciComposition;
+
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private FCISpecieTypeGroup specieTypeGroup;
 

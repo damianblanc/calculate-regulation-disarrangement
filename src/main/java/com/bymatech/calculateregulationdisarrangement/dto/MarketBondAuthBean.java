@@ -1,10 +1,8 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -13,16 +11,16 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class BymaBondAuthBean {
+public class MarketBondAuthBean {
     @SerializedName("page_number")
     @Expose
     private Integer pageNumber = 0;
 
     @SerializedName("Content_Type")
     @Expose
-    private String contentType;
+    private String contentType = "application/json";
 
-    public static BymaBondAuthBean create(Integer pageNumber) {
-       return new BymaBondAuthBean(pageNumber, "\"application/json\"");
+    public static MarketBondAuthBean create(Integer pageNumber) {
+       return new MarketBondAuthBean(pageNumber, "\"application/json\"");
     }
 }

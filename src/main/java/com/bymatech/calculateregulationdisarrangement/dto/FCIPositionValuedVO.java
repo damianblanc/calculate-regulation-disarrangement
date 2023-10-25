@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class FCIPositionValuedVO {
 
-    List<FCIValuedDTO> values;
+    List<FCIValuedVO> values;
 }

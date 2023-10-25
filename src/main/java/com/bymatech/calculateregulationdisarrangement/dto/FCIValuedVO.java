@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FCIValuedDTO {
+public class FCIValuedVO {
 
-    private String specieType;
+    private String fciSpecieType;
     private String valued;
 }

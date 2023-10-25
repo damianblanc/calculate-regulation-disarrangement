@@ -1,6 +1,9 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
-public enum SpecieType {
+/**
+ * Comprehends all available groups to work with
+ */
+public enum SpecieTypeGroupEnum {
     Equity,
     Bond,
 

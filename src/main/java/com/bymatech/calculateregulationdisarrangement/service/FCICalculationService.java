@@ -1,33 +1,84 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Comprehends FCI regulation operations
+ * Comprehends core FCI regulation operations performing base calculations
  */
 @Service
 public interface FCICalculationService {
 
-    RegulationLagOutcomeVO calculatePositionDisarrangement(String symbol, FCISpeciePositionDTO fciPosition);
+    /**
+     * Performs bias calculation over indicated position
+     *
+     * @param fciRegulationSymbol {@link FCIRegulation} defined symbol
+     * @param fciPositionId       {@link FCIPosition} A Persisted raw FCIPosition to be used for further processing
+     * @return A value object representation containing all relevant calculation outcomes
+     * @throws JsonProcessingException Since a FCIPosition is persisted in JSON format string parsed when processing
+     *                                 <p>
+     *                                 Allows to work with an already persisted position
+     */
+    RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception;
 
-    RegulationLagOutcomeVO calculatePositionBiasById(String symbol, String id) throws JsonProcessingException;
+    FCIPositionPercentageVO calculatePositionBiasPercentages(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception;
 
-    RegulationLagVerboseVO calculatePositionDisarrangementVerbose(String symbol, FCISpeciePositionDTO fciPosition);
+    FCIPositionValuedVO calculatePositionBiasValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception;
 
-    Map<SpecieType, Double> calculatePositionDisarrangementPercentages(String symbol, FCISpeciePositionDTO fciPosition);
+    FCIRegulationPercentageVO calculateRegulationPercentages(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
-    Map<SpecieType, Double> calculatePositionDisarrangementValued(String symbol, FCISpeciePositionDTO fciPosition);
+    FCIRegulationValuedVO calculateRegulationValued(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
-    FCIPositionPercentageVO calculatePositionBiasPercentages(String symbol, String id) throws JsonProcessingException;
+    /* Specie Type over Position */
 
-    FCIPositionValuedVO calculatePositionBiasValued(String symbol, String id) throws JsonProcessingException;
+//    /**
+//     * Calculates each {@link FCISpecieType} percentage relative weight over its {@link FCIPosition}
+//     *
+//     * @param fciRegulationSymbol {@link FCIRegulation} defined symbol
+//     * @param fciPositionId       A list of species included in Position to be processed
+//     * @return A List of species with their relative percentage over position
+//     * @throws JsonProcessingException
+//     */
+//    Map<FCISpecieType, Double> calculateSpecieTypePercentageOverPosition(String fciRegulationSymbol, String fciPositionId) throws Exception;
+//
+//    /**
+//     * Calculates each {@link FCISpecieType} value relative weight over its {@link FCIPosition}
+//     *
+//     * @param fciRegulationSymbol {@link FCIRegulation} defined symbol
+//     * @param fciPositionId       A list of species included in Position to be processed
+//     * @return A List of species with their relative value over position
+//     * @throws JsonProcessingException
+//     */
+//    Map<FCISpecieType, Double> calculateSpecieTypeValueOverPosition(String fciRegulationSymbol, String fciPositionId) throws Exception;
+//
+//    /* Specie over Specie Type */
+//
+//    /**
+//     * Calculates each specie percentage relative weight over total position
+//     *
+//     * @param fciRegulationSymbol {@link FCIRegulation} defined symbol
+//     * @param fciPositionId       A list of species included in Position to be processed
+//     * @return A List of species with their relative percentage over position
+//     * @throws JsonProcessingException
+//     */
+//    Map<FCISpeciePosition, Double> calculateSpeciePercentageOverSpecieType(String fciRegulationSymbol, String fciPositionId) throws JsonProcessingException;
+//
+//    /**
+//     * Calculates each specie value relative weight over total position
+//     *
+//     * @param fciRegulationSymbol {@link FCIRegulation} defined symbol
+//     * @param fciPositionId       A list of species included in Position to be processed
+//     * @return A List of species with their relative value over position
+//     * @throws JsonProcessingException
+//     */
+//    Map<FCISpeciePosition, Double> calculateSpecieValueOverSpecieType(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
-    FCIRegulationPercentageVO calculateRegulationPercentages(String symbol, String id) throws JsonProcessingException;
-
-    FCIRegulationValuedVO calculateRegulationValued(String symbol, String id) throws JsonProcessingException;
 }

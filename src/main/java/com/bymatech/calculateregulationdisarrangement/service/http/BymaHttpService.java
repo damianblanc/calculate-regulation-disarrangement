@@ -11,12 +11,12 @@ import java.util.List;
 @Service
 public interface BymaHttpService {
         @POST("/vanoms-be-core/rest/api/bymadata/free/cedears")
-        Call<List<BymaCedearResponse>> getCedears(@Body BymaCedearAuthBean bymaCedearAuthBean);
+        Call<List<MarketCedearResponse>> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
 
         @POST("vanoms-be-core/rest/api/bymadata/free/bnown/seriesHistoricas/iamc/bonos")
-        Call<BymaBondResponse> getBonds(@Body BymaBondAuthBean bymaBondAuthBean);
+        Call<MarketBondResponse> getBonds(@Body MarketBondAuthBean marketBondAuthBean);
 
         @POST("vanoms-be-core/rest/api/bymadata/free/leading-equity")
-        Call<BymaEquityResponse> getEquities(@Body BymaEquityAuthBean bymaEquityAuthBean);
+        Call<MarketEquityResponse> getEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
 
 }

@@ -1,14 +1,13 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
+import com.bymatech.calculateregulationdisarrangement.domain.*;
+import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
+import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,24 +24,28 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     @Autowired
     private FCIRegulationRepository fciRegulationRepository;
 
-    public Map<SpecieType, List<SpeciePosition>> groupPositionBySpecieType(List<SpeciePosition> position) {
-        return position.stream().collect(Collectors.groupingBy(SpeciePosition::getSpecieType));
+    @Autowired
+    private MarketHttpService marketHttpService;
+
+
+    public Map<FCISpecieType, List<FCISpeciePosition>> groupPositionBySpecieType(List<FCISpeciePosition> position) {
+        return position.stream().collect(Collectors.groupingBy(FCISpeciePosition::getFciSpecieType));
     }
 
-    public Double calculateTotalValuedPosition(List<SpeciePosition> position) {
-        return calculateTotalValuedPosition(getSummarizedPosition(groupPositionBySpecieType(position)));
+    public Double calculateTotalValuedPosition(List<FCISpeciePosition> position) {
+        return calculateTotalValuedPosition(getValuedPositionBySpecieType(groupPositionBySpecieType(position)));
     }
 
-    public Double calculateTotalValuedPosition(Map<SpecieType, Double> summarizedPosition) {
+    public Double calculateTotalValuedPosition(Map<FCISpecieType, Double> summarizedPosition) {
         return summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
     }
 
-    public Map<SpecieType, Double> getSummarizedPosition(Map<SpecieType, List< SpeciePosition >> position) {
+    public Map<FCISpecieType, Double> getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position) {
         return position.entrySet().stream()
                 .map(entry ->
                         Map.entry(entry.getKey(),
                                 entry.getValue().stream()
-                                        .map(SpeciePosition::valuePosition)
+                                        .map(FCISpeciePosition::valuePosition)
                                         .reduce(Double::sum).orElseThrow(IllegalArgumentException::new)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -60,13 +63,33 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public FCIPosition findFCIPositionById(String symbol, Integer id) {
+    public FCIPosition findFCIPositionById(String symbol, Integer fciPositionId) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        return fciRegulation.getPositions().stream().filter(p -> p.getId().equals(id)).findFirst()
+        return fciRegulation.getPositions().stream().filter(p -> p.getId().equals(fciPositionId)).findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, symbol, id)));
+                        String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, symbol, fciPositionId)));
+    }
+
+    public List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition, Boolean refresh) throws Exception {
+        marketHttpService.updateCurrentMarketPrices();
+        return updateCurrentMarketPriceToPosition(fciPosition);
+    }
+    @Override
+    public List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition) throws Exception {
+        List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition);
+
+        List<FCISpeciePosition> updatedFciSpeciePositions = new ArrayList<>();
+        fciSpeciePositions.forEach(fciSpeciePosition -> {
+            MarketResponse marketResponse = marketHttpService.getMarketResponses().stream()
+                        .filter(response -> response.getSymbol().equals(fciSpeciePosition.getSymbol()))
+                        .findFirst().orElseThrow();
+        fciSpeciePosition.setCurrentMarketPrice(Double.valueOf(marketResponse.getPrice()));
+        updatedFciSpeciePositions.add(fciSpeciePosition);
+        });
+
+        return updatedFciSpeciePositions;
     }
 
     @Override

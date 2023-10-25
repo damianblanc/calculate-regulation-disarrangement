@@ -1,7 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.util;
 
-import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +28,12 @@ public class CalculationServiceHelper {
         return a > b ? b : a;
     }
 
-    public static List<SpeciePosition> getFciPositionListFilteredBySpecieType(
-            List<SpeciePosition> fciPositionList, SpecieType specieType) {
-        return fciPositionList.stream().filter(e -> e.getSpecieType() == specieType).toList();
+    public static List<FCISpeciePosition> getFciPositionListFilteredBySpecieType(
+            List<FCISpeciePosition> fciPositionList, FCISpecieType specieType) {
+        return fciPositionList.stream().filter(e -> e.getFciSpecieType() == specieType).toList();
     }
 
-    public static Double summarizePositionList(Map<SpecieType, Double> summarizedPosition) {
+    public static Double summarizePositionList(Map<FCISpecieType, Double> summarizedPosition) {
         return summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
     }
 }

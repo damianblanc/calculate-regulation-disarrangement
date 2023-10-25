@@ -13,7 +13,7 @@ import lombok.Getter;
  *             "Content-Type": "application/json"
  */
 @Getter
-public class BymaCedearAuthBean {
+public class MarketCedearAuthBean {
 
     private boolean excludeZeroPxAndQty = true;
     private boolean T2 = true;
@@ -22,7 +22,7 @@ public class BymaCedearAuthBean {
     @JsonProperty("Content_Type")
     private String contentType = "application/json";
 
-    public static BymaCedearAuthBean create() {
-        return new BymaCedearAuthBean();
+    public static MarketCedearAuthBean create() {
+        return new MarketCedearAuthBean();
     }
 }

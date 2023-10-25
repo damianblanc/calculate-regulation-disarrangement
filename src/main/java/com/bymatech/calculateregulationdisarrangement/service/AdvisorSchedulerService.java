@@ -30,7 +30,7 @@ public class AdvisorSchedulerService {
     private static final String BYMA_AUTOMATED_ADVISOR = "Byma Automated Advisor";
 
 //    @Scheduled(fixedRate = 1000)
-//    @Scheduled(fixedDelayString = "${schedule.advice.position.fixed.delay.seconds:2}000")
+//    @Scheduled(fixedDelayString = "${schedule.advice.position.fixed.delay.seconds:5}000")
     public List<OperationAdviceSpecieType> advicePosition() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date now = new Date();
@@ -40,10 +40,10 @@ public class AdvisorSchedulerService {
         FCISpeciePositionDTO fciPosition = createFCIPosition();
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation("AMR23");
 
-       List<OperationAdviceSpecieType> advice = fciPositionCriteriaPriceUniformDistributionService.advice("AMR23", fciPosition).getOperationAdvicesVO();
-        FCIPositionAdviceService.registerAdvice(fciRegulation, objectMapper.writeValueAsString(advice), BYMA_AUTOMATED_ADVISOR);
+//       List<OperationAdviceSpecieType> advice = fciPositionCriteriaPriceUniformDistributionService.advice("AMR23", fciPosition).getOperationAdvicesVO();
+//        FCIPositionAdviceService.registerAdvice(fciRegulation, objectMapper.writeValueAsString(advice), BYMA_AUTOMATED_ADVISOR);
         List<String> allAdvices = FCIPositionAdviceService.getAllAdvices();
-        return advice;
+        return null;
     }
 
     private FCISpeciePositionDTO createFCIPosition() throws Exception {

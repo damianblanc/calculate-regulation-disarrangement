@@ -2,7 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.dto;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,19 +41,19 @@ public class FCIRegulationDTO {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FCIPositionAdvice> FCIPositionAdvices;
 
-    public Map<String, Double> getFCIRegulationComposition() {
+    public Map<FCISpecieType, Double> getFCIRegulationComposition() {
         return composition.stream()
-                .map(c -> Map.entry(c.getSpecieType(), c.getPercentage()))
+                .map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<SpecieType, Double> getCompositionAsSpecieType() {
-        return composition.stream().map(c -> Map.entry(SpecieType.valueOf(c.getSpecieType()), c.getPercentage()))
+    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
+        return composition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public static Map<String, Double> getCompositionAsString(Map<SpecieType, Double> composition) {
-        return composition.entrySet().stream().map(entry -> Map.entry(entry.getKey().name(), entry.getValue()))
+    public static Map<String, Double> getCompositionAsString(Map<FCISpecieType, Double> composition) {
+        return composition.entrySet().stream().map(entry -> Map.entry(entry.getKey().getName(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

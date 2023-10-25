@@ -9,18 +9,18 @@ import lombok.NoArgsConstructor;
  * Keeps Disarrangement History
  */
 @Entity
-@Table(name = "Disarrangements")
+@Table(name = "Biases")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Disarrangement {
+public class Bias {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private SpecieType specieType;
-    private Double disarrangementPercentage;
+//    private FCISpecieType specieType;
+    private Double biasPercentage;
 
     @ManyToOne
     @JoinColumn(name = "retrieval_id")

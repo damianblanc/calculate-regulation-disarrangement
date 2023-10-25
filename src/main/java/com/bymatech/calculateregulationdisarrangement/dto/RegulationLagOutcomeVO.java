@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,11 +14,16 @@ import java.util.Map;
 @AllArgsConstructor
 public class RegulationLagOutcomeVO {
 
-    private Map<SpecieType, Double> regulationLags;
-    private Map<SpecieType, Double> regulationValuedLags;
-    private Map<SpecieType, Double> positionPercentageBias;
-    private Map<SpecieType, Double> positionValuedBias;
-    private Map<SpecieType, Double> regulationPercentage;
-    private Map<SpecieType, Double> regulationValued;
-
+    private Map<FCISpecieType, Double> regulationLags;
+    private Map<FCISpecieType, Double> regulationValuedLags;
+    private Map<FCISpecieType, Double> positionPercentageBias;
+    private Map<FCISpecieType, Double> positionValuedBias;
+    private Map<FCISpecieType, Double> regulationPercentage;
+    private Map<FCISpecieType, Double> regulationValued;
+    private Map<FCISpecieType, Double> specieTypePercentageWeightRelativeToPosition;
+    private Map<FCISpecieType, Double> specieTypeValueWeightRelativeToPosition;
+    private Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToFCISpecieType;
+    private Map<FCISpeciePosition, Double> specieValueWeightRelativeToFCISpecieType;
+    private Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToPosition;
+    private Map<FCISpeciePosition, Double> specieValueWeightRelativeToPosition;
 }

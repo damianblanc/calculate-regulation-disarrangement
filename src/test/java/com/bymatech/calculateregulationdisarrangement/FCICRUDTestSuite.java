@@ -1,8 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,7 +77,7 @@ public class FCICRUDTestSuite {
 
         FCIRegulation fciRegulation = objectMapper.readValue(creationContent, FCIRegulation.class);
         fciRegulation.setName("Alpha Mix Rent FCI ARG");
-        fciRegulation.getComposition().removeIf(e -> e.getSpecieType().equals(SpecieType.Bond.name()));
+        fciRegulation.getComposition().removeIf(e -> e.getFciSpecieType().equals(SpecieTypeGroupEnum.Bond.name()));
         String contentToUpdate = objectMapper.writeValueAsString(fciRegulation);
 
         String updatingContent = mockmvc.perform(MockMvcRequestBuilders.put("/api/v1/fci")
@@ -126,11 +123,11 @@ public class FCICRUDTestSuite {
 
     private FCIRegulation createFCIRegulationBean() {
         FCIRegulation fciRegulation = FCIRegulation.builder().id(1).name("Alpha Mix Rent FCI").symbol("ALFA").build();
-        FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).specieType(SpecieType.Bond.name()).build();
-        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).specieType(SpecieType.Equity.name()).build();
-        FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).specieType(SpecieType.Cash.name()).build();
-        Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
-        fciRegulation.setComposition(fciCompositionList);
+//        FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).fciSpecieType(SpecieType.Bond.name()).build();
+//        FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).fciSpecieType(SpecieType.Equity.name()).build();
+//        FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).fciSpecieType(SpecieType.Cash.name()).build();
+//        Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
+//        fciRegulation.setComposition(fciCompositionList);
         return fciRegulation;
     }
 

@@ -48,14 +48,14 @@ import java.util.List;
  * }
  */
 @Data
-public class BymaEquityResponse {
+public class MarketEquityResponse {
     @SerializedName("content")
     @Expose
-    private BymaBondResponse.Content content;
+    private MarketBondResponse.Content content;
 
     @SerializedName("data")
     @Expose
-    private List<BymaEquityResponse.BymaEquityResponseElement> bymaEquityResponses = new ArrayList<>();
+    private List<MarketEquityResponseElement> marketEquityResponses = new ArrayList<>();
 
 
     @Getter
@@ -77,13 +77,14 @@ public class BymaEquityResponse {
         private Integer totalElementsCount;
     }
 
-    public static BymaEquityResponse create() { return new BymaEquityResponse(); }
+    public static MarketEquityResponse create() { return new MarketEquityResponse(); }
 
     /**
      * Byma bonds Http Response
      */
     @Data
-    public class BymaEquityResponseElement implements Comparable<BymaEquityResponse.BymaEquityResponseElement> {
+    public class MarketEquityResponseElement extends MarketResponse
+            implements Comparable<MarketEquityResponseElement> {
 
         @SerializedName("tradeVolume")
         @Expose
@@ -161,8 +162,13 @@ public class BymaEquityResponse {
         @Expose
         private String quantityBid;
 
+        private void setTrade(String trade) {
+            this.trade = trade;
+            super.price = trade;
+        }
+
         @Override
-        public int compareTo(@NotNull BymaEquityResponse.BymaEquityResponseElement e) {
+        public int compareTo(@NotNull MarketEquityResponseElement e) {
             if (Double.parseDouble(this.getTrade()) >= Double.parseDouble(e.getTrade())) {
                 return 1;
             }

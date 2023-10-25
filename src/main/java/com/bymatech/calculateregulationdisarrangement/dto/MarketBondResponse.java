@@ -45,7 +45,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class BymaBondResponse {
+public class MarketBondResponse {
 
     @SerializedName("content")
     @Expose
@@ -53,7 +53,7 @@ public class BymaBondResponse {
 
     @SerializedName("data")
     @Expose
-    private List<BymaBondResponseElement> bymaBondResponses = new ArrayList<>();
+    private List<MarketBondResponseElement> marketBondResponses = new ArrayList<>();
 
 
     @Getter
@@ -75,13 +75,13 @@ public class BymaBondResponse {
         private Integer totalElementsCount;
     }
 
-    public static BymaBondResponse create() { return new BymaBondResponse(); }
+    public static MarketBondResponse create() { return new MarketBondResponse(); }
 
     /**
      * Byma bonds Http Response
      */
     @Data
-    public class BymaBondResponseElement implements Comparable<BymaBondResponseElement> {
+    public class MarketBondResponseElement extends MarketResponse implements Comparable<MarketBondResponseElement> {
 
         @SerializedName("descripcion")
         @Expose
@@ -126,8 +126,18 @@ public class BymaBondResponse {
         @Expose
         private String isin;
 
+        private void setSymbol(String symbol) {
+            this.symbol = symbol;
+            super.symbol = symbol;
+        }
+
+        private void setPrice(String price) {
+            this.price = price;
+            super.price = price;
+        }
+
         @Override
-        public int compareTo(@NotNull BymaBondResponseElement e) {
+        public int compareTo(@NotNull MarketBondResponseElement e) {
             if (Double.parseDouble(this.getPrice()) >= Double.parseDouble(e.getPrice())) {
                 return 1;
             }

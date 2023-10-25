@@ -1,6 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
-import com.bymatech.calculateregulationdisarrangement.domain.SpeciePosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FCISpeciePositionDTO {
-    private List<SpeciePosition> position;
+    private List<FCISpeciePosition> position;
 }

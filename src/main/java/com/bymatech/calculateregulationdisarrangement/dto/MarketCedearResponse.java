@@ -6,7 +6,7 @@ import lombok.Data;
  * Byma Cedears http response bean
  */
 @Data
-public class BymaCedearResponse {
+public class MarketCedearResponse {
     private Double tradeVolume;
     private String symbol;
     private Double imbalance;

@@ -2,13 +2,13 @@ package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
-import com.bymatech.calculateregulationdisarrangement.domain.SpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * Comprehends CRUD operations over {@link FCISpecieTypeGroup} and {@link SpecieType}
+ * Comprehends CRUD operations over {@link FCISpecieTypeGroup} and {@link SpecieTypeGroupEnum}
  */
 @Service
 public interface FCISpecieTypeGroupService {
@@ -43,30 +43,30 @@ public interface FCISpecieTypeGroupService {
 
     /* SpecieType */
     /**
-     * Creates a {@link SpecieType}
+     * Creates a {@link SpecieTypeGroupEnum}
      * @Param groupName Specie Type Group symbol representation
      * @Param specieType to be created
      */
     FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType FCISpecieType);
 
     /**
-     * Deletes a {@link SpecieType} indicated by its name
+     * Deletes a {@link SpecieTypeGroupEnum} indicated by its name
      */
     String deleteFCISpecieType(String groupName, String specieTypeName);
 
     /**
-     * Updates a {@link SpecieType} by incoming state
+     * Updates a {@link SpecieTypeGroupEnum} by incoming state
      * @param fciSpecieType to be updated
      */
     FCISpecieType updateFCISpecieType(String FCISpecieTypeNameGroup, FCISpecieType fciSpecieType);
 
     /**
-     * Finds a {@link SpecieType} indicated by its name
+     * Finds a {@link SpecieTypeGroupEnum} indicated by its name
      */
     FCISpecieType findFCISpecieType(String specieTypeNameGroup, String specieTypeName);
 
     /**
-     * List all {@link SpecieType}
+     * List all {@link SpecieTypeGroupEnum}
      */
     List<FCISpecieType> listFCISpecieTypes(String FCISpecieTypeGroupName);
 }
