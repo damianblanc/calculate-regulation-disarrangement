@@ -8,14 +8,13 @@ import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
+import com.bymatech.calculateregulationdisarrangement.util.DomainExtractionHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hibernate.sql.ast.tree.expression.Over;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +31,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     @Autowired
     private FCIPositionService fciPositionService;
 
-
+//TODO:Create a cache and load a refreshed market price indicated position, in order to avoid processing when asking to flavours
     @Override
     public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
@@ -41,7 +40,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         updateCurrentMarketPriceToPosition(fciPosition, refresh);
 
         /** Preconditions */
-        Map<FCISpecieType, Double> fciRegulationCompositionBySpecieType = fciRegulation.getCompositionAsSpecieType();
+        Map<FCISpecieType, Double> fciRegulationCompositionBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition());
         Map<FCISpecieType, List<FCISpeciePosition>> groupedPositionBySpecieType = fciPositionService.groupPositionBySpecieType(fciSpeciePositions);
         analyseBiasPreconditions(fciRegulationCompositionBySpecieType, groupedPositionBySpecieType);
 
@@ -50,7 +49,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         Map<FCISpecieType, Double> percentagePositionBySpecieType = calculatePercentagePositionBySpecieType(valuedPositionBySpecieType);
 
         /** Regulation grouping calculation */
-        Map<FCISpecieType, Double> percentageRegulationBySpecieType = fciRegulation.getCompositionAsSpecieType();
+        Map<FCISpecieType, Double> percentageRegulationBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition());
         Map<FCISpecieType, Double> valuedRegulationBySpecieType = calculateValuedRegulationBySpecieType(percentageRegulationBySpecieType, valuedPositionBySpecieType);
 
         /** Biases grouping calculation */

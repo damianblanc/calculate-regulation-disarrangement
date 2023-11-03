@@ -34,9 +34,9 @@ public class FCIPositionAdvice {
     @Column(name = "advice", columnDefinition = "TEXT")
     private String advice;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="fci_regulation_id",referencedColumnName = "fci_regulation_id")
-    @JsonBackReference
-    private FCIRegulation fciRegulation;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name="fci_regulation_id", referencedColumnName = "fci_regulation_id")
+//    @JsonBackReference
+//    private FCIRegulation fciRegulation;
 
 }

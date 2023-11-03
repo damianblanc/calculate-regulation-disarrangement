@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import static java.util.stream.Collectors.summarizingDouble;
 @Builder
 public class FCIPosition {
     @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private JsonNode position;
 
     @Id

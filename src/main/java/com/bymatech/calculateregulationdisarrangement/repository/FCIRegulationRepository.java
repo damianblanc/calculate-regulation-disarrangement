@@ -14,18 +14,8 @@ public interface FCIRegulationRepository extends JpaRepository<FCIRegulation, In
 
     Optional<FCIRegulation> findByName(String name);
 
-
-
     Optional<FCIRegulation> findBySymbol(String symbol);
 
     @Query("SELECT f FROM FCIRegulation f WHERE f.symbol = :symbol")
     List<FCIRegulation> listBySymbol(@Param("symbol") String symbol);
-
-//    @Query("SELECT b FROM Book b join b.category c where c.category in :category")
-//    Page<Book> getBooksByCat(Pageable pageable, @Param("category") List<String> category);
-
-
-//    @Query("SELECT f FROM FCIRegulation" +
-//            "JOIN f.composition c ON c.fciRegulation IN :p")
-//    List<FCIComposition> getFCIRegulationCompositions(@Param("p") String symbol);
 }

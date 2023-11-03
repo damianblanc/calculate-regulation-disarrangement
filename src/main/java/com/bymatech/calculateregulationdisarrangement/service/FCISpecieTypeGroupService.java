@@ -69,4 +69,9 @@ public interface FCISpecieTypeGroupService {
      * List all {@link SpecieTypeGroupEnum}
      */
     List<FCISpecieType> listFCISpecieTypes(String FCISpecieTypeGroupName);
+
+    /**
+     * List all available {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
+     */
+    List<FCISpecieType> listFCISpecieTypes();
 }

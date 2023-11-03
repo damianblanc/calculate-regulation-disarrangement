@@ -3,4 +3,4 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/test/java/com/bymatech/calculateregulationdisarrangement/BymaMarketTestSuite.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/test/java/com/bymatech/calculateregulationdisarrangement/FCITestFixture.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/test/java/com/bymatech/calculateregulationdisarrangement/FCIAdvisorTestSuite.java
-/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/test/java/com/bymatech/calculateregulationdisarrangement/CalculateRegulationBiasApplicationTests.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/test/java/com/bymatech/calculateregulationdisarrangement/CalculateFCIRegulationBiasApplicationTests.java

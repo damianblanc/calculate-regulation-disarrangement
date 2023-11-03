@@ -38,7 +38,7 @@ public class AdvisorSchedulerService {
         System.out.println("Fixed Delay scheduler:: " + strDate);
 
         FCISpeciePositionDTO fciPosition = createFCIPosition();
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation("AMR23");
+//        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation("AMR23");
 
 //       List<OperationAdviceSpecieType> advice = fciPositionCriteriaPriceUniformDistributionService.advice("AMR23", fciPosition).getOperationAdvicesVO();
 //        FCIPositionAdviceService.registerAdvice(fciRegulation, objectMapper.writeValueAsString(advice), BYMA_AUTOMATED_ADVISOR);

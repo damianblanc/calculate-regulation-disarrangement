@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-public class BymaMarketController {
+public class FCIMarketController {
 
     @Autowired
     private MarketHttpService bymaService;

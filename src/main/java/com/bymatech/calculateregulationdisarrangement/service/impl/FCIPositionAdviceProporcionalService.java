@@ -26,7 +26,7 @@ public class FCIPositionAdviceProporcionalService implements FCIPositionAdvisorS
         Multimap<SpecieTypeGroupEnum, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
 
-        Set<FCIComposition> composition = fciRegulation.getComposition();
+//        Set<FCIComposition> composition = fciRegulation.getComposition();
 
 //        RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionBias(fciRegulationSymbol, fciPositionId);
 //        Map<FCISpecieType, Double> percentagePosition = regulationLagOutcomeVO.getRegulationLags();
@@ -60,7 +60,7 @@ public class FCIPositionAdviceProporcionalService implements FCIPositionAdvisorS
 //                .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
 
         return OperationAdviceVerboseVO.builder()
-                .fciRegulationComposition(fciRegulation.getComposition())
+//                .fciRegulationComposition(fciRegulation.getComposition())
 //                .regulationLagOutcomeVO(regulationLagOutcomeVO)
 //                .operationAdvicesVO(operationAdviceSpecieTypes)
                 .build();

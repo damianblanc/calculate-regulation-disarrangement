@@ -1,29 +1,26 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+@Entity
+@Table(name = "FCIRegulation")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 /**
  * Represents FCI Regulation Composition by defining each {@link SpecieTypeGroupEnum} and its percentage
  */
-@Entity
-@Table(name = "FCIRegulation")
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Slf4j
-@Builder
 public class FCIRegulation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "fci_regulation_id")
+    @Column(name = "fci_regulation_id", unique = true, nullable = false)
     private Integer id;
 
     @Column(name = "symbol")
@@ -35,36 +32,33 @@ public class FCIRegulation {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "composition")
+//    @Column(name = "composition")
 //    @OneToMany(mappedBy = "fciRegulationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 //    @OneToMany(mappedBy = "fciRegulationId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(mappedBy="fciRegulation", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name="fci_regulation_id")
+//    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+//    @JoinTable(name = "fci_composition_by_regulation",
+//            joinColumns = @JoinColumn(name = "fci_regulation_id"),
+//            inverseJoinColumns = @JoinColumn(name = "fci_composition_id"))
+    @JoinTable(name = "fci_composition_by_regulation",
+            joinColumns =
+                    { @JoinColumn(name = "fci_regulation_id", referencedColumnName = "fci_regulation_id") },
+            inverseJoinColumns =
+                    { @JoinColumn(name = "fci_composition_id", referencedColumnName = "fci_composition_id") })
     private Set<FCIComposition> composition;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<FCIPosition> positions;
+//    private Set<FCIComposition> fciCompositionWithId;
+
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<FCIPosition> positions;
 
 
-    private transient Set<FCIComposition> compositionWithIds;
-
-    @Column(name = "advices")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FCIPositionAdvice> FCIPositionAdvices = new ArrayList<>();
-
-//    public Map<String, Double> getFCIRegulationComposition() {
-//        return composition.stream()
-//            .map(c -> Map.entry(c.getSpecieType(), c.getPercentage()))
-//            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//    }
-//
-    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
-        return composition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-//
-//    public static Map<String, Double> getCompositionAsString(Map<SpecieType, Double> composition) {
-//        return composition.entrySet().stream().map(entry -> Map.entry(entry.getKey().name(), entry.getValue()))
+//    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
+//        return fciComposition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 //    }
-
 }

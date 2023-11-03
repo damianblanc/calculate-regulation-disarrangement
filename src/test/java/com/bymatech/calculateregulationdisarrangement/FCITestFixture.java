@@ -95,7 +95,7 @@ public class FCITestFixture {
       FCIRegulationDTO fciRegulation = FCIRegulationDTO.builder().name(fCIRegulationName).symbol(symbol).build();
 
       Set<FCIComposition> fciComposition = regulationComposition.entrySet().stream()
-              .map(e -> FCIComposition.builder().fciSpecieType(e.getKey()).percentage(e.getValue()).build())
+              .map(e -> FCIComposition.builder().fciSpecieTypeId(e.getKey().getFciSpecieTypeId()).percentage(e.getValue()).build())
               .collect(Collectors.toUnmodifiableSet());
 
       fciRegulation.setComposition(fciComposition);

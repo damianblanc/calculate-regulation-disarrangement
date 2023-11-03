@@ -3,16 +3,21 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+/**
+ * Comprehends all {@link FCIRegulation} operations
+ */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(path = "/api/v1")
 public class FCIRegulationController {
 
     @Autowired
     private FCIRegulationCRUDService fciRegulationCRUDService;
+
 
     @PostMapping("/fci")
     public FCIRegulation createFCIRegulation(@RequestBody FCIRegulation fciRegulation) {
@@ -24,7 +29,7 @@ public class FCIRegulationController {
         return fciRegulationCRUDService.deleteFCIRegulation(symbol);
     }
 
-    @PutMapping("/fci")
+    @PutMapping("/fci/{symbol}")
     public FCIRegulation updateFCIRegulation(@RequestBody FCIRegulation fciRegulation) {
         return fciRegulationCRUDService.updateFCIRegulation(fciRegulation);
     }

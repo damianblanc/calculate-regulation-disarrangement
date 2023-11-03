@@ -42,14 +42,16 @@ public class FCIRegulationDTO {
     private Set<FCIPositionAdvice> FCIPositionAdvices;
 
     public Map<FCISpecieType, Double> getFCIRegulationComposition() {
-        return composition.stream()
-                .map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        return composition.stream()
+//                .map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return null;
     }
 
     public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
-        return composition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        return composition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return null;
     }
 
     public static Map<String, Double> getCompositionAsString(Map<FCISpecieType, Double> composition) {

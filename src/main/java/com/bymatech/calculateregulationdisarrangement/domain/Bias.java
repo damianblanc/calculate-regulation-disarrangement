@@ -26,7 +26,7 @@ public class Bias {
     @JoinColumn(name = "retrieval_id")
     private Retrieval retrieval;
 
-    @ManyToOne
-    @JoinColumn(name = "fciRegulation_id")
-    private FCIRegulation fciRegulation;
+//    @ManyToOne
+//    @JoinColumn(name = "fciRegulation_id")
+//    private FCIRegulation fciRegulation;
 }

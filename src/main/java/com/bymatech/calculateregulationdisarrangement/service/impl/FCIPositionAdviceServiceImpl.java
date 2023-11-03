@@ -16,8 +16,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -34,11 +32,12 @@ public class FCIPositionAdviceServiceImpl implements FCIPositionAdviceService {
 
     @Override
     public FCIPositionAdvice registerAdvice(FCIRegulation fciRegulation, String advice, String owner) {
-        return fciPositionAdviceRepository.save(FCIPositionAdvice.builder()
-                .owner(owner)
-                .timestamp(Timestamp.from(Instant.now()))
-                .advice(advice)
-                .fciRegulation(fciRegulation).build());
+//        return fciPositionAdviceRepository.save(FCIPositionAdvice.builder()
+//                .owner(owner)
+//                .timestamp(Timestamp.from(Instant.now()))
+//                .advice(advice)
+//                .fciRegulation(fciRegulation).build());
+        return null;
     }
 
     @Override

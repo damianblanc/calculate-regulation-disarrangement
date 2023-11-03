@@ -128,17 +128,17 @@ public class MarketBondResponse {
 
         private void setSymbol(String symbol) {
             this.symbol = symbol;
-            super.symbol = symbol;
+            super.marketSymbol = symbol;
         }
 
         private void setPrice(String price) {
             this.price = price;
-            super.price = price;
+            super.marketPrice = price;
         }
 
         @Override
         public int compareTo(@NotNull MarketBondResponseElement e) {
-            if (Double.parseDouble(this.getPrice()) >= Double.parseDouble(e.getPrice())) {
+            if (Double.parseDouble(this.getMarketPrice()) >= Double.parseDouble(e.getMarketPrice())) {
                 return 1;
             }
             return -1;

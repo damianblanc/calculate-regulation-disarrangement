@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public abstract class MarketResponse {
 
-    protected String price;
+    protected String marketPrice;
 
-    protected String symbol;
+    protected String marketSymbol;
 
 }

@@ -63,7 +63,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     @Override
     public List<MarketBondResponse.MarketBondResponseElement> getBondsOrderedByPrice(OrderType orderType) {
         List<MarketBondResponse.MarketBondResponseElement> bonds =
-                getTotalBonds().stream().sorted(Comparator.comparing(MarketBondResponse.MarketBondResponseElement::getPrice)).toList();
+                getTotalBonds().stream().sorted(Comparator.comparing(MarketBondResponse.MarketBondResponseElement::getMarketPrice)).toList();
         return orderType == OrderType.DESC ? bonds : bonds.stream().sorted(Collections.reverseOrder()).toList();
     }
 
@@ -71,7 +71,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     public List<MarketResponse> getBondsOrderByPriceFilteredBySpecieList(OrderType orderType, List<FCISpeciePosition> speciesPosition) {
         List<MarketBondResponse.MarketBondResponseElement> marketBondResponseElements = getBondsOrderedByPrice(orderType).stream()
                 .filter(bond -> speciesPosition.stream()
-                        .anyMatch(specie -> specie.getSymbol().equals(bond.getSymbol())))
+                        .anyMatch(specie -> specie.getSymbol().equals(bond.getMarketSymbol())))
                 .toList();
         return null;
     }
@@ -79,7 +79,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     @Override
     public List<SpecieCurrentPriceVO> getBondsOrderByPriceVO(OrderType orderType) {
         return getBondsOrderedByPrice(orderType).stream()
-                .map(bond -> new SpecieCurrentPriceVO(bond.getDescription(), Double.valueOf(bond.getPrice())))
+                .map(bond -> new SpecieCurrentPriceVO(bond.getDescription(), Double.valueOf(bond.getMarketPrice())))
                 .toList();
     }
 
@@ -115,7 +115,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     public List<MarketResponse> getEquityOrderedByPriceFilteredBySpecieList(OrderType orderType, List<FCISpeciePosition> speciesPosition) {
         return getEquityOrderedByPrice(orderType).stream()
                 .filter(equity -> speciesPosition.stream()
-                        .anyMatch(specie -> specie.getSymbol().equals(equity.getSymbol())))
+                        .anyMatch(specie -> specie.getSymbol().equals(equity.getMarketSymbol())))
                 .toList();
     }
 

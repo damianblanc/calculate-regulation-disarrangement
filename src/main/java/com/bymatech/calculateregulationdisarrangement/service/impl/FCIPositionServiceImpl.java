@@ -7,7 +7,6 @@ import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,24 +51,26 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Override
     public FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition) throws JsonProcessingException  {
-        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        fciPosition.setCreatedOn();
-        fciPosition.setOverview(fciPosition);
-        fciRegulation.getPositions().add(fciPosition);
-        fciRegulationRepository.save(fciRegulation);
-        return fciPosition;
+//        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+//        fciPosition.setCreatedOn();
+//        fciPosition.setOverview(fciPosition);
+////        fciRegulation.getPositions().add(fciPosition);
+//        fciRegulationRepository.save(fciRegulation);
+//        return fciPosition;
+        return null;
     }
 
     @Override
     public FCIPosition findFCIPositionById(String symbol, Integer fciPositionId) {
-        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        return fciRegulation.getPositions().stream().filter(p -> p.getId().equals(fciPositionId)).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, symbol, fciPositionId)));
+//        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+//        return fciRegulation.getPositions().stream().filter(p -> p.getId().equals(fciPositionId)).findFirst()
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, symbol, fciPositionId)));
+        return null;
     }
 
     public List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition, Boolean refresh) throws Exception {
@@ -83,9 +84,9 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         List<FCISpeciePosition> updatedFciSpeciePositions = new ArrayList<>();
         fciSpeciePositions.forEach(fciSpeciePosition -> {
             MarketResponse marketResponse = marketHttpService.getMarketResponses().stream()
-                        .filter(response -> response.getSymbol().equals(fciSpeciePosition.getSymbol()))
+                        .filter(response -> response.getMarketSymbol().equals(fciSpeciePosition.getSymbol()))
                         .findFirst().orElseThrow();
-        fciSpeciePosition.setCurrentMarketPrice(Double.valueOf(marketResponse.getPrice()));
+        fciSpeciePosition.setCurrentMarketPrice(Double.valueOf(marketResponse.getMarketPrice()));
         updatedFciSpeciePositions.add(fciSpeciePosition);
         });
 
@@ -94,18 +95,20 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Override
     public Set<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol) {
-        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        Set<FCIPosition> positions = fciRegulation.getPositions();
-        return positions.stream().map(p ->
-                FCIPositionVO.builder()
-                        .id(p.getId())
-                        .fciSymbol(fciRegulation.getSymbol())
-                        .timestamp(p.getCreatedOn(DATE_TIME_FORMAT))
-                        .overview(p.getOverview())
-                        .jsonPosition(p.getJsonPosition())
-                        .build()).collect(Collectors.toSet());
+//        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol)
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+////        Set<FCIPosition> positions = fciRegulation.getPositions();
+//        Set<FCIPosition> positions = null;
+//        return positions.stream().map(p ->
+//                FCIPositionVO.builder()
+//                        .id(p.getId())
+//                        .fciSymbol(fciRegulation.getSymbol())
+//                        .timestamp(p.getCreatedOn(DATE_TIME_FORMAT))
+//                        .overview(p.getOverview())
+//                        .jsonPosition(p.getJsonPosition())
+//                        .build()).collect(Collectors.toSet());
+        return null;
     }
 
 }

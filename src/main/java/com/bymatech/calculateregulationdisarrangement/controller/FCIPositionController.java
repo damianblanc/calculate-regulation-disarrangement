@@ -1,8 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
-import com.bymatech.calculateregulationdisarrangement.domain.FCIPositionAdvice;
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.fasterxml.jackson.core.JsonProcessingException;

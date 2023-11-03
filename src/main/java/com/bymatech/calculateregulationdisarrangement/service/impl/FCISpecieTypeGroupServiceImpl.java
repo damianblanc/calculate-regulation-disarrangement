@@ -21,36 +21,35 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     /* FCISpecieTypeGroup */
     @Override
-    public FCISpecieTypeGroup createFCISpecieTypeGroup(FCISpecieTypeGroup FCISpecieTypeGroup) {
-        return fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
+    public FCISpecieTypeGroup createFCISpecieTypeGroup(FCISpecieTypeGroup fciSpecieTypeGroup) {
+        return fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
     }
 
     @Override
-    public String deleteFCISpecieTypeGroup(String FCISpecieTypeGroupName) {
-        FCISpecieTypeGroup toDelete = fciSpecieTypeGroupRepository.findByName(FCISpecieTypeGroupName)
+    public String deleteFCISpecieTypeGroup(String fciSpecieTypeGroupName) {
+        FCISpecieTypeGroup toDelete = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroupName)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieTypeGroupName)));
+                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeGroupName)));
         fciSpecieTypeGroupRepository.delete(toDelete);
-        return FCISpecieTypeGroupName;
+        return fciSpecieTypeGroupName;
     }
 
     @Override
-    public FCISpecieTypeGroup updateFCISpecieTypeGroup(FCISpecieTypeGroup FCISpecieTypeGroup) {
-        FCISpecieTypeGroup toUpdate = fciSpecieTypeGroupRepository.findByName(FCISpecieTypeGroup.getName())
+    public FCISpecieTypeGroup updateFCISpecieTypeGroup(FCISpecieTypeGroup fciSpecieTypeGroup) {
+        FCISpecieTypeGroup toUpdate = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroup.getName())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieTypeGroup.getName())));
-        toUpdate.setName(FCISpecieTypeGroup.getName());
-        toUpdate.setDescription(FCISpecieTypeGroup.getDescription());
-        toUpdate.setUrl(FCISpecieTypeGroup.getUrl());
-        toUpdate.setFciSpecieTypes(FCISpecieTypeGroup.getFciSpecieTypes());
+                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeGroup.getName())));
+        toUpdate.setName(fciSpecieTypeGroup.getName());
+        toUpdate.setDescription(fciSpecieTypeGroup.getDescription());
+        toUpdate.setFciSpecieTypes(fciSpecieTypeGroup.getFciSpecieTypes());
         return fciSpecieTypeGroupRepository.save(toUpdate);
     }
 
     @Override
-    public FCISpecieTypeGroup findFCISpecieTypeGroup(String FCISpecieTypeGroupName) {
-        return fciSpecieTypeGroupRepository.findByName(FCISpecieTypeGroupName)
+    public FCISpecieTypeGroup findFCISpecieTypeGroup(String fciSpecieTypeGroupName) {
+        return fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroupName)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieTypeGroupName)));
+                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeGroupName)));
     }
 
     public List<FCISpecieTypeGroup> listFCISpecieTypeGroups() {
@@ -60,45 +59,53 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     /* FCISpecieType */
     @Override
-    public FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType FCISpecieType) {
+    public FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType fciSpecieType) {
         FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(groupName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, groupName)));
-        FCISpecieTypeGroup.getFciSpecieTypes().add(FCISpecieType);
+        FCISpecieTypeGroup.getFciSpecieTypes().add(fciSpecieType);
         return fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
     }
 
     @Override
-    public String deleteFCISpecieType(String FCISpecieTypeNameGroup, String FCISpecieTypeName) {
-        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(FCISpecieTypeName)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieTypeNameGroup)));
-        FCISpecieTypeGroup.getFciSpecieTypes().removeIf(sp -> sp.getName().equals(FCISpecieTypeName));
+    public String deleteFCISpecieType(String fciSpecieTypeNameGroup, String fciSpecieTypeName) {
+        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeName)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroup)));
+        FCISpecieTypeGroup.getFciSpecieTypes().removeIf(sp -> sp.getName().equals(fciSpecieTypeName));
         fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
-        return FCISpecieTypeName;
+        return fciSpecieTypeName;
     }
 
     @Override
-    public FCISpecieType updateFCISpecieType(String FCISpecieTypeNameGroup, FCISpecieType FCISpecieType) {
-        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(FCISpecieType.getName())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieType.getName())));
-        FCISpecieType foundFCISpecieType = FCISpecieTypeGroup.getFciSpecieTypes().stream().filter(sp -> FCISpecieType.getName().equals(sp.getName())).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, FCISpecieTypeNameGroup)));
-        foundFCISpecieType.setName(FCISpecieType.getName());
-        foundFCISpecieType.setDescription(FCISpecieType.getDescription());
+    public FCISpecieType updateFCISpecieType(String fciSpecieTypeNameGroup, FCISpecieType fciSpecieType) {
+        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(fciSpecieType.getName())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieType.getName())));
+        FCISpecieType foundFCISpecieType = FCISpecieTypeGroup.getFciSpecieTypes().stream().filter(sp -> fciSpecieType.getName().equals(sp.getName())).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroup)));
+        foundFCISpecieType.setName(fciSpecieType.getName());
+        foundFCISpecieType.setDescription(fciSpecieType.getDescription());
         fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
         return foundFCISpecieType;
     }
 
     @Override
-    public FCISpecieType findFCISpecieType(String FCISpecieTypeNameGroup, String FCISpecieTypeName) {
-        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(FCISpecieTypeNameGroup)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, FCISpecieTypeNameGroup)));
-        return FCISpecieTypeGroup.getFciSpecieTypes().stream().filter(FCISpecieType -> FCISpecieType.getName().equals(FCISpecieTypeName)).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, FCISpecieTypeNameGroup)));
+    public FCISpecieType findFCISpecieType(String fciSpecieTypeNameGroup, String fciSpecieTypeName) {
+        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeNameGroup)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroup)));
+        return FCISpecieTypeGroup.getFciSpecieTypes().stream().filter(FCISpecieType -> FCISpecieType.getName().equals(fciSpecieTypeName)).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroup)));
     }
 
     @Override
-    public List<FCISpecieType> listFCISpecieTypes(String FCISpecieTypeGroupName) {
+    public List<FCISpecieType> listFCISpecieTypes(String fciSpecieTypeGroupName) {
+        return fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroupName).stream()
+                .map(FCISpecieTypeGroup::getFciSpecieTypes)
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FCISpecieType> listFCISpecieTypes() {
         return fciSpecieTypeGroupRepository.findAll().stream()
                 .map(FCISpecieTypeGroup::getFciSpecieTypes)
                 .flatMap(Set::stream)

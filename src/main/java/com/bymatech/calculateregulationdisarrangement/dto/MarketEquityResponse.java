@@ -164,7 +164,7 @@ public class MarketEquityResponse {
 
         private void setTrade(String trade) {
             this.trade = trade;
-            super.price = trade;
+            super.marketPrice = trade;
         }
 
         @Override

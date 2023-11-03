@@ -2,10 +2,8 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.service.*;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -77,7 +75,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                 .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
 
         return OperationAdviceVerboseVO.builder()
-                .fciRegulationComposition(fciRegulation.getComposition())
+//                .fciRegulationComposition(fciRegulation.getComposition())
                 .regulationLagOutcomeVO(regulationLagOutcomeVO)
                 .operationAdvicesVO(operationAdviceSpecieTypes)
                 .build();
@@ -99,7 +97,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                                             specieData.getSummarizedPosition(),
                                              specieData.getFciPositionList(),
                                             specieData.getSpeciePercentage(), specieData.getParameters().getElementQuantity()),
-                                    e.getSymbol(), e.getPrice(), specieData.getOrderType().getOperationAdvice());
+                                    e.getMarketSymbol(), e.getMarketPrice(), specieData.getOrderType().getOperationAdvice());
                             specieTypeAdvices.put(SpecieTypeGroupEnum.Equity, operationAdviceVO);
                         }
                 );
@@ -121,7 +119,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                                 CalculationServiceHelper.calculateMinNumber(
                                         specieData.getFciPositionList().size(),
                                         specieData.getParameters().getElementQuantity())),
-                        e.getSymbol(), e.getPrice(), specieData.getOrderType().getOperationAdvice()).canAdvice()).collect(Collectors.toSet());
+                        e.getMarketSymbol(), e.getMarketPrice(), specieData.getOrderType().getOperationAdvice()).canAdvice()).collect(Collectors.toSet());
 
         canAdviceBonds.forEach(e -> {
                     OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(
@@ -133,7 +131,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                                 CalculationServiceHelper.calculateMinNumber(
                                         canAdviceBonds.size(),
                                         specieData.getParameters().getElementQuantity())),
-                        e.getSymbol(), e.getPrice(), specieData.getOrderType().getOperationAdvice());
+                        e.getMarketSymbol(), e.getMarketPrice(), specieData.getOrderType().getOperationAdvice());
                         specieTypeAdvices.put(SpecieTypeGroupEnum.Bond, operationAdviceVO);
                     }
                 );
