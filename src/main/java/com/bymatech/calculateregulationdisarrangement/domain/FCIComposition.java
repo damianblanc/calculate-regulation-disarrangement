@@ -56,7 +56,7 @@ public class FCIComposition {
     @Column(name = "percentage")
     private Double percentage;
 
-//    @JsonProperty("fciRegulationId")
+    //    @JsonProperty("fciRegulationId")
 //    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 //    @JsonIdentityReference(alwaysAsId = true)
 //    @ManyToOne(targetEntity = FCIRegulation.class)

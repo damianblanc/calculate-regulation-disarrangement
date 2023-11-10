@@ -66,12 +66,24 @@ public interface FCISpecieTypeGroupService {
     FCISpecieType findFCISpecieType(String specieTypeNameGroup, String specieTypeName);
 
     /**
-     * List all {@link SpecieTypeGroupEnum}
+     * Lists all {@link SpecieTypeGroupEnum}
      */
     List<FCISpecieType> listFCISpecieTypes(String FCISpecieTypeGroupName);
 
     /**
-     * List all available {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
+     * Lists all available {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
      */
     List<FCISpecieType> listFCISpecieTypes();
+
+    /**
+     * Lists updatable {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
+     */
+    List<FCISpecieType> listUpdatableSpecieTypes();
+
+    /**
+     * Lists not updatable {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
+     * There are special cases for specie types that cannot take a current price from market
+     * I/E: Cash specie type
+     */
+    List<FCISpecieType> listNotUpdatableSpecieTypes();
 }

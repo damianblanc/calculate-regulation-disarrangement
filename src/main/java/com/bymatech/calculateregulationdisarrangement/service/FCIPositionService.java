@@ -17,17 +17,17 @@ import java.util.Set;
 @Service
 public interface FCIPositionService {
 
-    Map<FCISpecieType, List<FCISpeciePosition>> groupPositionBySpecieType(List<FCISpeciePosition> position);
+    Map<FCISpecieType, List<FCISpeciePosition>> groupPositionBySpecieType(List<FCISpeciePosition> position, List<FCISpecieType> fciSpecieTypes);
 
-    Double calculateTotalValuedPosition(List<FCISpeciePosition> position);
+    Double calculateTotalValuedPosition(List<FCISpeciePosition> position, List<FCISpecieType> fciSpecieTypes);
 
     Double calculateTotalValuedPosition(Map<FCISpecieType, Double> summarizedPosition);
 
     Map<FCISpecieType, Double> getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position);
 
-    Set<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol);
+    List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol);
 
-    FCIPosition createFCIPosition(String symbol, FCIPosition fciPosition) throws JsonProcessingException;
+    FCIPositionVO createFCIPosition(String symbol, FCIPosition fciPosition) throws Exception;
 
     /**
      * Finds a Position in FCI Regulation position list
@@ -35,6 +35,10 @@ public interface FCIPositionService {
      * @param fciPositionId Position id
      */
     FCIPosition findFCIPositionById(String fciRegulationSymbol, Integer fciPositionId);
+
+    FCIPositionVO findFCIPositionVOById(String fciRegulationSymbol, Integer fciPositionId);
+
+    FCIPositionVO findFCIPositionVOByIdRefreshed(String fciRegulationSymbol, Integer fciPositionId) throws Exception;
 
     /**
      * Updates Current Market Price to all species in Position

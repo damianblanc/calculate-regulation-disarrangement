@@ -3,7 +3,11 @@ package com.bymatech.calculateregulationdisarrangement.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Set;
 
 @Entity
@@ -16,7 +20,7 @@ import java.util.Set;
 /**
  * Represents FCI Regulation Composition by defining each {@link SpecieTypeGroupEnum} and its percentage
  */
-public class FCIRegulation {
+public class FCIRegulation implements Comparable<FCIRegulation> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,9 +57,24 @@ public class FCIRegulation {
 
 //    private Set<FCIComposition> fciCompositionWithId;
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<FCIPosition> positions;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<FCIPosition> positions;
 
+    @Column(name = "created_on")
+    private Timestamp createdOn;
+
+    public void setCreatedOn() {
+        this.createdOn = new Timestamp(Instant.now().toEpochMilli());
+    }
+
+    public String getCreatedOn( SimpleDateFormat sdf) {
+        return sdf.format(this.createdOn);
+    }
+
+    @Override
+    public int compareTo(@NotNull FCIRegulation fciRegulation) {
+        return fciRegulation.getId().equals(this.getId()) ? 0 : -1;
+    }
 
 //    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
 //        return fciComposition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))

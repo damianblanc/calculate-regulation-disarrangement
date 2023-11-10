@@ -17,7 +17,7 @@ public class FCISpeciePosition {
 
     private String name;
     private String symbol;
-    private FCISpecieType fciSpecieType;
+    private String fciSpecieType;
 
     /**
      * This property is updated each time a FCIPosition is retrieved to work with market price

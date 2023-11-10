@@ -162,10 +162,20 @@ public class MarketEquityResponse {
         @Expose
         private String quantityBid;
 
-        private void setTrade(String trade) {
+        public void setSymbol(String symbol) {
+            super.marketSymbol = symbol;
+        }
+
+        public void setTrade(String trade) {
             this.trade = trade;
             super.marketPrice = trade;
         }
+
+        public void setFciSpecieType() {
+            super.setFciSpecieType("Equity");  //TODO: This has to be bound to correct specie type once created relation in model (getting species from market,
+                                             //TODO: allowing to relate them to created specie types)
+        }
+
 
         @Override
         public int compareTo(@NotNull MarketEquityResponseElement e) {

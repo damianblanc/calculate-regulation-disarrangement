@@ -30,7 +30,7 @@ public class CalculationServiceHelper {
 
     public static List<FCISpeciePosition> getFciPositionListFilteredBySpecieType(
             List<FCISpeciePosition> fciPositionList, FCISpecieType specieType) {
-        return fciPositionList.stream().filter(e -> e.getFciSpecieType() == specieType).toList();
+        return fciPositionList.stream().filter(e -> e.getFciSpecieType().equals(specieType.getName())).toList();
     }
 
     public static Double summarizePositionList(Map<FCISpecieType, Double> summarizedPosition) {

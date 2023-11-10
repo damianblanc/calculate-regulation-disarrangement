@@ -111,4 +111,14 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
                 .flatMap(Set::stream)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<FCISpecieType> listUpdatableSpecieTypes() {
+        return listFCISpecieTypes().stream().filter(FCISpecieType::getUpdatable).toList();
+    }
+
+    @Override
+    public List<FCISpecieType> listNotUpdatableSpecieTypes() {
+        return listFCISpecieTypes().stream().filter(fciSpecieType -> !fciSpecieType.getUpdatable()).toList();
+    }
 }

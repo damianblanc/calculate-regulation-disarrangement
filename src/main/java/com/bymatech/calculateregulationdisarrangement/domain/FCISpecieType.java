@@ -23,6 +23,13 @@ public class FCISpecieType {
 
     private String description;
 
+    /**
+     * Indicates whether this specie type accepts their bound species to have its prices
+     * updated with current market price
+     * Refer to Cash specie type that is not to be updated
+     */
+    private Boolean updatable;
+
 //    @OneToOne(mappedBy = "fciSpecieType")
 //    private FCIComposition fciComposition;
 

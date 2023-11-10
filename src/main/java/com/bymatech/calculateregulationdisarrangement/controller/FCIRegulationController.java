@@ -1,11 +1,13 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,7 +42,12 @@ public class FCIRegulationController {
     }
 
     @GetMapping("/fci")
-    public Set<FCIRegulation> listFCIRegulations() {
+    public List<FCIRegulation> listFCIRegulations() {
         return fciRegulationCRUDService.listFCIRegulations();
+    }
+
+    @GetMapping("/fci/symbol-name")
+    public List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbols() {
+        return fciRegulationCRUDService.listFCIRegulationSymbolsAndNames();
     }
 }

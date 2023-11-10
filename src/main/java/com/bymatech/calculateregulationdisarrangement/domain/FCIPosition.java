@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
@@ -26,15 +26,17 @@ import static java.util.stream.Collectors.summarizingDouble;
 @Builder
 public class FCIPosition {
     @Transient
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private JsonNode position;
+
+    @Column(name = "marketPosition", length = 8192)
+    private String updatedMarketPosition;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "jsonPosition", length = 4096)
+    @Column(name = "originalPosition", length = 4096)
     private String jsonPosition;
 
     @Column(name = "overview")
@@ -67,7 +69,7 @@ public class FCIPosition {
     public static List<FCISpeciePosition> getSpeciePositions(FCIPosition fciPosition) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<FCISpeciePosition> FCISpeciePositions = new ArrayList<>();
-            Iterator<JsonNode> elements = mapper.readTree(fciPosition.jsonPosition).elements();
+            Iterator<JsonNode> elements = mapper.readTree(fciPosition.getJsonPosition()).elements();
             elements.forEachRemaining(e -> {
                         try {
                             FCISpeciePositions.add(mapper.treeToValue(e, FCISpeciePosition.class));
@@ -78,17 +80,23 @@ public class FCIPosition {
         return FCISpeciePositions;
     }
 
-    public void setOverview(FCIPosition fciPosition) throws JsonProcessingException {
-        List<FCISpeciePosition> FCISpeciePositions = getSpeciePositions(fciPosition);
-        StringBuffer specieTypeSums = new StringBuffer();
+    public void updateMarketPosition(List<FCISpeciePosition> fciSpeciePositionList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        setUpdatedMarketPosition(mapper.writeValueAsString(fciSpeciePositionList));
+    }
 
-        Map<FCISpecieType, DoubleSummaryStatistics> m =
-                FCISpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
+    public void setOverview(List<FCISpeciePosition> fciSpeciePositions) {
+        StringBuffer specieTypeSums = new StringBuffer();
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        Map<String, DoubleSummaryStatistics> m =
+                fciSpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
                         summarizingDouble(FCISpeciePosition::valuePosition)));
 
-        m.forEach((key, value) -> specieTypeSums.append(key.getName()).append(": ").append(value.getSum()).append(" "));
+        m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(df.format(value.getSum())).append(" "));
         Double totalPosition = m.values().stream().map(DoubleSummaryStatistics::getSum).reduce(Double::sum).orElseThrow();
 
-        this.overview = String.format("Species:%d - Valued: %.2f - Totals: %s", FCISpeciePositions.size(), totalPosition, specieTypeSums);
+        this.overview = String.format("Species:%d - Valued: $%.2f - Totals: %s", fciSpeciePositions.size(), totalPosition,
+                specieTypeSums.toString().replace(" $0 ", " N/A "));
     }
 }

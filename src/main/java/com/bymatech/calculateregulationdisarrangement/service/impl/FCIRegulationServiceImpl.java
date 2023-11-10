@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
@@ -14,8 +15,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +36,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public FCIRegulation createFCIRegulation(FCIRegulation request) {
-       return  fciRegulationRepository.save(request);
+       return fciRegulationRepository.save(request);
 //        FCIRegulation fciRegulation = FCIRegulation.builder().symbol(request.getSymbol()).name(request.getName()).description(request.getDescription()).build();
 //        FCIRegulation savedFciRegulation = fciRegulationRepository.save(fciRegulation);
 //        Set<FCIComposition> fciCompositions = new HashSet<>();
@@ -90,11 +93,22 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     }
 
     @Override
-    public Set<FCIRegulation> listFCIRegulations() {
-        Set<FCIRegulation> fciRegulations = fciRegulationRepository.findAll().stream()
+    public List<FCIRegulation> listFCIRegulations() {
+        return fciRegulationRepository.findAll().stream().sorted().toList();
 //                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
-                .collect(Collectors.toSet());
 //       return fciRegulations.stream().peek(r -> r.setFciCompositionWithId((r.getFciComposition()))).collect(Collectors.toSet());
-       return fciRegulations;
     }
+
+    @Override
+    public List<String> listFCIRegulationSymbols() {
+       return fciRegulationRepository.findAll().stream().sorted().map(FCIRegulation::getSymbol).toList();
+    }
+
+    @Override
+    public List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbolsAndNames() {
+        AtomicInteger index = new AtomicInteger();
+        return fciRegulationRepository.findAll().stream().sorted().map(fciRegulation ->
+            new FCIRegulationSymbolAndNameVO(index.getAndIncrement(), fciRegulation.getSymbol(), fciRegulation.getName())).toList();
+    }
+
 }

@@ -36,10 +36,15 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     @Override
     public List<MarketBondResponse.MarketBondResponseElement> getTotalBonds() {
         MarketBondResponse marketBonds = getBonds(MarketBondAuthBean.create(1));
-        List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>(marketBonds.getMarketBondResponses());
+        List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>();
 
-        for (int i = 2; i <= marketBonds.getContent().getPageCount(); i++) {
-            List<MarketBondResponse.MarketBondResponseElement> marketBondResponses = getBonds(MarketBondAuthBean.create(i)).getMarketBondResponses();
+        for (int i = 1; i <= marketBonds.getContent().getPageCount(); i++) {
+            List<MarketBondResponse.MarketBondResponseElement> marketBondResponses =
+                    getBonds(MarketBondAuthBean.create(i)).getMarketBondResponses().stream().peek(bond -> {
+                        bond.setMarketSymbol(bond.getSymbol());
+                        bond.setMarketPrice(bond.getPrice());
+                        bond.setFciSpecieType();
+                    }).toList();
             bonds.addAll(marketBondResponses);
         }
 
@@ -101,11 +106,15 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     @Override
     public List<MarketEquityResponse.MarketEquityResponseElement> getTotalEquities() {
         MarketEquityResponse marketEquities = getEquities(MarketEquityAuthBean.create(1));
-        List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>(marketEquities.getMarketEquityResponses());
+        List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>();
 
-        for (int i = 2; i <= marketEquities.getContent().getPageCount(); i++) {
-            List<MarketEquityResponse.MarketEquityResponseElement> marketBondResponses = getEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses();
-            equities.addAll(marketBondResponses);
+        for (int i = 1; i <= marketEquities.getContent().getPageCount(); i++) {
+            List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
+                    getEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
+                        equity.setMarketSymbol(equity.getSymbol());
+                        equity.setMarketPrice(equity.getTrade());
+                    }).toList();
+            equities.addAll(marketEquityResponses);
         }
 
         return equities;

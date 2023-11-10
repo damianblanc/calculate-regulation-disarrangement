@@ -9,6 +9,8 @@ import retrofit2.http.Body;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public interface MarketHttpService {
@@ -40,16 +42,29 @@ public interface MarketHttpService {
      */
 //    @Scheduled(fixedDelayString = "${schedule.advice.position.fixed.delay.minutes:5}")
 //    @Scheduled(fixedDelayString = "${schedule.advice.position.fixed.delay.seconds:2}000")
-    default void updateCurrentMarketPrices() {
+    default List<MarketResponse> updateCurrentMarketPrices() {
         //TODO: See that comunication can fail, then do not clear before getting results, test comunicacion
         //TODO: Does returned data does not change after stock round closure? I/E: 17.00, until 11.00 next day?
         //TODO: Avoid going to retrieve data when it becomes constant.
-        marketResponses.clear();
-        marketResponses.addAll(getTotalBonds());
-        marketResponses.addAll(getTotalEquities());
+        try {
+            marketResponses.clear();
+
+            CompletableFuture<List<MarketBondResponse.MarketBondResponseElement>> futureBondsTask = CompletableFuture.supplyAsync(this::getTotalBonds);
+            while (!futureBondsTask.isDone()) {
+                marketResponses.addAll(futureBondsTask.get());
+            }
+
+            CompletableFuture< List<MarketEquityResponse.MarketEquityResponseElement>> futureEquitiesTask = CompletableFuture.supplyAsync(this::getTotalEquities);
+            while (!futureEquitiesTask.isDone()) {
+                marketResponses.addAll(futureEquitiesTask.get());
+            }
+            return marketResponses;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     default List<MarketResponse> getMarketResponses() {
-        return marketResponses;
+        return marketResponses.isEmpty() ? updateCurrentMarketPrices() : marketResponses;
     }
 }

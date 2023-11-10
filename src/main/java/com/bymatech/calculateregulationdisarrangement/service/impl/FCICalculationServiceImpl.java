@@ -6,6 +6,7 @@ import com.bymatech.calculateregulationdisarrangement.exception.FailedValidation
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
+import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.DomainExtractionHelper;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +34,9 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     @Autowired
     private FCIPositionService fciPositionService;
 
+    @Autowired
+    private FCISpecieTypeGroupService fciSpecieTypeGroupService;
+
 //TODO:Create a cache and load a refreshed market price indicated position, in order to avoid processing when asking to flavours
     @Override
     public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
@@ -39,17 +45,20 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition);
         updateCurrentMarketPriceToPosition(fciPosition, refresh);
 
+        List<FCISpecieType> fciSpecieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
+        Set<String> fciSpecieTypesNames = fciSpecieTypes.stream().map(FCISpecieType::getName).collect(Collectors.toSet());
+        Map<FCISpecieType, Double> fciRegulationCompositionBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition(), fciSpecieTypes);
+        Map<FCISpecieType, List<FCISpeciePosition>> groupedPositionBySpecieType = fciPositionService.groupPositionBySpecieType(fciSpeciePositions, fciSpecieTypes);
+
         /** Preconditions */
-        Map<FCISpecieType, Double> fciRegulationCompositionBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition());
-        Map<FCISpecieType, List<FCISpeciePosition>> groupedPositionBySpecieType = fciPositionService.groupPositionBySpecieType(fciSpeciePositions);
-        analyseBiasPreconditions(fciRegulationCompositionBySpecieType, groupedPositionBySpecieType);
+        analyseBiasPreconditions(fciRegulationCompositionBySpecieType, groupedPositionBySpecieType, fciSpecieTypesNames);
 
         /** Position grouping calculation */
         Map<FCISpecieType, Double> valuedPositionBySpecieType = fciPositionService.getValuedPositionBySpecieType(groupedPositionBySpecieType);
         Map<FCISpecieType, Double> percentagePositionBySpecieType = calculatePercentagePositionBySpecieType(valuedPositionBySpecieType);
 
         /** Regulation grouping calculation */
-        Map<FCISpecieType, Double> percentageRegulationBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition());
+        Map<FCISpecieType, Double> percentageRegulationBySpecieType = DomainExtractionHelper.getCompositionAsSpecieType(fciRegulation.getComposition(), fciSpecieTypes);
         Map<FCISpecieType, Double> valuedRegulationBySpecieType = calculateValuedRegulationBySpecieType(percentageRegulationBySpecieType, valuedPositionBySpecieType);
 
         /** Biases grouping calculation */
@@ -87,10 +96,9 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     private List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition, @NotNull Boolean refresh) throws Exception {
-        if (refresh) {
-            return fciPositionService.updateCurrentMarketPriceToPosition(fciPosition, true);
-        }
-      return fciPositionService.updateCurrentMarketPriceToPosition(fciPosition);
+       return refresh ?
+            fciPositionService.updateCurrentMarketPriceToPosition(fciPosition, true)
+            : fciPositionService.updateCurrentMarketPriceToPosition(fciPosition);
     }
 
     private Map<FCISpecieType, Double> calculateValuedRegulationBySpecieType(Map<FCISpecieType, Double> regulationPercentage,
@@ -151,7 +159,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
         return fciSpeciePositions.stream()
                 .map(fciSpeciePosition -> {
-                    Double fciSpecieTypeValued = valuedPositionBySpecieType.get(fciSpeciePosition.getFciSpecieType());
+                    Double fciSpecieTypeValued = valuedPositionBySpecieType.entrySet().stream()
+                            .filter(vpst -> vpst.getKey().getName().equals(fciSpeciePosition.getFciSpecieType())).findFirst().orElseThrow().getValue();
                     return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued * 100);
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -159,7 +168,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     private  Map<FCISpeciePosition, Double> calculateSpecieValueOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
         return fciSpeciePositions.stream()
                 .map(fciSpeciePosition -> {
-                    Double fciSpecieTypeValued = valuedPositionBySpecieType.get(fciSpeciePosition.getFciSpecieType());
+                    Double fciSpecieTypeValued = valuedPositionBySpecieType.entrySet().stream()
+                            .filter(vpst -> vpst.getKey().getName().equals(fciSpeciePosition.getFciSpecieType())).findFirst().orElseThrow().getValue();
                     return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued);
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -245,7 +255,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
      * All Specie type indicated in FCI Regulation Percentage composition are expected to be received for processing
      */
     private void analyseBiasPreconditions(Map<FCISpecieType, Double> fciRegulationComposition,
-                                          Map<FCISpecieType, List<FCISpeciePosition>> fciSpecieTypePosition) {
+                                          Map<FCISpecieType, List<FCISpeciePosition>> fciSpecieTypePosition,
+                                          Set<String> fciSpecieTypesNames) {
         Double percentageSumReduction = fciRegulationComposition.values().stream().reduce(Double::sum).orElseThrow();
 
         /** fciRegulationComposition must close to 100% */
@@ -255,8 +266,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 
         /** All Specie type indicated in FCI Regulation Percentage composition are expected to be received for processing */
         fciRegulationComposition.keySet().forEach(fciRegulationSpecieType -> {
-            if (fciSpecieTypePosition.keySet().stream()
-                    .noneMatch(fciPositionSpecieType -> fciPositionSpecieType == fciRegulationSpecieType)) {
+            if (fciSpecieTypePosition.keySet().stream().noneMatch(fciSpecieType -> fciSpecieTypesNames.contains(fciSpecieType.getName()))) {
                 throw new IllegalArgumentException(String.format(ExceptionMessage.REGULATION_SPECIE_TYPE_DOES_NOT_MATCH.msg, fciRegulationSpecieType));
             }
         });

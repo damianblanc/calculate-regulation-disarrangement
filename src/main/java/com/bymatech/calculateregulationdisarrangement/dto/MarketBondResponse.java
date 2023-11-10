@@ -126,14 +126,18 @@ public class MarketBondResponse {
         @Expose
         private String isin;
 
-        private void setSymbol(String symbol) {
-            this.symbol = symbol;
+        public void setSymbol(String symbol) {
             super.marketSymbol = symbol;
         }
 
-        private void setPrice(String price) {
+        public void setPrice(String price) {
             this.price = price;
             super.marketPrice = price;
+        }
+
+        public void setFciSpecieType() {
+            super.setFciSpecieType("Bond");  //TODO: This has to be bound to correct specie type once created relation in model (getting species from market,
+                                             //TODO: allowing to relate them to created specie types)
         }
 
         @Override

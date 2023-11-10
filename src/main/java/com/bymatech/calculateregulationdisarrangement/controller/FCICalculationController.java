@@ -55,7 +55,7 @@ public class FCICalculationController {
         return fciCalculationService.calculatePositionBias(symbol, id, refresh).getSpeciePercentageWeightRelativeToFCISpecieType();
     }
 
-    @GetMapping(path="/calculate-bias/fci/{symbol}/position/{id}/percentages/rspecie-relative-to-specie-type/refresh/{refresh}", consumes="application/json", produces="application/json")
+    @GetMapping(path="/calculate-bias/fci/{symbol}/position/{id}/valued/specie-relative-to-specie-type/refresh/{refresh}", consumes="application/json", produces="application/json")
     public Map<FCISpeciePosition, Double> calculateBiasValuedSpecieRelativeToSpecieType(@PathVariable String symbol, @PathVariable String id, @PathVariable Boolean refresh) throws Exception {
         return fciCalculationService.calculatePositionBias(symbol, id, refresh).getSpecieValueWeightRelativeToFCISpecieType();
     }
