@@ -12,7 +12,7 @@ import java.util.List;
  * Comprehends all reporting operations
  */
 @RestController
-@RequestMapping("/api/v1/component/")
+@RequestMapping("/api/v1/component")
 public class FCIReportController {
 
     @Autowired

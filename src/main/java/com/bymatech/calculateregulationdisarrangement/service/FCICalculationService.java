@@ -5,6 +5,8 @@ import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Comprehends core FCI regulation operations performing base calculations
  */
@@ -30,6 +32,8 @@ public interface FCICalculationService {
     FCIRegulationPercentageVO calculateRegulationPercentages(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
     FCIRegulationValuedVO calculateRegulationValued(String fciRegulationSymbol, String fciPositionId) throws Exception;
+
+    List<FCIPercentageAndValuedVO> calculatePositionBiasPercentageValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception;
 
     /* Specie Type over Position */
 

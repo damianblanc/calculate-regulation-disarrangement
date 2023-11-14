@@ -141,6 +141,17 @@ public class FCICalculationServiceImpl implements FCICalculationService {
                 .map(e -> new FCIValuedVO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
+    @Override
+    public List<FCIPercentageAndValuedVO> calculatePositionBiasPercentageValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
+        AtomicInteger index = new AtomicInteger();
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getPositionPercentageBias();
+        Map<FCISpecieType, Double> n = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getPositionValuedBias();
+        return m.entrySet().stream()
+                .map(e -> new FCIPercentageAndValuedVO(index.getAndIncrement(), e.getKey().getName(), String.format("%.2f",e.getValue()),
+                        String.format("%.2f", n.get(n.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))
+                        )).collect(Collectors.toList());
+    }
+
 
     /* Specie Type over Position */
     private Map<FCISpecieType, Double> calculateSpecieTypePercentageOverPosition(Map<FCISpecieType, Double> valuedPositionBySpecieType, Double totalSummarizedPosition) {
