@@ -3,6 +3,8 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.http.Body;
@@ -50,14 +52,26 @@ public interface MarketHttpService {
             marketResponses.clear();
 
             CompletableFuture<List<MarketBondResponse.MarketBondResponseElement>> futureBondsTask = CompletableFuture.supplyAsync(this::getTotalBonds);
+            List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>();
             while (!futureBondsTask.isDone()) {
-                marketResponses.addAll(futureBondsTask.get());
+                bonds = futureBondsTask.get();
+
+            }
+            if (bonds.isEmpty()) {
+                throw new IllegalArgumentException(ExceptionMessage.MARKET_BOND_INFORMATION_NOT_AVAILABLE.msg);
             }
 
             CompletableFuture< List<MarketEquityResponse.MarketEquityResponseElement>> futureEquitiesTask = CompletableFuture.supplyAsync(this::getTotalEquities);
+            List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>();
             while (!futureEquitiesTask.isDone()) {
-                marketResponses.addAll(futureEquitiesTask.get());
+                equities = futureEquitiesTask.get();
+
             }
+            if (equities.isEmpty()) {
+                throw new IllegalArgumentException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
+            }
+            marketResponses.addAll(bonds);
+            marketResponses.addAll(equities);
             return marketResponses;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);

@@ -116,7 +116,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         List<FCISpecieType> fciSpecieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
 
         List<FCISpeciePosition> updatedFciSpeciePositions = new ArrayList<>();
-        FCIPosition.getSpeciePositions(fciPosition).forEach(fciSpeciePosition -> {
+        FCIPosition.getSpeciePositions(fciPosition, false).forEach(fciSpeciePosition -> {
             if (isUpdatable(fciSpecieTypes, fciSpeciePosition.getFciSpecieType())) {
                 MarketResponse marketResponse = marketHttpService.getMarketResponses().stream()
                         .filter(response -> fciSpeciePosition.getSymbol().equals(response.getMarketSymbol()))
@@ -128,6 +128,12 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         });
 
         return updatedFciSpeciePositions;
+    }
+
+    @Override
+    public List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol) {
+        return listPositionsByFCIRegulationSymbol(fciRegulationSymbol).stream().map(fciPosition ->
+                new FCIPositionIdCreatedOnVO(fciPosition.getId(), fciPosition.getTimestamp())).toList();
     }
 
     private Boolean isUpdatable(List<FCISpecieType> fciSpecieTypes, String fciSpecieTypeName) {

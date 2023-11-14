@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FCIPercentageDTO {
+public class FCIPositionIdCreatedOnVO {
 
-    private String specieType;
-    private String percentage;
+    private Integer id;
+
+    private String timestamp;
 }

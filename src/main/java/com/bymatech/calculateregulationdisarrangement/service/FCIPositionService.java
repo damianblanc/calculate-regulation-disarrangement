@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionIdCreatedOnVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
@@ -52,4 +53,6 @@ public interface FCIPositionService {
      * @param fciPosition Represents current working Position
      */
     List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition) throws Exception;
+
+    List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol);
 }

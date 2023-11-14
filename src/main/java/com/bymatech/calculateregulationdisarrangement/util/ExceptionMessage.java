@@ -22,6 +22,10 @@ public enum ExceptionMessage {
     SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND("Specie Type cannot be found with name [%s]"),
 
     POSITION_CONTAINS_NOT_RETRIEVED_SPECIE("Position contains specie [%s] which is not informed by Market"),
+
+    MARKET_EQUITY_INFORMATION_NOT_AVAILABLE("Market Equity Information is not currently available, try again later"),
+
+    MARKET_BOND_INFORMATION_NOT_AVAILABLE("Market Bond Information is not currently available, try again later");
     ;
 
     public final String msg;

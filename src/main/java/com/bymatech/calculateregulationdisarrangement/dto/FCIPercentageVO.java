@@ -3,12 +3,11 @@ package com.bymatech.calculateregulationdisarrangement.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
-
-
 @Data
 @AllArgsConstructor
-public class FCIPositionPercentageVO {
+public class FCIPercentageVO {
 
-    List<FCIPercentageVO> percentages;
+    private Integer id;
+    private String specieType;
+    private String percentage;
 }

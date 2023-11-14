@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +42,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
         FCIPosition fciPosition = fciPositionService.findFCIPositionById(fciRegulationSymbol, Integer.valueOf(fciPositionId));
-        List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition);
+        List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, true);
         updateCurrentMarketPriceToPosition(fciPosition, refresh);
 
         List<FCISpecieType> fciSpecieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
@@ -112,10 +112,11 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     @Override
-    public FCIPositionPercentageVO calculatePositionBiasPercentages(String fciRegulationSymbol, String fciPositionId,  Boolean refresh) throws Exception {
+    public FCIPositionPercentageVO calculatePositionBiasPercentages(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
+        AtomicInteger index = new AtomicInteger();
         Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionPercentageBias();
         return new FCIPositionPercentageVO(m.entrySet().stream()
-                .map(e -> new FCIPercentageDTO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIPercentageVO(index.getAndIncrement(), e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override
@@ -127,9 +128,10 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 
     @Override
     public FCIRegulationPercentageVO calculateRegulationPercentages(String fciRegulationSymbol, String fciPositionId) throws Exception {
+        AtomicInteger index = new AtomicInteger();
         Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getRegulationPercentage();
         return new FCIRegulationPercentageVO(m.entrySet().stream()
-                .map(e -> new FCIPercentageDTO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
+                .map(e -> new FCIPercentageVO(index.getAndIncrement(), e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override

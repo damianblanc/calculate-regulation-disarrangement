@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionIdCreatedOnVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public class FCIPositionController {
     @GetMapping("/fci/{symbol}/position")
     public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol);
+    }
+
+    @GetMapping("/fci/{symbol}/position/id-created-on")
+    public List<FCIPositionIdCreatedOnVO> listFCIPositionsByFCIRegulationSymbolIdCreatedOn(@PathVariable String symbol) {
+        return fciPositionService.listPositionsByFCIRegulationSymbolIdCreatedOn(symbol);
     }
 }

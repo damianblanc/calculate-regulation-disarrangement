@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class FCIRegulationPercentageVO {
-    List<FCIPercentageDTO> percentages;
+    List<FCIPercentageVO> percentages;
 }

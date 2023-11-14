@@ -66,10 +66,11 @@ public class FCIPosition {
         return this.jsonPosition;
     }
 
-    public static List<FCISpeciePosition> getSpeciePositions(FCIPosition fciPosition) throws JsonProcessingException {
+    public static List<FCISpeciePosition> getSpeciePositions(FCIPosition fciPosition, boolean updatedMarketPosition) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<FCISpeciePosition> FCISpeciePositions = new ArrayList<>();
-            Iterator<JsonNode> elements = mapper.readTree(fciPosition.getJsonPosition()).elements();
+            Iterator<JsonNode> elements = mapper.readTree(
+                    updatedMarketPosition ? fciPosition.getUpdatedMarketPosition() : fciPosition.getJsonPosition()).elements();
             elements.forEachRemaining(e -> {
                         try {
                             FCISpeciePositions.add(mapper.treeToValue(e, FCISpeciePosition.class));
