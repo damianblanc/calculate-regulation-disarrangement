@@ -10,4 +10,7 @@ public class FCIPercentageAndValuedVO {
     private String specieType;
     private String percentage;
     private String valued;
+
+    private String rpercentage;
+    private String rvalued;
 }

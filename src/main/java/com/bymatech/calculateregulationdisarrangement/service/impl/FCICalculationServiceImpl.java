@@ -144,12 +144,18 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     @Override
     public List<FCIPercentageAndValuedVO> calculatePositionBiasPercentageValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
         AtomicInteger index = new AtomicInteger();
-        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getPositionPercentageBias();
-        Map<FCISpecieType, Double> n = calculatePositionBias(fciRegulationSymbol, fciPositionId, false).getPositionValuedBias();
+        RegulationLagOutcomeVO regulationLagOutcomeVO = calculatePositionBias(fciRegulationSymbol, fciPositionId, false);
+        Map<FCISpecieType, Double> m = regulationLagOutcomeVO.getPositionPercentageBias();
+        Map<FCISpecieType, Double> n = regulationLagOutcomeVO.getPositionValuedBias();
+        Map<FCISpecieType, Double> p = regulationLagOutcomeVO.getRegulationLags();
+        Map<FCISpecieType, Double> q = regulationLagOutcomeVO.getRegulationValuedLags();
         return m.entrySet().stream()
-                .map(e -> new FCIPercentageAndValuedVO(index.getAndIncrement(), e.getKey().getName(), String.format("%.2f",e.getValue()),
-                        String.format("%.2f", n.get(n.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))
-                        )).collect(Collectors.toList());
+            .map(e -> new FCIPercentageAndValuedVO(index.getAndIncrement(),
+                e.getKey().getName(), String.format("%.2f", e.getValue()),
+                String.format("%.2f", n.get(n.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
+                String.format("%.2f", p.get(p.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
+                String.format("%.2f", q.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))))
+                .collect(Collectors.toList());
     }
 
 
