@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.AdviceCalculationCriteria;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
+import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionAdviceProportionalService;
 import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaPriceUniformDistributionService;
 import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaVolumeMaxTradingService;
 import com.google.common.collect.ImmutableMap;
@@ -21,9 +22,12 @@ public class CriteriaAdvisorServiceFactory {
     @Autowired
     private FCIPositionCriteriaVolumeMaxTradingService fciPositionCriteriaVolumeMaxTradingService;
 
+    @Autowired
+    private FCIPositionAdviceProportionalService fciPositionAdviceProportionalService;
+
     FCIPositionAdvisorService select(AdviceCalculationCriteria criteria) {
         ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisorService> services = ImmutableMap.<AdviceCalculationCriteria, FCIPositionAdvisorService>builder()
-                .put(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION, fciPositionCriteriaPriceUniformDistributionService)
+                .put(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION, fciPositionAdviceProportionalService)
                 .put(AdviceCalculationCriteria.VOLUME_MAX_TRADING, fciPositionCriteriaVolumeMaxTradingService)
                 .build();
         return services.get(criteria);

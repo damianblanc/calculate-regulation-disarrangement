@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.util;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
+import com.bymatech.calculateregulationdisarrangement.domain.OperationAdvice;
 
 import java.util.List;
 import java.util.Map;

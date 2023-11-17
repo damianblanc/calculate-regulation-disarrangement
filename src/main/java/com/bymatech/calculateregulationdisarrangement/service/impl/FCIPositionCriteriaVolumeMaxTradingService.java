@@ -1,10 +1,13 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
+import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceSpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVerboseVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdvisorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Advices Volume Max Trading criteria implementation
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FCIPositionCriteriaVolumeMaxTradingService implements FCIPositionAdvisorService {
     @Override
-    public OperationAdviceVerboseVO advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
+    public List<OperationAdviceSpecieType> advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
         return null;
     }
 

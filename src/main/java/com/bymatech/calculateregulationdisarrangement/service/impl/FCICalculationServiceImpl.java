@@ -43,7 +43,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
         FCIPosition fciPosition = fciPositionService.findFCIPositionById(fciRegulationSymbol, Integer.valueOf(fciPositionId));
         List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, true);
-        updateCurrentMarketPriceToPosition(fciPosition, refresh);
+        if (refresh) updateCurrentMarketPriceToPosition(fciPosition, true);
 
         List<FCISpecieType> fciSpecieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
         Set<String> fciSpecieTypesNames = fciSpecieTypes.stream().map(FCISpecieType::getName).collect(Collectors.toSet());
@@ -96,9 +96,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     private List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition, @NotNull Boolean refresh) throws Exception {
-       return refresh ?
-            fciPositionService.updateCurrentMarketPriceToPosition(fciPosition, true)
-            : fciPositionService.updateCurrentMarketPriceToPosition(fciPosition);
+       return refresh ? fciPositionService.updateCurrentMarketPriceToPosition(fciPosition, true)
+                        : fciPositionService.updateCurrentMarketPriceToPosition(fciPosition);
     }
 
     private Map<FCISpecieType, Double> calculateValuedRegulationBySpecieType(Map<FCISpecieType, Double> regulationPercentage,
@@ -114,14 +113,14 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     @Override
     public FCIPositionPercentageVO calculatePositionBiasPercentages(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
         AtomicInteger index = new AtomicInteger();
-        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionPercentageBias();
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionOverTotalPositionPercentage();
         return new FCIPositionPercentageVO(m.entrySet().stream()
                 .map(e -> new FCIPercentageVO(index.getAndIncrement(), e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
 
     @Override
     public FCIPositionValuedVO calculatePositionBiasValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
-        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionValuedBias();
+        Map<FCISpecieType, Double> m = calculatePositionBias(fciRegulationSymbol, fciPositionId, refresh).getPositionOverTotalPositionValued();
         return new FCIPositionValuedVO(m.entrySet().stream()
                 .map(e -> new FCIValuedVO(e.getKey().getName(), String.format("%.2f",e.getValue()))).collect(Collectors.toList()));
     }
@@ -145,16 +144,20 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     public List<FCIPercentageAndValuedVO> calculatePositionBiasPercentageValued(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
         AtomicInteger index = new AtomicInteger();
         RegulationLagOutcomeVO regulationLagOutcomeVO = calculatePositionBias(fciRegulationSymbol, fciPositionId, false);
-        Map<FCISpecieType, Double> m = regulationLagOutcomeVO.getPositionPercentageBias();
-        Map<FCISpecieType, Double> n = regulationLagOutcomeVO.getPositionValuedBias();
-        Map<FCISpecieType, Double> p = regulationLagOutcomeVO.getRegulationLags();
-        Map<FCISpecieType, Double> q = regulationLagOutcomeVO.getRegulationValuedLags();
+        Map<FCISpecieType, Double> m = regulationLagOutcomeVO.getPositionOverTotalPositionPercentage();
+        Map<FCISpecieType, Double> n = regulationLagOutcomeVO.getPositionOverTotalPositionValued();
+        Map<FCISpecieType, Double> p = regulationLagOutcomeVO.getPositionOverRegulationBiasPercentage();
+        Map<FCISpecieType, Double> q = regulationLagOutcomeVO.getPositionOverRegulationBiasValued();
+        Map<FCISpecieType, Double> r = regulationLagOutcomeVO.getRegulationPercentage();
+        Map<FCISpecieType, Double> s = regulationLagOutcomeVO.getRegulationValued();
         return m.entrySet().stream()
             .map(e -> new FCIPercentageAndValuedVO(index.getAndIncrement(),
                 e.getKey().getName(), String.format("%.2f", e.getValue()),
                 String.format("%.2f", n.get(n.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
                 String.format("%.2f", p.get(p.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
-                String.format("%.2f", q.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))))
+                String.format("%.2f", q.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
+                String.format("%.2f", r.get(p.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
+                String.format("%.2f", s.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))))
                 .collect(Collectors.toList());
     }
 
@@ -248,6 +251,10 @@ public class FCICalculationServiceImpl implements FCICalculationService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    /**
+     * Calculates Percentage of {@link FCISpecieType} related to total valued Position
+     * @param valuedPositionBySpecieType Indicates each position {@link FCISpecieType} value
+     */
     private Map<FCISpecieType, Double> calculatePercentagePositionBySpecieType(Map<FCISpecieType, Double> valuedPositionBySpecieType) {
         Double totalValuedPosition = fciPositionService.calculateTotalValuedPosition(valuedPositionBySpecieType);
         return calculatePercentageBySpecieType(valuedPositionBySpecieType, totalValuedPosition);

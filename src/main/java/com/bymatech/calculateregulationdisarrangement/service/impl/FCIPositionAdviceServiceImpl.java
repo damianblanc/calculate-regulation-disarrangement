@@ -66,7 +66,7 @@ public class FCIPositionAdviceServiceImpl implements FCIPositionAdviceService {
     }
 
     @Override
-    public PriceUniformlyDistributionCriteriaParameterDTO getParameters(AdviceCalculationCriteria criteria) throws JsonProcessingException {
+    public PriceUniformlyDistributionCriteriaParameterDTO getAdviceParameters(AdviceCalculationCriteria criteria) throws JsonProcessingException {
         AdvisorCriteriaParameter advisorCriteriaParameter =
                 findCriteriaParameterDefinitionByName(
                         AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION);

@@ -31,6 +31,6 @@ public interface FCIPositionAdviceService {
 
     AdvisorCriteriaParameter findCriteriaParameterDefinitionByName(AdviceCalculationCriteria criteria);
 
-    PriceUniformlyDistributionCriteriaParameterDTO getParameters(AdviceCalculationCriteria criteria) throws JsonProcessingException;
+    PriceUniformlyDistributionCriteriaParameterDTO getAdviceParameters(AdviceCalculationCriteria criteria) throws JsonProcessingException;
 
 }

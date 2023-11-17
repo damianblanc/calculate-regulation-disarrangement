@@ -13,4 +13,7 @@ public class FCIPercentageAndValuedVO {
 
     private String rpercentage;
     private String rvalued;
+
+    private String fpercentage;
+    private String fvalued;
 }

@@ -15,7 +15,7 @@ public class OperationAdviceVO {
 
     private OperationAdvice operationAdvice;
 
-    private Integer quantity;
+    private Double quantity;
 
     private Double price;
 

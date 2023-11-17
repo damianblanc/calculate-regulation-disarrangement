@@ -24,12 +24,12 @@ public class FCIAdviceController {
     @Autowired
     private FCIPositionAdviceService fciPositionAdviceService;
 
-    @PostMapping("/calculate-bias/fci/{symbol}/position/{id}/advice/criteria/{criteria}")
+    @GetMapping("/calculate-bias/fci/{symbol}/position/{id}/advice/criteria/{criteria}")
     public List<OperationAdviceSpecieType> advicePositionByCriteria(
-            @RequestBody FCISpeciePositionDTO fciPosition, @PathVariable String symbol, @PathVariable String id, @PathVariable String criteria) throws Exception {
+            @PathVariable String symbol, @PathVariable String id, @PathVariable String criteria) throws Exception {
         return criteriaAdvisorServiceFactory
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
-                .advice(symbol, id).getOperationAdvicesVO();
+                .advice(symbol, id);
     }
 
 //    @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}/specie-type/{specieType}")
@@ -41,13 +41,13 @@ public class FCIAdviceController {
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 //    }
 
-    @PostMapping("/calculate-bias/fci/{symbol}/position/{id}/advice/criteria/{criteria}/verbose")
-    public OperationAdviceVerboseVO advicePositionByCriteriaVerbose(
-            @RequestBody FCISpeciePositionDTO fciPosition, @PathVariable String symbol, @PathVariable String id, @PathVariable String criteria) throws Exception {
-        return criteriaAdvisorServiceFactory
-                .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
-                .advice(symbol, id);
-    }
+//    @PostMapping("/calculate-bias/fci/{symbol}/position/{id}/advice/criteria/{criteria}/verbose")
+//    public OperationAdviceVerboseVO advicePositionByCriteriaVerbose(
+//            @RequestBody FCISpeciePositionDTO fciPosition, @PathVariable String symbol, @PathVariable String id, @PathVariable String criteria) throws Exception {
+//        return criteriaAdvisorServiceFactory
+//                .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
+//                .advice(symbol, id);
+//    }
 
     @PostMapping("/advice/criteria/parameter-definition")
     public void createAdviceCriteriaParameterDefinition(@RequestBody AdviceCriteriaParameterDefinition criteriaParameterDefinition) {

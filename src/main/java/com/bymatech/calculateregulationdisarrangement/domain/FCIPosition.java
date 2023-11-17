@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
+import com.bymatech.calculateregulationdisarrangement.util.NumberFormatHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,10 +95,10 @@ public class FCIPosition {
                 fciSpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
                         summarizingDouble(FCISpeciePosition::valuePosition)));
 
-        m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(df.format(value.getSum())).append(" "));
+        m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(NumberFormatHelper.format(value.getSum())).append(" "));
         Double totalPosition = m.values().stream().map(DoubleSummaryStatistics::getSum).reduce(Double::sum).orElseThrow();
 
-        this.overview = String.format("Species:%d - Valued: $%.2f - Totals: %s", fciSpeciePositions.size(), totalPosition,
-                specieTypeSums.toString().replace(" $0 ", " N/A "));
+        this.overview = String.format("Species:%d - Valued: $ %s - Totals: %s", fciSpeciePositions.size(), NumberFormatHelper.format(totalPosition),
+                specieTypeSums.toString().replace(" $0 ", " N/A ")).replace("¤", "");
     }
 }

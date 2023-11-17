@@ -42,7 +42,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     private FCIRegulationCRUDService fciRegulationCRUDService;
 
     @Override
-    public OperationAdviceVerboseVO advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
+    public List<OperationAdviceSpecieType> advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
         Multimap<SpecieTypeGroupEnum, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
         FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
 
@@ -54,10 +54,10 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                 .build();
 
         PriceUniformlyDistributionCriteriaParameterDTO parameters =
-                fciPositionAdviceService.getParameters(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION);
+                fciPositionAdviceService.getAdviceParameters(AdviceCalculationCriteria.PRICE_UNIFORMLY_DISTRIBUTION);
 
         RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionBias(fciRegulationSymbol, fciPositionId, false);
-        Map<FCISpecieType, Double> percentagePosition = regulationLagOutcomeVO.getRegulationLags();
+        Map<FCISpecieType, Double> percentagePosition = regulationLagOutcomeVO.getPositionOverRegulationBiasPercentage();
 
         percentagePosition.forEach((specieType, speciePercentage) ->
             specieTypeAdvices.putAll(specieTypeProcess.get(specieType).apply(
@@ -74,16 +74,18 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
         List<OperationAdviceSpecieType> operationAdviceSpecieTypes = specieTypeAdvices.asMap().entrySet().stream()
                 .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
 
-        return OperationAdviceVerboseVO.builder()
+//        return OperationAdviceVerboseVO.builder()
 //                .fciRegulationComposition(fciRegulation.getComposition())
-                .regulationLagOutcomeVO(regulationLagOutcomeVO)
-                .operationAdvicesVO(operationAdviceSpecieTypes)
-                .build();
+//                .regulationLagOutcomeVO(regulationLagOutcomeVO)
+//                .operationAdvicesVO(operationAdviceSpecieTypes)
+//                .build();
+        return null;
     }
 
     @Override
     public OperationAdviceVerboseVO adviceVerbose(String fciRegulationSymbol, String fciPositionId) throws Exception {
-        return advice(fciRegulationSymbol, fciPositionId);
+//        return advice(fciRegulationSymbol, fciPositionId);
+        return null;
     }
 
     private Multimap<SpecieTypeGroupEnum, OperationAdviceVO> equity(SpecieData specieData) {
@@ -163,7 +165,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     private static OperationAdviceVO setSpecieTypeAdvice(AtomicInteger index, Double percentageOverPriceToCoverValued, String symbol, String price,
                                             OperationAdvice operationAdvice) {
         return new OperationAdviceVO(index.getAndIncrement(), symbol, operationAdvice,
-                CalculationServiceHelper.calculateSpecieQuantityToCover(percentageOverPriceToCoverValued, Double.valueOf(price)),
+                CalculationServiceHelper.calculateSpecieQuantityToCover(percentageOverPriceToCoverValued, Double.valueOf(price)).doubleValue(),
                 Double.valueOf(price));
     }
 
