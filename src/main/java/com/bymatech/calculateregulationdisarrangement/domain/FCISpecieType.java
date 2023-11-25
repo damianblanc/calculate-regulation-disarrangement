@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "FCISpecieType")
@@ -12,12 +13,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FCISpecieType {
+public class FCISpecieType implements Comparable<FCISpecieType> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "fci_specie_type_id")
-        private Integer fciSpecieTypeId;
+    private Integer fciSpecieTypeId;
 
     private String name;
 
@@ -27,8 +28,15 @@ public class FCISpecieType {
      * Indicates whether this specie type accepts their bound species to have its prices
      * updated with current market price
      * Refer to Cash specie type that is not to be updated
+     * When not updatable group must have only one specie type
      */
     private Boolean updatable;
+
+    @Override
+    public int compareTo(@NotNull FCISpecieType fciSpecieType) {
+            if (this.getFciSpecieTypeId().equals(fciSpecieType.getFciSpecieTypeId())) return 0;
+            return this.getFciSpecieTypeId() < fciSpecieType.getFciSpecieTypeId() ? 1 : -1;
+    }
 
 //    @OneToOne(mappedBy = "fciSpecieType")
 //    private FCIComposition fciComposition;

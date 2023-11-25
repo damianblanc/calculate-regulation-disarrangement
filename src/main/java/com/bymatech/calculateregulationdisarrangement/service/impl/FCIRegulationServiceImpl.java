@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
@@ -7,6 +8,7 @@ import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationValuedVO;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
+import com.bymatech.calculateregulationdisarrangement.service.FCICompositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
  * Comprehends CRUD operations over {@link FCIRegulation}
  */
 @Service
+@Transactional
 public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 
     @Autowired
@@ -39,6 +42,9 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 
     @Autowired
     private FCISpecieTypeGroupService fciSpecieTypeGroupService;
+
+    @Autowired
+    private FCICompositionService fciCompositionService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
@@ -69,10 +75,24 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 
     @Override
     public FCIRegulation updateFCIRegulation(FCIRegulation fciRegulation) {
-        fciRegulationRepository.findBySymbol(fciRegulation.getSymbol())
+        FCIRegulation foundFciRegulation = fciRegulationRepository.findBySymbol(fciRegulation.getSymbol())
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulation.getSymbol())));
-        return fciRegulationRepository.save(fciRegulation);
+        foundFciRegulation.setName(fciRegulation.getName());
+        foundFciRegulation.setDescription(fciRegulation.getDescription());
+        foundFciRegulation.getComposition().clear();
+        foundFciRegulation.setComposition(fciRegulation.getComposition());
+//        Set<FCIComposition> fciCompositions = fciRegulation.getComposition().stream().peek(c -> c.setFciRegulation(foundFciRegulation)).collect(Collectors.toSet());
+        foundFciRegulation.getComposition().addAll(fciRegulation.getComposition());
+
+        FCIRegulation savedFciRegulation = fciRegulationRepository.saveAndFlush(foundFciRegulation);
+
+//        fciRegulation.getComposition().forEach(fciComposition -> {
+//            fciComposition.setFciRegulation(foundFciRegulation);
+//            fciCompositionService.updateComposition(fciComposition);
+//        });
+
+        return savedFciRegulation;
     }
 
     @Override

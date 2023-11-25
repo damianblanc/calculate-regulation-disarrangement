@@ -92,7 +92,7 @@ public class FCIPosition {
         DecimalFormat df = new DecimalFormat("#.##");
 
         Map<String, DoubleSummaryStatistics> m =
-                fciSpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
+                fciSpeciePositions.stream().        collect(groupingBy(FCISpeciePosition::getFciSpecieType,
                         summarizingDouble(FCISpeciePosition::valuePosition)));
 
         m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(NumberFormatHelper.format(value.getSum())).append(" "));

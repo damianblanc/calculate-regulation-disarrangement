@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -27,8 +29,9 @@ public class FCISpecieTypeGroup {
     @Column(name = "description")
     private String description;
 
+    private Boolean updatable;
+
     @OneToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "fci_specie_type_by_group", joinColumns = @JoinColumn(name = "fci_specie_type_group_id"), inverseJoinColumns = @JoinColumn(name = "fci_specie_type_id"))
-    private Set<FCISpecieType> fciSpecieTypes = new HashSet<FCISpecieType>();
-
+    private List<FCISpecieType> fciSpecieTypes = new ArrayList<>();
 }

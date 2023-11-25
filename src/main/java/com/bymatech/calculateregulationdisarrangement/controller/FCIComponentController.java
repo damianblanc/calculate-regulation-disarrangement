@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class FCIComponentController {
         return fciSpecieTypeGroupService.findFCISpecieTypeGroup(FCISpecieTypeGroupName);
     }
     @GetMapping("/specie-type-group")
-    public List<FCISpecieTypeGroup> listFCISpecieTypeGroups() {
+    public List<SpecieTypeGroupDto> listFCISpecieTypeGroups() {
         return fciSpecieTypeGroupService.listFCISpecieTypeGroups();
     }
 

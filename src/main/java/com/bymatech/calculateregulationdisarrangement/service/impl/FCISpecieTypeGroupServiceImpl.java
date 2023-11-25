@@ -2,6 +2,8 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeDto;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieTypeGroupRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
@@ -52,8 +54,16 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
                         String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeGroupName)));
     }
 
-    public List<FCISpecieTypeGroup> listFCISpecieTypeGroups() {
-        return fciSpecieTypeGroupRepository.findAll();
+    public List<SpecieTypeGroupDto> listFCISpecieTypeGroups() {
+        return fciSpecieTypeGroupRepository.findAll().stream()
+            .map(fciSpecieTypeGroup ->
+                    new SpecieTypeGroupDto(fciSpecieTypeGroup.getId(),
+                        fciSpecieTypeGroup.getName(), fciSpecieTypeGroup.getDescription(), fciSpecieTypeGroup.getUpdatable(),
+                        fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType ->
+                                new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(), fciSpecieType.getName(),
+                                        fciSpecieType.getDescription(), fciSpecieType.getUpdatable()))
+                                .sorted().toList()))
+            .sorted().toList();
     }
 
 
@@ -100,7 +110,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     public List<FCISpecieType> listFCISpecieTypes(String fciSpecieTypeGroupName) {
         return fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroupName).stream()
                 .map(FCISpecieTypeGroup::getFciSpecieTypes)
-                .flatMap(Set::stream)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
@@ -108,7 +118,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     public List<FCISpecieType> listFCISpecieTypes() {
         return fciSpecieTypeGroupRepository.findAll().stream()
                 .map(FCISpecieTypeGroup::getFciSpecieTypes)
-                .flatMap(Set::stream)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 

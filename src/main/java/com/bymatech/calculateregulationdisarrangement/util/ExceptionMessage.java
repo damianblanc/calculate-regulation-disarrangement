@@ -15,6 +15,8 @@ public enum ExceptionMessage {
 
     FCI_REGULATION_ENTITY_NOT_FOUND("FCI Regulation cannot be found with symbol [%s]"),
 
+    FCI_COMPOSITION_ENTITY_NOT_FOUND("FCI Composition cannot be found with id [%s]"),
+
     FCI_POSITION_ENTITY_NOT_FOUND("FCI Regulation Position [%s] cannot be found with id [%s]"),
 
     SPECIE_TYPE_ENTITY_NOT_FOUND("Specie Type Group cannot be found with name [%s]"),

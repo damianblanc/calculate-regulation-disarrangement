@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public interface FCISpecieTypeGroupService {
     /**
      * Retrieves available Specie Type Groups
      */
-    List<FCISpecieTypeGroup> listFCISpecieTypeGroups();
+    List<SpecieTypeGroupDto> listFCISpecieTypeGroups();
 
     /* SpecieType */
     /**
