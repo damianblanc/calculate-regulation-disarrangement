@@ -47,6 +47,8 @@ public interface FCISpecieTypeGroupService {
      * Creates a {@link SpecieTypeGroupEnum}
      * @Param groupName Specie Type Group symbol representation
      * @Param specieType to be created
+     * {@link FCISpecieType} Inherites updatable behavior from its parent bound {@link FCISpecieTypeGroup}
+     * Updatable property refers to the ability to take current prices from market and apply them to a position
      */
     FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType FCISpecieType);
 

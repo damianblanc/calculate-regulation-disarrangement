@@ -70,11 +70,12 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     /* FCISpecieType */
     @Override
     public FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType fciSpecieType) {
-        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(groupName)
+        FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(groupName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, groupName)));
-        FCISpecieTypeGroup.getFciSpecieTypes().add(fciSpecieType);
-        return fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
+        fciSpecieType.setUpdatable(fciSpecieTypeGroup.getUpdatable());
+        fciSpecieTypeGroup.getFciSpecieTypes().add(fciSpecieType);
+        return fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
     }
 
     @Override
