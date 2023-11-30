@@ -3,6 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieTypeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import org.springframework.stereotype.Service;
 
@@ -89,4 +90,14 @@ public interface FCISpecieTypeGroupService {
      * I/E: Cash specie type
      */
     List<FCISpecieType> listNotUpdatableSpecieTypes();
+
+    SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation();
+
+    SpecieToSpecieTypeVO deleteSpecieToSpecieTypeAssociation(String specieSymbol);
+
+    SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieSymbol);
+
+    SpecieToSpecieTypeVO findSpecieToSpecieTypeAssociation(String specieSymbol);
+
+    List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName);
 }

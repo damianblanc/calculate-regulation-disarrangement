@@ -45,7 +45,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class MarketBondResponse {
+public class MarketBondResponse implements Market {
 
     @SerializedName("content")
     @Expose
@@ -81,7 +81,7 @@ public class MarketBondResponse {
      * Byma bonds Http Response
      */
     @Data
-    public class MarketBondResponseElement extends MarketResponse implements Comparable<MarketBondResponseElement> {
+    public static class MarketBondResponseElement extends MarketResponse implements Comparable<MarketBondResponseElement>, Market {
 
         @SerializedName("descripcion")
         @Expose

@@ -33,7 +33,6 @@ public class MarketHttpServiceImpl implements MarketHttpService {
         return List.of();
     }
 
-    @Override
     public List<MarketBondResponse.MarketBondResponseElement> getTotalBonds() {
         MarketBondResponse marketBonds = getBonds(MarketBondAuthBean.create(1));
         List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>();

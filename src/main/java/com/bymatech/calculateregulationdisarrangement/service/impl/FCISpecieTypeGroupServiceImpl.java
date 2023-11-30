@@ -1,18 +1,22 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
-import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeDto;
-import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
+import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
+import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieToSpecieTypeRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieTypeGroupRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
+import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +24,12 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     @Autowired
     private FCISpecieTypeGroupRepository fciSpecieTypeGroupRepository;
+
+    @Autowired
+    private FCISpecieToSpecieTypeRepository fciSpecieToSpecieTypeRepository;
+
+    @Autowired
+    private MarketHttpService marketService;
 
     /* FCISpecieTypeGroup */
     @Override
@@ -132,4 +142,53 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     public List<FCISpecieType> listNotUpdatableSpecieTypes() {
         return listFCISpecieTypes().stream().filter(fciSpecieType -> !fciSpecieType.getUpdatable()).toList();
     }
+
+    @Override
+    public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation() {
+        return null;
+    }
+
+    @Override
+    public SpecieToSpecieTypeVO deleteSpecieToSpecieTypeAssociation(String specieSymbol) {
+        return null;
+    }
+
+    @Override
+    public SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieSymbol) {
+        return null;
+    }
+
+    @Override
+    public SpecieToSpecieTypeVO findSpecieToSpecieTypeAssociation(String specieSymbol) {
+        return null;
+    }
+
+    @Override
+    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName) {
+        AtomicInteger index = new AtomicInteger();
+        FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(specieTypeGroupName)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
+        FCISpecieType foundFCISpecieType = fciSpecieTypeGroup.getFciSpecieTypes().stream().filter(sp -> specieTypeName.equals(sp.getName())).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeName)));
+        List<FCISpecieToSpecieType> fciSpecieToSpecieTypes = fciSpecieToSpecieTypeRepository.listBySpecieTypeId(foundFCISpecieType.getFciSpecieTypeId());
+
+        if (SpecieTypeGroupEnum.Equity.name().equals(specieTypeGroupName)) {
+            return marketService.getTotalEquities().stream().map(specie ->
+                    getSpecieToSpecieTypeVO(fciSpecieToSpecieTypes, specie.getSymbol(), index)).toList();
+        }
+        return marketService.getTotalBonds().stream().map(specie ->
+                getSpecieToSpecieTypeVO(fciSpecieToSpecieTypes, specie.getSymbol(), index)).toList();
+    }
+
+    private SpecieToSpecieTypeVO getSpecieToSpecieTypeVO(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes, String specie, AtomicInteger index) {
+        Optional<FCISpecieToSpecieType> association = findFCISpecieToSpecieType(fciSpecieToSpecieTypes, specie);
+        return association.map(specieToSpecieType -> new SpecieToSpecieTypeVO(index.getAndIncrement(), specie,
+                        specieToSpecieType.getFciSpecieType().getFciSpecieTypeId(), specieToSpecieType.getFciSpecieType().getName()))
+                .orElseGet(() -> SpecieToSpecieTypeVO.builder().fciSpecieTypeId(index.getAndIncrement()).specieSymbol(specie).build());
+    }
+
+    private Optional<FCISpecieToSpecieType> findFCISpecieToSpecieType(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes, String specieSymbol) {
+        return fciSpecieToSpecieTypes.stream().filter(fciSpecieToSpecieType -> fciSpecieToSpecieType.getSymbol().equals(specieSymbol)).findFirst();
+    }
+
 }
