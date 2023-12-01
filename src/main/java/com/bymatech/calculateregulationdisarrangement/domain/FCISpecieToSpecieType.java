@@ -12,14 +12,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+/**
+ * Represents an association between a {@link FCISpeciePosition} and {@link FCISpecieType}
+ * A {@link FCISpecieTypeGroup} contains many {@link FCISpecieType}
+ */
 public class FCISpecieToSpecieType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "fci_specie_id")
-    private Integer fciSpecieId;
+    private Integer id;
 
-    private String symbol;
+    @Column(name = "specie-symbol")
+    private String specieSymbol;
 
     @ManyToOne
     @JoinColumn(name = "fci_specie_type_id")

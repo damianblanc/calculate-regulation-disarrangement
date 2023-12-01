@@ -17,6 +17,9 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+/**
+ * Represents an overall grouping of {@link FCISpecieType} associated with market data retrieving
+ */
 public class FCISpecieTypeGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

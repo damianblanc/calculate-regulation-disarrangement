@@ -76,7 +76,14 @@ public class FCIComponentController {
         return fciSpecieTypeGroupService.listFCISpecieTypes();
     }
 
-    @GetMapping("/specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie")
+    @GetMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")
+    public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,
+                                                                          @PathVariable String specieTypeName, @PathVariable String specieSymbol) {
+        return fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
+    }
+
+
+    @GetMapping("/specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/bind")
     public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,  @PathVariable String specieTypeName) {
         return fciSpecieTypeGroupService.listSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName);
     }

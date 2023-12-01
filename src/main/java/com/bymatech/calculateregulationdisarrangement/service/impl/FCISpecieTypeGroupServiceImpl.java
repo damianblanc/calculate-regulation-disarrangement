@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -144,23 +145,49 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     }
 
     @Override
-    public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation() {
-        return null;
+    public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+        FCISpecieType f = findFCISpecieType(specieTypeGroupName, specieTypeName);
+        FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(FCISpecieToSpecieType.builder().specieSymbol(specieSymbol).fciSpecieType(f).build());
+        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
     }
 
     @Override
-    public SpecieToSpecieTypeVO deleteSpecieToSpecieTypeAssociation(String specieSymbol) {
-        return null;
+    public void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+        FCISpecieToSpecieType specieToSpecieTypeAssociation = findSpecieToSpecieTypeAssociation(specieSymbol);
+        fciSpecieToSpecieTypeRepository.delete(specieToSpecieTypeAssociation);
+    }
+
+    /**
+     * Updating an association can only change specie type bound for an specie within specie type group
+     */
+    @Override
+    public SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+        FCISpecieToSpecieType specieToSpecieTypeAssociation = findSpecieToSpecieTypeAssociation(specieSymbol);
+        specieToSpecieTypeAssociation.setFciSpecieType(findFCISpecieType(specieTypeGroupName, specieTypeName));
+        FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(specieToSpecieTypeAssociation);
+        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
     }
 
     @Override
-    public SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieSymbol) {
-        return null;
+    public FCISpecieToSpecieType findSpecieToSpecieTypeAssociation(String specieSymbol) {
+        return fciSpecieToSpecieTypeRepository.findBySpecieSymbol(specieSymbol)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ASSOCIATION_ENTITY_NOT_FOUND.msg, specieSymbol)));
     }
 
     @Override
-    public SpecieToSpecieTypeVO findSpecieToSpecieTypeAssociation(String specieSymbol) {
-        return null;
+    public Optional<FCISpecieToSpecieType> findOptionalSpecieToSpecieTypeAssociation(String specieSymbol) {
+        return fciSpecieToSpecieTypeRepository.findBySpecieSymbol(specieSymbol);
+    }
+
+    @Override
+    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName) {
+        List<FCISpecieToSpecieType> fciSpecieToSpecieTypes = new ArrayList<>();
+        FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(specieTypeGroupName)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
+        fciSpecieTypeGroup.getFciSpecieTypes().forEach(fciSpecieType ->
+            fciSpecieToSpecieTypes.addAll(fciSpecieToSpecieTypeRepository.listBySpecieTypeId(fciSpecieType.getFciSpecieTypeId())));
+        return fciSpecieToSpecieTypes.stream().map(fciSpecieToSpecieType -> new SpecieToSpecieTypeVO(fciSpecieToSpecieType.getId(),
+                fciSpecieToSpecieType.getSpecieSymbol(), fciSpecieToSpecieType.getFciSpecieType().getFciSpecieTypeId(), fciSpecieToSpecieType.getFciSpecieType().getName())).toList();
     }
 
     @Override
@@ -188,7 +215,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     }
 
     private Optional<FCISpecieToSpecieType> findFCISpecieToSpecieType(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes, String specieSymbol) {
-        return fciSpecieToSpecieTypes.stream().filter(fciSpecieToSpecieType -> fciSpecieToSpecieType.getSymbol().equals(specieSymbol)).findFirst();
+        return fciSpecieToSpecieTypes.stream().filter(fciSpecieToSpecieType -> fciSpecieToSpecieType.getSpecieSymbol().equals(specieSymbol)).findFirst();
     }
 
 }

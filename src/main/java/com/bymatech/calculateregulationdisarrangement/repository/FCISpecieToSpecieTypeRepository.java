@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface FCISpecieToSpecieTypeRepository extends JpaRepository<FCISpecieToSpecieType, Integer> {
 
-    Optional<FCISpecieToSpecieType> findByName(String name);
+    Optional<FCISpecieToSpecieType> findBySpecieSymbol(String specieSymbol);
 
     @Query("SELECT stty FROM FCISpecieToSpecieType stty WHERE stty.fci_specie_type_id = :fciSpecieTypeId")
     List<FCISpecieToSpecieType> listBySpecieTypeId(@Param("fciSpecieTypeId") Integer specieTypeId);

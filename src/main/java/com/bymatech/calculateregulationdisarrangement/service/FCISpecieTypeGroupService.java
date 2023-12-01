@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
@@ -8,6 +9,7 @@ import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Comprehends CRUD operations over {@link FCISpecieTypeGroup} and {@link SpecieTypeGroupEnum}
@@ -65,12 +67,12 @@ public interface FCISpecieTypeGroupService {
     FCISpecieType updateFCISpecieType(String FCISpecieTypeNameGroup, FCISpecieType fciSpecieType);
 
     /**
-     * Finds a {@link SpecieTypeGroupEnum} indicated by its name
+     * Finds a {@link FCISpecieType} indicated by its name
      */
     FCISpecieType findFCISpecieType(String specieTypeNameGroup, String specieTypeName);
 
     /**
-     * Lists all {@link SpecieTypeGroupEnum}
+     * Lists all {@link FCISpecieType}
      */
     List<FCISpecieType> listFCISpecieTypes(String FCISpecieTypeGroupName);
 
@@ -91,13 +93,38 @@ public interface FCISpecieTypeGroupService {
      */
     List<FCISpecieType> listNotUpdatableSpecieTypes();
 
-    SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation();
+    /**
+     * Creates an association between a specie and a specie type within a specie group
+     */
+    SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
 
-    SpecieToSpecieTypeVO deleteSpecieToSpecieTypeAssociation(String specieSymbol);
+    /**
+     * Deletes, unbind an association between a specie and a specie type within a specie group
+     */
+    void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
 
-    SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieSymbol);
+    /**
+     * Changes a specie to other specie type within a specie group
+     */
+    SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
 
-    SpecieToSpecieTypeVO findSpecieToSpecieTypeAssociation(String specieSymbol);
+    /**
+     * Retrieves a search association between a specie and a specie type within a specie group
+     */
+    FCISpecieToSpecieType findSpecieToSpecieTypeAssociation(String specieSymbol);
 
+    /**
+     * Retrieves a search association between a specie and a specie type within a specie group
+     */
+    Optional<FCISpecieToSpecieType> findOptionalSpecieToSpecieTypeAssociation(String specieSymbol);
+
+    /**
+     * List all available associations association between a specie and a specie type within a specie group
+     */
+    List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName);
+
+    /**
+     * List all available associations association between a specie and a specie type within a specie group filtered by indicated specie type
+     */
     List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName);
 }
