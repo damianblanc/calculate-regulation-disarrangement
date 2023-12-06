@@ -22,7 +22,7 @@ public class FCISpecieToSpecieType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "specie-symbol")
+    @Column(name = "specie_symbol")
     private String specieSymbol;
 
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.repository;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ public interface FCISpecieToSpecieTypeRepository extends JpaRepository<FCISpecie
 
     Optional<FCISpecieToSpecieType> findBySpecieSymbol(String specieSymbol);
 
-    @Query("SELECT stty FROM FCISpecieToSpecieType stty WHERE stty.fci_specie_type_id = :fciSpecieTypeId")
-    List<FCISpecieToSpecieType> listBySpecieTypeId(@Param("fciSpecieTypeId") Integer specieTypeId);
+    @Query("SELECT s FROM FCISpecieToSpecieType s WHERE s.fciSpecieType = :fciSpecieType")
+    List<FCISpecieToSpecieType> listBySpecieType(@Param("fciSpecieType") FCISpecieType specieType);
 
 }

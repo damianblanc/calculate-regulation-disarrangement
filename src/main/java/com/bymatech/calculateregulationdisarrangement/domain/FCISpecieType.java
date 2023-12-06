@@ -32,6 +32,9 @@ public class FCISpecieType implements Comparable<FCISpecieType> {
      */
     private Boolean updatable;
 
+    @Column(name = "specie_quantity")
+    private Integer specieQuantity = 0;
+
     @Override
     public int compareTo(@NotNull FCISpecieType fciSpecieType) {
             if (this.getFciSpecieTypeId().equals(fciSpecieType.getFciSpecieTypeId())) return 0;

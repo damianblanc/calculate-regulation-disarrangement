@@ -19,11 +19,11 @@ public enum ExceptionMessage {
 
     FCI_POSITION_ENTITY_NOT_FOUND("FCI Regulation Position [%s] cannot be found with id [%s]"),
 
-    SPECIE_TYPE_ENTITY_NOT_FOUND("Specie Type Group cannot be found with name [%s]"),
+    SPECIE_TYPE_ENTITY_NOT_FOUND("Specie Type cannot be found with name [%s]"),
 
     SPECIE_TYPE_ASSOCIATION_ENTITY_NOT_FOUND("Specie Type association cannot be found for specie symbol [%s]"),
 
-    SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND("Specie Type cannot be found with name [%s]"),
+    SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND("Specie Type Group cannot be found with name [%s]"),
 
     POSITION_CONTAINS_NOT_RETRIEVED_SPECIE("Position contains specie [%s] which is not informed by Market"),
 

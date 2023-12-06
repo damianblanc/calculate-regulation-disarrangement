@@ -18,6 +18,8 @@ public class SpecieTypeDto implements Comparable<SpecieTypeDto> {
 
     private Boolean updatable;
 
+    private Integer specieQuantity;
+
     @Override
     public int compareTo(@NotNull SpecieTypeDto specieTypeDto) {
         if (this.getFciSpecieTypeId().equals(specieTypeDto.getFciSpecieTypeId())) return 0;
