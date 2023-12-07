@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -160,7 +161,7 @@ public class FCICRUDTestSuite {
         FCISpecieType energies = FCISpecieType.builder().name("Energies").description("Comprehends all energy companies type equities").build();
         FCISpecieType agricultures = FCISpecieType.builder().name("Agricultures").description("Comprehends all agriculture companies type equities").build();
         return FCISpecieTypeGroup.builder().name("Equity").description("Wraps all Equity specie types")
-                .fciSpecieTypes(Set.of(banks, energies, agricultures)).build();
+                .fciSpecieTypes(List.of(banks, energies, agricultures)).build();
     }
 
     /**
