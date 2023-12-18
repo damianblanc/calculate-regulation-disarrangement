@@ -161,7 +161,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                         .overview(fciPosition.getOverview())
                         .jsonPosition(fciPosition.getJsonPosition())
                         .updatedMarketPosition(fciPosition.getUpdatedMarketPosition())
-                        .composition(FCIPosition.getPositionComposition(fciPosition, false))
+                        .composition(FCIPosition.getPositionComposition(fciPosition, true))
                         .build();
     }
 
