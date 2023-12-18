@@ -49,8 +49,13 @@ public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorS
         RegulationLagOutcomeVO regulationLagOutcomeVO = fciCalculationService.calculatePositionBias(fciRegulationSymbol, fciPositionId, false);
 
         Map<FCISpecieType, List<OperationAdviceVO>> advices = doAdvice(regulationLagOutcomeVO, fciSpeciesInPosition);
-        advices.forEach((key, value) -> specieTypeAdvices.add(new OperationAdviceSpecieType(index.getAndIncrement(), key.getName(), value)));
-            return specieTypeAdvices;
+
+        List<SpecieTypeGroupDto> groups = fciSpecieTypeGroupService.listFCISpecieTypeGroups();
+        advices.forEach((key, value) -> {
+                SpecieTypeGroupDto specieTypeGroupDto = groups.stream().filter(g -> g.getFciSpecieTypes().stream().map(SpecieTypeDto::getName).toList().contains(key.getName())).findFirst().orElseThrow();
+                specieTypeAdvices.add(new OperationAdviceSpecieType(index.getAndIncrement(), key.getName(), specieTypeGroupDto.getName(), value));
+        });
+        return specieTypeAdvices.stream().sorted().toList();
     }
 
     private Map<FCISpecieType, List<OperationAdviceVO>> doAdvice(RegulationLagOutcomeVO regulationLagOutcomeVO, List<FCISpeciePosition> fciSpeciesInPosition) {
@@ -71,7 +76,7 @@ public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorS
                         Double fciSpecieQuantity =  Math.abs(fciSpecieOverSpecieTypeValued * fciSpecieTypeBiasOverRegulationValued / fciSpeciePosition.getCurrentMarketPrice());
 
                         return new OperationAdviceVO(index.getAndIncrement(), fciSpeciePosition.getSymbol(), OperationAdvice.getOperationAdvice(fciSpecieTypeBiasOverRegulationPercentage),
-                                fciSpecieQuantity, fciSpeciePosition.getCurrentMarketPrice());
+                                fciSpecieQuantity, fciSpeciePosition.getCurrentMarketPrice(), fciSpecieQuantity * fciSpeciePosition.getCurrentMarketPrice());
                 }).toList()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

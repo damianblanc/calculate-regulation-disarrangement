@@ -19,6 +19,8 @@ public class OperationAdviceVO {
 
     private Double price;
 
+    private Double value;
+
     public boolean canAdvice() {
         return quantity > 0;
     }

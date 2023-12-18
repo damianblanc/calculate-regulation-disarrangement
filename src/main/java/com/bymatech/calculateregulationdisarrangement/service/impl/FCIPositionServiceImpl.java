@@ -7,6 +7,7 @@ import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FCIPositionServiceImpl implements FCIPositionService {
 
     private final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -24,6 +26,8 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Autowired
     private MarketHttpService marketHttpService;
+
+
 
     @Autowired
     private com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService fciSpecieTypeGroupService;
@@ -80,7 +84,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public FCIPositionVO findFCIPositionVOById(String fciRegulationSymbol, Integer fciPositionId) {
+    public FCIPositionVO findFCIPositionVOById(String fciRegulationSymbol, Integer fciPositionId) throws Exception {
         FCIPosition fciPosition = findFCIPositionById(fciRegulationSymbol, fciPositionId);
         return createFCIPositionVO(fciRegulationSymbol, fciPosition);
     }
@@ -131,7 +135,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol) {
+    public List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol) throws Exception {
         return listPositionsByFCIRegulationSymbol(fciRegulationSymbol).stream().map(fciPosition ->
                 new FCIPositionIdCreatedOnVO(fciPosition.getId(), fciPosition.getTimestamp())).toList();
     }
@@ -141,7 +145,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String fciRegulationSymbol) {
+    public List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String fciRegulationSymbol) throws Exception {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
@@ -157,6 +161,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                         .overview(fciPosition.getOverview())
                         .jsonPosition(fciPosition.getJsonPosition())
                         .updatedMarketPosition(fciPosition.getUpdatedMarketPosition())
+                        .composition(FCIPosition.getPositionComposition(fciPosition, false))
                         .build();
     }
 

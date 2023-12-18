@@ -26,7 +26,7 @@ public interface FCIPositionService {
 
     Map<FCISpecieType, Double> getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position);
 
-    List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol);
+    List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol) throws Exception;
 
     FCIPositionVO createFCIPosition(String symbol, FCIPosition fciPosition) throws Exception;
 
@@ -37,7 +37,7 @@ public interface FCIPositionService {
      */
     FCIPosition findFCIPositionById(String fciRegulationSymbol, Integer fciPositionId);
 
-    FCIPositionVO findFCIPositionVOById(String fciRegulationSymbol, Integer fciPositionId);
+    FCIPositionVO findFCIPositionVOById(String fciRegulationSymbol, Integer fciPositionId) throws Exception;
 
     FCIPositionVO findFCIPositionVOByIdRefreshed(String fciRegulationSymbol, Integer fciPositionId) throws Exception;
 
@@ -54,5 +54,5 @@ public interface FCIPositionService {
      */
     List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition) throws Exception;
 
-    List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol);
+    List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol) throws Exception;
 }

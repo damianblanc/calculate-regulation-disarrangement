@@ -1,0 +1,11 @@
+com.bymatech.calculateregulationdisarrangement
+com.bymatech.calculateregulationdisarrangement.config
+com.bymatech.calculateregulationdisarrangement.controller
+com.bymatech.calculateregulationdisarrangement.domain
+com.bymatech.calculateregulationdisarrangement.dto
+com.bymatech.calculateregulationdisarrangement.exception
+com.bymatech.calculateregulationdisarrangement.repository
+com.bymatech.calculateregulationdisarrangement.service
+com.bymatech.calculateregulationdisarrangement.service.http
+com.bymatech.calculateregulationdisarrangement.service.impl
+com.bymatech.calculateregulationdisarrangement.util

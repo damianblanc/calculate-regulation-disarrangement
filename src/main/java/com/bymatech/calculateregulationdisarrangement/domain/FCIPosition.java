@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
+import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionCompositionVO;
 import com.bymatech.calculateregulationdisarrangement.util.NumberFormatHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,12 +10,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summarizingDouble;
@@ -25,6 +27,7 @@ import static java.util.stream.Collectors.summarizingDouble;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class FCIPosition {
     @Transient
     private JsonNode position;
@@ -82,6 +85,30 @@ public class FCIPosition {
         return FCISpeciePositions;
     }
 
+    public static List<FCIPositionCompositionVO> getPositionComposition(FCIPosition fciPosition, boolean updatedMarketPosition) {
+        AtomicInteger index = new AtomicInteger();
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayList<FCISpeciePosition> positionCompositionList = new ArrayList<>();
+
+        try {
+            Iterator<JsonNode> elements = mapper.readTree(
+                    updatedMarketPosition ? fciPosition.getUpdatedMarketPosition() : fciPosition.getJsonPosition()).elements();
+            elements.forEachRemaining(e -> {
+                try {
+                    positionCompositionList.add(mapper.treeToValue(e, FCISpeciePosition.class));
+                } catch (JsonProcessingException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            return positionCompositionList.stream().map(p ->
+                    new FCIPositionCompositionVO(index.getAndIncrement(), p.getFciSpecieGroup(), p.getFciSpecieType(),
+                            p.getName(), p.getSymbol(), p.getCurrentMarketPrice(), p.getQuantity())).toList();
+        } catch (final Exception ex) {
+            log.warn(ex.getMessage());
+        }
+        return List.of();
+    }
+
     public void updateMarketPosition(List<FCISpeciePosition> fciSpeciePositionList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         setUpdatedMarketPosition(mapper.writeValueAsString(fciSpeciePositionList));
@@ -89,10 +116,8 @@ public class FCIPosition {
 
     public void setOverview(List<FCISpeciePosition> fciSpeciePositions) {
         StringBuffer specieTypeSums = new StringBuffer();
-        DecimalFormat df = new DecimalFormat("#.##");
 
-        Map<String, DoubleSummaryStatistics> m =
-                fciSpeciePositions.stream().        collect(groupingBy(FCISpeciePosition::getFciSpecieType,
+        Map<String, DoubleSummaryStatistics> m = fciSpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
                         summarizingDouble(FCISpeciePosition::valuePosition)));
 
         m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(NumberFormatHelper.format(value.getSum())).append(" "));

@@ -234,7 +234,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
             Map<FCISpecieType, Double> percentagePositionBySpecieType) {
         return percentagePositionBySpecieType.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getValue() - percentageRegulationBySpecieType.get(entry.getKey())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .   collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**

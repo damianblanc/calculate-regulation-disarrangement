@@ -1,8 +1,11 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -19,6 +22,8 @@ public class FCIPositionVO implements Comparable<FCIPositionVO> {
     private String jsonPosition;
 
     private String updatedMarketPosition;
+
+    private List<FCIPositionCompositionVO> composition;
 
     @Override
     public int compareTo(@NotNull FCIPositionVO fciPositionVO) {

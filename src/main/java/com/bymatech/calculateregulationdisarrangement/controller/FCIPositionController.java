@@ -23,7 +23,7 @@ public class FCIPositionController {
     }
 
     @GetMapping("/fci/{symbol}/position/{id}")
-    public FCIPositionVO findFCIPositionByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable String id) {
+    public FCIPositionVO findFCIPositionByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable String id) throws Exception {
         return fciPositionService.findFCIPositionVOById(symbol, Integer.valueOf(id));
     }
 
@@ -33,12 +33,12 @@ public class FCIPositionController {
     }
 
     @GetMapping("/fci/{symbol}/position")
-    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) {
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) throws Exception {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol);
     }
 
     @GetMapping("/fci/{symbol}/position/id-created-on")
-    public List<FCIPositionIdCreatedOnVO> listFCIPositionsByFCIRegulationSymbolIdCreatedOn(@PathVariable String symbol) {
+    public List<FCIPositionIdCreatedOnVO> listFCIPositionsByFCIRegulationSymbolIdCreatedOn(@PathVariable String symbol) throws Exception {
         return fciPositionService.listPositionsByFCIRegulationSymbolIdCreatedOn(symbol);
     }
 }

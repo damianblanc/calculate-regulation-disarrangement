@@ -71,8 +71,8 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                             .build())));
 
         AtomicInteger index = new AtomicInteger();
-        List<OperationAdviceSpecieType> operationAdviceSpecieTypes = specieTypeAdvices.asMap().entrySet().stream()
-                .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
+//        List<OperationAdviceSpecieType> operationAdviceSpecieTypes = specieTypeAdvices.asMap().entrySet().stream()
+//                .map(e -> new OperationAdviceSpecieType(index.getAndIncrement(), e.getKey().name(), e.getValue())).toList();
 
 //        return OperationAdviceVerboseVO.builder()
 //                .fciRegulationComposition(fciRegulation.getComposition())
@@ -165,8 +165,8 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     private static OperationAdviceVO setSpecieTypeAdvice(AtomicInteger index, Double percentageOverPriceToCoverValued, String symbol, String price,
                                             OperationAdvice operationAdvice) {
         return new OperationAdviceVO(index.getAndIncrement(), symbol, operationAdvice,
-                CalculationServiceHelper.calculateSpecieQuantityToCover(percentageOverPriceToCoverValued, Double.valueOf(price)).doubleValue(),
-                Double.valueOf(price));
+                CalculationServiceHelper.calculateSpecieQuantityToCover(percentageOverPriceToCoverValued, Double.parseDouble(price)).doubleValue(),
+                Double.parseDouble(price), Double.parseDouble(price) * Double.parseDouble(price));
     }
 
     @NotNull
