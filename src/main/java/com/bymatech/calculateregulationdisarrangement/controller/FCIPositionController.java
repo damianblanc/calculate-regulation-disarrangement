@@ -4,11 +4,11 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionIdCreatedOnVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
+import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -35,6 +35,12 @@ public class FCIPositionController {
     @GetMapping("/fci/{symbol}/position")
     public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) throws Exception {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol);
+    }
+
+    @GetMapping("/fci/{symbol}/position/page/{pageNumber}")
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable Integer pageNumber) throws Exception {
+        return fciPositionService.listPositionsByFCIRegulationSymbol(symbol)
+                .stream().skip(Constants.begin(pageNumber)).limit(Constants.PAGE_SIZE).toList();
     }
 
     @GetMapping("/fci/{symbol}/position/id-created-on")

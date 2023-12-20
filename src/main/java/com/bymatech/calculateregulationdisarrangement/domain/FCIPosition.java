@@ -102,7 +102,7 @@ public class FCIPosition {
             });
             return positionCompositionList.stream().map(p ->
                     new FCIPositionCompositionVO(index.getAndIncrement(), p.getFciSpecieGroup(), p.getFciSpecieType(),
-                            p.getName(), p.getSymbol(), p.getCurrentMarketPrice(), p.getQuantity())).toList();
+                            p.getName(), p.getSymbol(), p.getCurrentMarketPrice(), p.getQuantity(), p.getCurrentMarketPrice() * p.getQuantity())).toList();
         } catch (final Exception ex) {
             log.warn(ex.getMessage());
         }

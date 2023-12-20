@@ -20,4 +20,6 @@ public class FCIPositionCompositionVO {
     private Double marketPrice;
 
     private Integer quantity;
+
+    private Double valued;
 }
