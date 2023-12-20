@@ -4,8 +4,6 @@ import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
-import org.aspectj.bridge.MessageUtil;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.http.Body;
 
@@ -31,7 +29,9 @@ public interface MarketHttpService {
 
     List<SpecieCurrentPriceVO> getBondsOrderByPriceVO(OrderType orderType);
 
-    MarketEquityResponse getEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
+    MarketEquityResponse getLeadingEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
+
+    MarketEquityResponse getGeneralEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
 
     List<MarketEquityResponse.MarketEquityResponseElement> getTotalEquities();
 

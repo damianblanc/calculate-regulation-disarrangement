@@ -17,6 +17,11 @@ public interface BymaHttpService {
         Call<MarketBondResponse> getBonds(@Body MarketBondAuthBean marketBondAuthBean);
 
         @POST("vanoms-be-core/rest/api/bymadata/free/leading-equity")
-        Call<MarketEquityResponse> getEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
+        Call<MarketEquityResponse> getLeadingEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
 
+        @POST("vanoms-be-core/rest/api/bymadata/free/general-equity")
+        Call<MarketEquityResponse> getGeneralEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
+
+        @POST("https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free/market-time")
+        Call<MarketTimeResponse> getMarketTime();
 }

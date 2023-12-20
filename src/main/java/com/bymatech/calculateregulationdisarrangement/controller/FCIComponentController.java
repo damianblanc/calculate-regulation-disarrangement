@@ -5,6 +5,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieTypeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
+import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,12 +84,24 @@ public class FCIComponentController {
     }
 
     @GetMapping("/specie-type-group/{specieTypeGroupName}/bind")
-    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName) {
+    public List<SpecieToSpecieTypeVO> listGroupSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName) {
         return fciSpecieTypeGroupService.listSpecieToSpecieTypeAssociation(specieTypeGroupName);
     }
 
+    @GetMapping("/specie-type-group/{specieTypeGroupName}/bind/page/{pageNumber}")
+    public List<SpecieToSpecieTypeVO> listGroupSpecieToSpecieTypeAssociationPaged(@PathVariable String specieTypeGroupName, @PathVariable Integer pageNumber) {
+        return fciSpecieTypeGroupService.listSpecieToSpecieTypeAssociation(specieTypeGroupName)
+                .stream().skip(Constants.begin(pageNumber)).limit(Constants.PAGE_SIZE).toList();
+    }
+
     @GetMapping("/specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/bind")
-    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,  @PathVariable String specieTypeName) {
+    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName, @PathVariable String specieTypeName) {
         return fciSpecieTypeGroupService.listSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName);
+    }
+
+    @GetMapping("/specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/bind/page/{pageNumber}")
+    public List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociationPaged(@PathVariable String specieTypeGroupName, @PathVariable String specieTypeName, @PathVariable Integer pageNumber) {
+        return fciSpecieTypeGroupService.listSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName)
+                .stream().skip(Constants.begin(pageNumber)).limit(Constants.PAGE_SIZE).toList();
     }
 }

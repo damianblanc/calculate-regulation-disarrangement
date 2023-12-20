@@ -88,10 +88,10 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     }
 
     @Override
-    public MarketEquityResponse getEquities(MarketEquityAuthBean marketEquityAuthBean) {
+    public MarketEquityResponse getLeadingEquities(MarketEquityAuthBean marketEquityAuthBean) {
         com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service =
                 BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
-        Call<MarketEquityResponse> callSync = service.getEquities(marketEquityAuthBean);
+        Call<MarketEquityResponse> callSync = service.getLeadingEquities(marketEquityAuthBean);
 
         try {
             Response<MarketEquityResponse> response = callSync.execute();
@@ -103,13 +103,39 @@ public class MarketHttpServiceImpl implements MarketHttpService {
     }
 
     @Override
+    public MarketEquityResponse getGeneralEquities(MarketEquityAuthBean marketEquityAuthBean) {
+        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service =
+                BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
+        Call<MarketEquityResponse> callSync = service.getGeneralEquities(marketEquityAuthBean);
+
+        try {
+            Response<MarketEquityResponse> response = callSync.execute();
+            return response.body();
+        } catch (Exception ex) {
+            log.warn(ex.getMessage());
+        }
+        return MarketEquityResponse.create();
+    }
+
+
+    @Override
     public List<MarketEquityResponse.MarketEquityResponseElement> getTotalEquities() {
-        MarketEquityResponse marketEquities = getEquities(MarketEquityAuthBean.create(1));
+        MarketEquityResponse marketLeadingEquities = getLeadingEquities(MarketEquityAuthBean.create(1));
         List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>();
 
-        for (int i = 1; i <= marketEquities.getContent().getPageCount(); i++) {
+        for (int i = 1; i <= marketLeadingEquities.getContent().getPageCount(); i++) {
             List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
-                    getEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
+                    getLeadingEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
+                        equity.setMarketSymbol(equity.getSymbol());
+                        equity.setMarketPrice(equity.getTrade());
+                    }).toList();
+            equities.addAll(marketEquityResponses);
+        }
+
+        MarketEquityResponse marketGeneralEquities = getGeneralEquities(MarketEquityAuthBean.create(1));
+        for (int i = 1; i <= marketGeneralEquities.getContent().getPageCount(); i++) {
+            List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
+                    getGeneralEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
                         equity.setMarketSymbol(equity.getSymbol());
                         equity.setMarketPrice(equity.getTrade());
                     }).toList();
@@ -129,7 +155,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
 
     @Override
     public List<MarketResponse> getEquityOrderedByPrice(OrderType orderType) {
-        MarketEquityResponse marketEquities = getEquities(MarketEquityAuthBean.create(1));
+        MarketEquityResponse marketEquities = getLeadingEquities(MarketEquityAuthBean.create(1));
         List<MarketEquityResponse.MarketEquityResponseElement> equities =
                 marketEquities.getMarketEquityResponses().stream().sorted(Comparator.comparing(
                         MarketEquityResponse.MarketEquityResponseElement::getTrade)).toList();
