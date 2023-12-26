@@ -13,6 +13,10 @@ public class Constants {
         return (long) pageNumber * Constants.PAGE_SIZE;
     }
 
+    public static long begin(int pageNumber, int pageSize) {
+        return (long) pageNumber * pageSize;
+    }
+
     public static long end(int pageNumber) {
         return (long) (pageNumber + 1) * Constants.PAGE_SIZE;
     }
