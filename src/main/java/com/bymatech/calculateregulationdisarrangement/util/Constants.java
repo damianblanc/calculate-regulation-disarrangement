@@ -9,6 +9,10 @@ public class Constants {
 
     public static final Integer PAGE_SIZE = 15;
 
+    public static final Double CASH_NOT_DEFINED_MARKET_PRICE = -1.0;
+
+    public static final Double MARKET_UNAVAILABLE_PRICES = 0.0;
+
     public static long begin(int pageNumber) {
         return (long) pageNumber * Constants.PAGE_SIZE;
     }

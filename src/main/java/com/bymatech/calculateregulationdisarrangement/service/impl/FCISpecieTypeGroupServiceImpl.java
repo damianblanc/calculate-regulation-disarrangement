@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -132,6 +133,16 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
                 .map(FCISpecieTypeGroup::getFciSpecieTypes)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> listFCISpecieTypeNames() {
+        return listFCISpecieTypes().stream().map(FCISpecieType::getName).toList();
+    }
+
+    public Boolean allMatchInSpecieTypes(List<String> incomingSpecieTypeNames) {
+        List<String> availableSpecieTypeNames = listFCISpecieTypeNames();
+        return new HashSet<>(availableSpecieTypeNames).containsAll(incomingSpecieTypeNames);
     }
 
     @Override

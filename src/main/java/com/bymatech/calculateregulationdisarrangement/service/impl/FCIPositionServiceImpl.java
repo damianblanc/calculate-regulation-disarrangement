@@ -2,9 +2,13 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
+import com.bymatech.calculateregulationdisarrangement.exception.PositionValidationException;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
+import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
+import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -27,10 +32,9 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     @Autowired
     private MarketHttpService marketHttpService;
 
-
-
     @Autowired
-    private com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService fciSpecieTypeGroupService;
+    private FCISpecieTypeGroupService fciSpecieTypeGroupService;
+
 
     public Map<FCISpecieType, List<FCISpeciePosition>> groupPositionBySpecieType(List<FCISpeciePosition> position, List<FCISpecieType> fciSpecieTypes) {
         return position.stream().collect(Collectors.groupingBy(fciSpeciePosition ->
@@ -58,10 +62,12 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     @Override
-    public FCIPositionVO createFCIPosition(String fciRegulationSymbol, FCIPosition fciPosition) throws Exception  {
+    public FCIPositionVO createFCIPosition(String fciRegulationSymbol, FCIPosition fciPosition) throws Exception {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+
+        validatePosition(fciPosition, fciRegulation);
 
         fciPosition.setCreatedOn();
         List<FCISpeciePosition> currentMarketPriceToPosition = updateCurrentMarketPriceToPosition(fciPosition, true);
@@ -165,4 +171,72 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                         .build();
     }
 
+    private Boolean validatePosition(FCIPosition fciPosition, FCIRegulation fciRegulation) throws Exception {
+        Set<FCIComposition> fciCompositions = fciRegulation.getComposition();
+        List<Integer> fciRegulationSpecieTypeIds = fciCompositions.stream().map(FCIComposition::getFciSpecieTypeId).toList();
+        List<FCIPositionCompositionVO> positionComposition = FCIPosition.getPositionComposition(fciPosition, false);
+        List<String> incomingNames = positionComposition.stream().map(FCIPositionCompositionVO::getSpecieType).toList();
+        List<FCISpecieType> specieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
+        List<String> specieTypeNames = specieTypes.stream().map(FCISpecieType::getName).toList();
+        List<String> fciRegulationNames = fciRegulationSpecieTypeIds.stream().map(id ->
+                        specieTypes.stream().filter(specieType -> specieType.getFciSpecieTypeId().equals(id)).findAny().orElseThrow())
+                .map(FCISpecieType::getName).toList();
+
+        /* All incoming specie types must exist */
+        incomingNames.forEach(incomingName -> {
+            if (!specieTypeNames.contains(incomingName)) {
+                throw new PositionValidationException(String.format(ExceptionMessage.SPECIE_TYPE_DOES_NOT_EXIST.msg, incomingName));
+            }
+        });
+
+        /* All incoming specie types must be included in FCI Regulation */
+        incomingNames.forEach(incomingName -> {
+            if (!fciRegulationNames.contains(incomingName)) {
+                throw new PositionValidationException(String.format(ExceptionMessage.SPECIE_TYPE_DOES_NOT_BELONG_TO_REGULATION.msg, incomingName, fciRegulation.getSymbol()));
+            }
+        });
+
+        /* Uploaded excel position file must contains all expected column names */
+        EnumSet<PositionFieldNameEnum> positionFieldNames = EnumSet.allOf(PositionFieldNameEnum.class);
+        positionFieldNames.forEach(fieldName -> {
+            if (!fciPosition.getJsonPosition().contains(fieldName.name())) {
+                throw new PositionValidationException(String.format(ExceptionMessage.INVALID_POSITION_FIELD_NAME.msg, fieldName.name()));
+            }
+        });
+
+        /* All species in position must be valid symbols */
+        List<FCISpeciePosition> speciePositions = FCIPosition.getSpeciePositions(fciPosition, false);
+        List<String> marketSpecieSymbols = marketHttpService.getAllWorkableSpecies().stream().map(MarketResponse::getMarketSymbol).toList();
+        List<FCISpeciePosition> fciSpeciePositions = speciePositions.stream().filter(speciePosition -> !speciePosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).toList();
+        fciSpeciePositions.forEach(speciePosition -> {
+            if (!marketSpecieSymbols.contains(speciePosition.getSymbol())) {
+                throw new PositionValidationException(String.format(ExceptionMessage.INVALID_POSITION_SPECIE_SYMBOL.msg, speciePosition.getSymbol()));
+            }
+        });
+
+        /* All specie groups in position must be defined */
+        List<SpecieTypeGroupDto> specieTypeGroups = fciSpecieTypeGroupService.listFCISpecieTypeGroups();
+        List<String> groupNames = specieTypeGroups.stream().map(SpecieTypeGroupDto::getName).toList();
+        speciePositions.forEach(speciePosition -> {
+            if (!groupNames.contains(speciePosition.getFciSpecieGroup())) {
+                throw new PositionValidationException(String.format(ExceptionMessage.INVALID_POSITION_SPECIE_GROUP.msg, speciePosition.getFciSpecieGroup()));
+            }
+        });
+
+        /* Cash Specie Type must be included in Position */
+        FCISpeciePosition cash = speciePositions.stream().filter(specieInPosition -> specieInPosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).findFirst()
+                .orElseThrow(() -> new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_NOT_INCLUDED_POSITION.msg));
+
+        /* Cash Specie Type must define currentMarketPrice */
+        if (Constants.CASH_NOT_DEFINED_MARKET_PRICE.equals(cash.getCurrentMarketPrice())) {
+            throw new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_PRICE_NOT_DEFINED.msg);
+        }
+
+        /* Cash Quantity must be one */
+        if (cash.getQuantity() != 1) {
+            throw new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_QUANTITY_NOT_ONE.msg);
+        }
+
+        return true;
+    }
 }

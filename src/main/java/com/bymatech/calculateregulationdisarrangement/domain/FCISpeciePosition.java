@@ -24,7 +24,7 @@ public class FCISpeciePosition {
      * This property is updated each time a FCIPosition is retrieved to work with market price
      */
     @Transient
-    private Double currentMarketPrice;
+    private Double currentMarketPrice = -1.0;
     private Integer quantity;
 
     public Double valuePosition() {

@@ -39,6 +39,8 @@ public interface MarketHttpService {
 
     List<MarketResponse> getEquityOrderedByPriceFilteredBySpecieList(OrderType orderType, List<FCISpeciePosition> speciesPosition);
 
+    List<MarketResponse> getAllWorkableSpecies();
+
     /**
      * An Asynchronous fixed delay scheduled task to retrieve current market prices for all Specie Type Groups
      */
@@ -61,7 +63,7 @@ public interface MarketHttpService {
                 throw new IllegalArgumentException(ExceptionMessage.MARKET_BOND_INFORMATION_NOT_AVAILABLE.msg);
             }
 
-            CompletableFuture< List<MarketEquityResponse.MarketEquityResponseElement>> futureEquitiesTask = CompletableFuture.supplyAsync(this::getTotalEquities);
+            CompletableFuture<List<MarketEquityResponse.MarketEquityResponseElement>> futureEquitiesTask = CompletableFuture.supplyAsync(this::getTotalEquities);
             List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>();
             while (!futureEquitiesTask.isDone()) {
                 equities = futureEquitiesTask.get();

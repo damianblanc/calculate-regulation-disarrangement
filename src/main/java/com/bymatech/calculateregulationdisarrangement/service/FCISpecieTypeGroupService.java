@@ -82,6 +82,17 @@ public interface FCISpecieTypeGroupService {
     List<FCISpecieType> listFCISpecieTypes();
 
     /**
+     * List all available {@link FCISpecieType} names for all {@link SpecieTypeGroupEnum}
+     * @return Available FCISpecieType names
+     */
+    List<String> listFCISpecieTypeNames();
+
+    /**
+     * Given a list of {@link FCISpecieType} names indicates whether all are included in available specie types
+     */
+    Boolean allMatchInSpecieTypes(List<String> incomingSpecieTypeNames);
+
+    /**
      * Lists updatable {@link FCISpecieType} for all {@link SpecieTypeGroupEnum}
      */
     List<FCISpecieType> listUpdatableSpecieTypes();

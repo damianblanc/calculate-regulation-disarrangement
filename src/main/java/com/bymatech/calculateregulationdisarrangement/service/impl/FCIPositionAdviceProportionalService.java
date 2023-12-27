@@ -6,8 +6,6 @@ import com.bymatech.calculateregulationdisarrangement.service.*;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.bymatech.calculateregulationdisarrangement.util.DomainExtractionHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorService {

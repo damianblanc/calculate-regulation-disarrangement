@@ -3,8 +3,12 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 import com.bymatech.calculateregulationdisarrangement.domain.OrderType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
+import com.bymatech.calculateregulationdisarrangement.exception.MarketResponseException;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.http.BymaAPIServiceGenerator;
+import com.bymatech.calculateregulationdisarrangement.util.Constants;
+import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
@@ -46,6 +50,13 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                     }).toList();
             bonds.addAll(marketBondResponses);
         }
+
+        if (bonds.isEmpty())
+            throw new MarketResponseException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
+
+        if (bonds.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
+                Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
+            throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
 
         return bonds;
     }
@@ -142,6 +153,13 @@ public class MarketHttpServiceImpl implements MarketHttpService {
             equities.addAll(marketEquityResponses);
         }
 
+        if (equities.isEmpty())
+            throw new MarketResponseException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
+
+        if (equities.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
+                Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
+            throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
+
         return equities;
     }
 
@@ -161,5 +179,13 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                         MarketEquityResponse.MarketEquityResponseElement::getTrade)).toList();
         List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponseElements = orderType == OrderType.DESC ? equities : equities.stream().sorted(Collections.reverseOrder()).toList();
         return null;
+    }
+
+    @Override
+    public List<MarketResponse> getAllWorkableSpecies() {
+        ArrayList<MarketResponse> responses = new ArrayList<>();
+        responses.addAll(getTotalBonds());
+        responses.addAll(getTotalEquities());
+        return responses;
     }
 }
