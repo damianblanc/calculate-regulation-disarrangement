@@ -57,6 +57,8 @@ public class FCIPosition {
         return sdf.format(this.createdOn);
     }
 
+    public Date getDateCreatedOn() { return new Date(createdOn.getTime()); }
+
     @Transient
     public JsonNode getPosition() {
         return position;

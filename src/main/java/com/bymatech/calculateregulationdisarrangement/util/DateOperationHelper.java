@@ -3,11 +3,14 @@ package com.bymatech.calculateregulationdisarrangement.util;
 import com.google.common.base.Strings;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * Contains various utilities to work with dates in order to support other operations
  */
 public class DateOperationHelper {
+
+    public static List<String> months = List.of("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
     public static Boolean isInRange(String c, String from, String to) {
         if (Strings.isNullOrEmpty(from) && Strings.isNullOrEmpty(to)) return true;
@@ -22,4 +25,6 @@ public class DateOperationHelper {
         }
         return true;
     }
+
+    public static String month(int index) { return months.get(index); }
 }

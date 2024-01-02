@@ -49,6 +49,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public FCIRegulation createFCIRegulation(FCIRegulation request) {
+        request.setCreatedOn();
        return fciRegulationRepository.save(request);
 //        FCIRegulation fciRegulation = FCIRegulation.builder().symbol(request.getSymbol()).name(request.getName()).description(request.getDescription()).build();
 //        FCIRegulation savedFciRegulation = fciRegulationRepository.save(fciRegulation);
@@ -80,10 +81,10 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulation.getSymbol())));
         foundFciRegulation.setName(fciRegulation.getName());
         foundFciRegulation.setDescription(fciRegulation.getDescription());
-        foundFciRegulation.getComposition().clear();
+//        foundFciRegulation.getComposition().remove(fciRegulation.getComposition())
         foundFciRegulation.setComposition(fciRegulation.getComposition());
 //        Set<FCIComposition> fciCompositions = fciRegulation.getComposition().stream().peek(c -> c.setFciRegulation(foundFciRegulation)).collect(Collectors.toSet());
-        foundFciRegulation.getComposition().addAll(fciRegulation.getComposition());
+//        foundFciRegulation.getComposition().addAll(fciRegulation.getComposition());
 
         FCIRegulation savedFciRegulation = fciRegulationRepository.saveAndFlush(foundFciRegulation);
 
@@ -91,7 +92,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 //            fciComposition.setFciRegulation(foundFciRegulation);
 //            fciCompositionService.updateComposition(fciComposition);
 //        });
-
+//TODO:SEE  Duplicate entry '2' for key 'fci_composition_by_regulation.UK_rwo8fqqo3luww4recmq67kun2' when updating!
         return savedFciRegulation;
     }
 

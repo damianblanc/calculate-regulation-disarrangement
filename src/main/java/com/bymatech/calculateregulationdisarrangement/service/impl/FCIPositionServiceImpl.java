@@ -2,13 +2,13 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
-import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.exception.PositionValidationException;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
+import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -146,17 +146,44 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                 new FCIPositionIdCreatedOnVO(fciPosition.getId(), fciPosition.getTimestamp())).toList();
     }
 
+    @Override
+    public Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGrouped(String fciRegulationSymbol) {
+        Set<FCIPosition> fciPositions = listPositionByFCIRegulation(fciRegulationSymbol);
+        Map<String, IntSummaryStatistics> groupedPositionsPerMonth = fciPositions.stream().map(FCIPosition::getDateCreatedOn)
+                .collect(Collectors.groupingBy(date -> DateOperationHelper.month(date.getMonth()), Collectors.summarizingInt(x -> 1)));
+
+        return groupedPositionsPerMonth.entrySet().stream().map(entry ->
+            Map.entry(entry.getKey(), (int) entry.getValue().getCount()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    @Override
+    public Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(String fciRegulationSymbol) {
+        Map<String, Integer> partialPositionGroupedList = listPositionsByFCIRegulationSymbolMonthlyGrouped(fciRegulationSymbol);
+        return DateOperationHelper.months.stream().map(month ->
+                Map.entry(month, partialPositionGroupedList.getOrDefault(month, 0)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+
     private Boolean isUpdatable(List<FCISpecieType> fciSpecieTypes, String fciSpecieTypeName) {
         return fciSpecieTypes.stream().filter(fciSpecieType -> fciSpecieType.getName().equals(fciSpecieTypeName)).findFirst().orElseThrow().getUpdatable();
     }
 
     @Override
-    public List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String fciRegulationSymbol) throws Exception {
+    public List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String fciRegulationSymbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
         Set<FCIPosition> positions = fciRegulation.getPositions();
                 return positions.stream().map(p -> createFCIPositionVO(fciRegulationSymbol, p)).sorted().collect(Collectors.toList());
+    }
+
+    public Set<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol) {
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+        return fciRegulation.getPositions();
     }
 
     private FCIPositionVO createFCIPositionVO(String fciRegulationSymbol, FCIPosition fciPosition) {

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,6 +73,10 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
         return sdf.format(this.createdOn);
     }
 
+    public Date getDateCreatedOn() {
+        return new Date(createdOn.getTime());
+    }
+
     @Override
     public int compareTo(@NotNull FCIRegulation fciRegulation) {
         return fciRegulation.getId().equals(this.getId()) ? 0 : -1;
@@ -81,4 +86,13 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
 //        return fciComposition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 //    }
+
+    public void setComposition(Set<FCIComposition> composition) {
+        if(this.composition == null) {
+            this.composition = composition;
+        } else {
+            this.composition.clear();
+            this.composition.addAll(composition);
+        }
+    }
 }

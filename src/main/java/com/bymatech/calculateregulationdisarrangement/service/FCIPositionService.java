@@ -26,7 +26,13 @@ public interface FCIPositionService {
 
     Map<FCISpecieType, Double> getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position);
 
-    List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol) throws Exception;
+    List<FCIPositionVO> listPositionsByFCIRegulationSymbol(String symbol);
+
+    /**
+     * Lists available positions bound to a {@link com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation}
+     * in order to perform inner calculations
+     */
+    Set<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol);
 
     FCIPositionVO createFCIPosition(String symbol, FCIPosition fciPosition) throws Exception;
 
@@ -55,4 +61,14 @@ public interface FCIPositionService {
     List<FCISpeciePosition> updateCurrentMarketPriceToPosition(FCIPosition fciPosition) throws Exception;
 
     List<FCIPositionIdCreatedOnVO> listPositionsByFCIRegulationSymbolIdCreatedOn(String fciRegulationSymbol) throws Exception;
+
+    /**
+     * Retrieves position quantity group per month
+     */
+    Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGrouped(String fciRegulationSymbol);
+
+    /**
+     * Complements retrieved position quantity per month, centering current month, with empty month quantities
+     */
+    Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(String fciRegulationSymbol);
 }
