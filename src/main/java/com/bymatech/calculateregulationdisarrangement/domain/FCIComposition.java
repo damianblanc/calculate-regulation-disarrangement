@@ -22,9 +22,9 @@ import org.hibernate.annotations.NotFoundAction;
 public class FCIComposition {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @SequenceGenerator(name="fci_composition_seq", sequenceName="fci_composition_seq")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator="fci_composition_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @SequenceGenerator(name="fci_composition_seq", sequenceName="fci_composition_seq")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE ,generator="fci_composition_seq")
     @Column(name = "fci_composition_id")
     private Integer fciCompositionId;
 

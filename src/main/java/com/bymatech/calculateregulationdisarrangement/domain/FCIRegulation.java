@@ -46,15 +46,20 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
 //    @JoinColumn(name="fci_regulation_id")
 //    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
 //    @JoinTable(name = "fci_composition_by_regulation",
 //            joinColumns = @JoinColumn(name = "fci_regulation_id"),
 //            inverseJoinColumns = @JoinColumn(name = "fci_composition_id"))
-    @JoinTable(name = "fci_composition_by_regulation",
-            joinColumns =
-                    { @JoinColumn(name = "fci_regulation_id", referencedColumnName = "fci_regulation_id") },
-            inverseJoinColumns =
-                    { @JoinColumn(name = "fci_composition_id", referencedColumnName = "fci_composition_id") })
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+//    @JoinTable(name = "fci_composition_by_regulation",
+//            joinColumns =
+//                    { @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id") },
+//            inverseJoinColumns =
+//                    { @JoinColumn(name = "COMPOSITION_ID", referencedColumnName = "fci_composition_id") })
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id")
+//    @JoinTable(name = "fci_composition_by_regulation",
+//            joinColumns = @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id")
     private Set<FCIComposition> composition;
 
 //    private Set<FCIComposition> fciCompositionWithId;

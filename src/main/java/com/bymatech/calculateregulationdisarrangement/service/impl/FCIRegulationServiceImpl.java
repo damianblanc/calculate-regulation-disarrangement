@@ -75,6 +75,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public FCIRegulation updateFCIRegulation(FCIRegulation fciRegulation) {
         FCIRegulation foundFciRegulation = fciRegulationRepository.findBySymbol(fciRegulation.getSymbol())
                 .orElseThrow(() -> new EntityNotFoundException(
