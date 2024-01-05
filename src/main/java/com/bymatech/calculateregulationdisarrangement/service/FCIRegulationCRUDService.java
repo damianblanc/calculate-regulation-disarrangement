@@ -1,9 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
+import com.bymatech.calculateregulationdisarrangement.dto.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,46 +17,53 @@ public interface FCIRegulationCRUDService {
      * Creates a new FCIRegulation
      * @return created FCIRegulation
      */
-    FCIRegulation createFCIRegulation(FCIRegulation fciRegulation);
+    FCIRegulationVO createFCIRegulation(FCIRegulation fciRegulation);
 
     /**
      * Deletes a FCIRegulation indicated by its symbol
      */
-    FCIRegulation deleteFCIRegulation(String symbol);
+    String deleteFCIRegulation(String fciSymbol);
 
     /**
      * Updates a FCIRegulation indicated by its symbol
      * @return Updated FCIRegulation
      */
-    FCIRegulation updateFCIRegulation(FCIRegulation fciRegulation);
+    FCIRegulationVO updateFCIRegulation(FCIRegulation fciRegulation);
 
     /**
      * Finds a FCIRegulation indicated by its symbol
      * @return Found FCIRegulation
      */
-    FCIRegulation findFCIRegulation(String symbol);
+    FCIRegulationVO findFCIRegulation(String symbol);
+
+    /**
+     * Finds a FCIRegulation indicated by its symbol
+     * @return Found FCIRegulation
+     */
+    FCIRegulation findFCIRegulationEntity(String symbol);
 
     /**
      * Finds a FCIRegulation indicated by its symbol
      * @return An Optional of FCIRegulation
      */
-    Optional<FCIRegulation> findFCIRegulationOptional(String symbol);
+    Optional<FCIRegulation> findFCIRegulationOptionalEntity(String symbol);
 
     /**
      * Finds or Creates a FCIRegulation indicated by its symbol
+     *
      * @return created FCIRegulation
      */
-    FCIRegulation findOrCreateFCIRegulation(FCIRegulationDTO fciRegulationDTO);
+    FCIRegulation findOrCreateFCIRegulationEntity(FCIRegulationDTO fciRegulationDTO);
 
     /**
      * List all FCIRegulations available
      * @return All created FCIRegulations
      */
-    List<FCIRegulation> listFCIRegulations();
+    List<FCIRegulationVO> listFCIRegulations();
 
     List<String> listFCIRegulationSymbols();
 
     List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbolsAndNames();
 
-    List<FCIPercentageVO> listFCIRegulationPercentages(String fciRegulationSymbol);
+    List<FCICompositionVO> listFCIRegulationPercentages(String fciRegulationSymbol);
 }

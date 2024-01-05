@@ -40,7 +40,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 //TODO:Create a cache and load a refreshed market price indicated position, in order to avoid processing when asking to flavours
     @Override
     public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
+        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulationEntity(fciRegulationSymbol);
         FCIPosition fciPosition = fciPositionService.findFCIPositionById(fciRegulationSymbol, Integer.valueOf(fciPositionId));
         List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, true);
         if (refresh) updateCurrentMarketPriceToPosition(fciPosition, true);

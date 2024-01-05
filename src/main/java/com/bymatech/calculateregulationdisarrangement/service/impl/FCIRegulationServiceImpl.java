@@ -3,10 +3,7 @@ package com.bymatech.calculateregulationdisarrangement.service.impl;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationDTO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationValuedVO;
+import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCICompositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
@@ -23,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * Comprehends CRUD operations over {@link FCIRegulation}
@@ -48,35 +43,22 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
-    public FCIRegulation createFCIRegulation(FCIRegulation request) {
-        request.setCreatedOn();
-       return fciRegulationRepository.save(request);
-//        FCIRegulation fciRegulation = FCIRegulation.builder().symbol(request.getSymbol()).name(request.getName()).description(request.getDescription()).build();
-//        FCIRegulation savedFciRegulation = fciRegulationRepository.save(fciRegulation);
-//        Set<FCIComposition> fciCompositions = new HashSet<>();
-//        request.get().forEach(c ->
-//                fciCompositions.add(FCIComposition.builder().fciRegulation(fciRegulation).fciSpecieType(c.getFciSpecieType()).percentage(c.getPercentage()).build()));
-//        savedFciRegulation.setComposition(fciCompositions);
-//        return fciRegulationRepository.save(savedFciRegulation);
-//        FCIRegulation persistedFCIRegulation = fciRegulationRepository.save(fciRegulation);
-//request.setFciComposition(fciCompositions);
-//        persistedFCIRegulation.getFciComposition().forEach(c -> c.setFciRegulationId(persistedFCIRegulation.getFciRegulationId()));
-//        return fciRegulationRepository.save(persistedFCIRegulation);
-//        return fciRegulationRepository.save(request);
-//        return persistedFCIRegulation;
+    public FCIRegulationVO createFCIRegulation(FCIRegulation request) {
+       request.setCreatedOn();
+       return toValueObject(fciRegulationRepository.save(request));
     }
 
     @Override
-    public FCIRegulation deleteFCIRegulation(String symbol) throws EntityNotFoundException {
-        FCIRegulation toDelete = fciRegulationRepository.findBySymbol(symbol)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+    public String deleteFCIRegulation(String fciSymbol) throws EntityNotFoundException {
+        FCIRegulation toDelete = fciRegulationRepository.findBySymbol(fciSymbol)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciSymbol)));
         fciRegulationRepository.delete(toDelete);
-        return toDelete;
+        return fciSymbol;
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public FCIRegulation updateFCIRegulation(FCIRegulation fciRegulation) {
+    public FCIRegulationVO updateFCIRegulation(FCIRegulation fciRegulation) {
         FCIRegulation foundFciRegulation = fciRegulationRepository.findBySymbol(fciRegulation.getSymbol())
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulation.getSymbol())));
@@ -94,38 +76,43 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
 //            fciCompositionService.updateComposition(fciComposition);
 //        });
 //TODO:SEE  Duplicate entry '2' for key 'fci_composition_by_regulation.UK_rwo8fqqo3luww4recmq67kun2' when updating!
-        return savedFciRegulation;
+        return toValueObject(savedFciRegulation);
     }
 
     @Override
-    public FCIRegulation findFCIRegulation(String symbol) {
+    public FCIRegulationVO findFCIRegulation(String symbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
                 String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
 //        fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices());
-        return  fciRegulation;
+        return toValueObject(fciRegulation);
     }
 
     @Override
-    public Optional<FCIRegulation> findFCIRegulationOptional(String symbol) {
+    public FCIRegulation findFCIRegulationEntity(String symbol) {
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
+                String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
+        return fciRegulation;
+    }
+
+    @Override
+    public Optional<FCIRegulation> findFCIRegulationOptionalEntity(String symbol) {
         return fciRegulationRepository.findBySymbol(symbol);
     }
 
     @Override
-    public FCIRegulation findOrCreateFCIRegulation(@NotNull FCIRegulationDTO fciRegulationDTO) {
+    public FCIRegulation findOrCreateFCIRegulationEntity(@NotNull FCIRegulationDTO fciRegulationDTO) {
         return fciRegulationRepository.findBySymbol(fciRegulationDTO.getSymbol())
             .orElseGet(() -> fciRegulationRepository.save(FCIRegulation.builder()
                     .name(fciRegulationDTO.getName())
                     .symbol(fciRegulationDTO.getSymbol())
+                    .description(fciRegulationDTO.getDescription())
                     .composition(fciRegulationDTO.getComposition())
-//                    .fciCompositionWithId(fciRegulationDTO.getComposition())
                     .build()));
     }
 
     @Override
-    public List<FCIRegulation> listFCIRegulations() {
-        return fciRegulationRepository.findAll().stream().sorted().toList();
-//                .peek(fciRegulation -> fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices()))
-//       return fciRegulations.stream().peek(r -> r.setFciCompositionWithId((r.getFciComposition()))).collect(Collectors.toSet());
+    public List<FCIRegulationVO> listFCIRegulations() {
+        return fciRegulationRepository.findAll().stream().map(this::toValueObject).sorted().toList();
     }
 
     @Override
@@ -141,19 +128,33 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     }
 
     @Override
-    public List<FCIPercentageVO> listFCIRegulationPercentages(String fciRegulationSymbol) {
-        AtomicInteger index = new AtomicInteger();
+    public List<FCICompositionVO> listFCIRegulationPercentages(String fciRegulationSymbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol).orElseThrow(() -> new EntityNotFoundException(
                 String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+        return toValueObject(fciRegulation.getComposition());
+    }
+
+    private List<FCICompositionVO> toValueObject(List<FCIComposition> fciCompositions) {
+        AtomicInteger index = new AtomicInteger();
         List<FCISpecieType> specieTypes = fciSpecieTypeGroupService.listFCISpecieTypes();
-        return fciRegulation.getComposition().stream().map(fciComposition -> {
+       return fciCompositions.stream().map(fciComposition -> {
             FCISpecieType fciSpecieType = specieTypes.stream().filter(specieType ->
                     specieType.getFciSpecieTypeId().equals(fciComposition.getFciSpecieTypeId())).findFirst().orElseThrow();
-            return new FCIPercentageVO(
+            return new FCICompositionVO(
                     index.getAndIncrement(),
                     fciSpecieType.getName(),
                     String.valueOf(fciComposition.getPercentage()));
-                }).toList();
+        }).toList();
+    }
+
+    private FCIRegulationVO toValueObject(FCIRegulation fciRegulation) {
+        return FCIRegulationVO.builder()
+                .id(fciRegulation.getId())
+                .fciSymbol(fciRegulation.getSymbol())
+                .name(fciRegulation.getName())
+                .description(fciRegulation.getDescription())
+                .composition(toValueObject(fciRegulation.getComposition()))
+                .build();
     }
 
 }

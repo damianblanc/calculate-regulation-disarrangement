@@ -32,7 +32,7 @@ public interface FCIPositionService {
      * Lists available positions bound to a {@link com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation}
      * in order to perform inner calculations
      */
-    Set<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol);
+    List<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol);
 
     FCIPositionVO createFCIPosition(String symbol, FCIPosition fciPosition) throws Exception;
 

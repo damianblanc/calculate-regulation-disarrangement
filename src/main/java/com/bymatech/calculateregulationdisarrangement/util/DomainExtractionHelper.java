@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class DomainExtractionHelper {
 
-    public static Map<FCISpecieType, Double> getCompositionAsSpecieType(Set<FCIComposition> fciCompositions, List<FCISpecieType> fciSpecieTypes) {
+    public static Map<FCISpecieType, Double> getCompositionAsSpecieType(List<FCIComposition> fciCompositions, List<FCISpecieType> fciSpecieTypes) {
         return fciCompositions.stream().map(c -> Map.entry(
                         fciSpecieTypes.stream().filter(fciSpecieType ->
                                 fciSpecieType.getFciSpecieTypeId().equals(c.getFciSpecieTypeId())).findFirst().orElseThrow(), c.getPercentage()))

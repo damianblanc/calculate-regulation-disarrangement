@@ -1,3 +1,4 @@
+com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationVO.class
 com/bymatech/calculateregulationdisarrangement/dto/OperationAdviceVO.class
 com/bymatech/calculateregulationdisarrangement/domain/OperationAdvice.class
 com/bymatech/calculateregulationdisarrangement/domain/SpecieTypeGroupEnum.class
@@ -43,6 +44,7 @@ com/bymatech/calculateregulationdisarrangement/service/http/BymaAPIServiceGenera
 com/bymatech/calculateregulationdisarrangement/domain/FCIComposition.class
 com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationSymbolAndNameVO.class
 com/bymatech/calculateregulationdisarrangement/service/impl/FCIRegulationServiceImpl.class
+com/bymatech/calculateregulationdisarrangement/domain/User.class
 com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionAdviceProportionalService.class
 com/bymatech/calculateregulationdisarrangement/domain/FCISpecieTypeGroup.class
 com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationDTO.class
@@ -63,6 +65,7 @@ com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionCriteriaV
 com/bymatech/calculateregulationdisarrangement/dto/SpecieTypeDto.class
 com/bymatech/calculateregulationdisarrangement/util/ExceptionMessage.class
 com/bymatech/calculateregulationdisarrangement/dto/MarketEquityAuthBean.class
+com/bymatech/calculateregulationdisarrangement/dto/FCICompositionVO$FCICompositionVOBuilder.class
 com/bymatech/calculateregulationdisarrangement/service/impl/FCIRegulationComponentImpl.class
 com/bymatech/calculateregulationdisarrangement/domain/AdvisorCriteriaParameter.class
 com/bymatech/calculateregulationdisarrangement/dto/FCIPercentageVO.class
@@ -72,6 +75,7 @@ com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionAdviceSer
 com/bymatech/calculateregulationdisarrangement/controller/FCIAdviceController.class
 com/bymatech/calculateregulationdisarrangement/service/AdvisorSchedulerService.class
 com/bymatech/calculateregulationdisarrangement/domain/Bias.class
+com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationVO$FCIRegulationVOBuilder.class
 com/bymatech/calculateregulationdisarrangement/domain/FCIRegulation.class
 com/bymatech/calculateregulationdisarrangement/domain/FCIPosition.class
 com/bymatech/calculateregulationdisarrangement/domain/Retrieval.class
@@ -80,6 +84,7 @@ com/bymatech/calculateregulationdisarrangement/dto/MarketEquityResponse$MarketEq
 com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionAdviceProportionalService$SpecieTypeAdvice$SpecieTypeAdviceBuilder.class
 com/bymatech/calculateregulationdisarrangement/service/impl/FCIReportTypeImpl.class
 com/bymatech/calculateregulationdisarrangement/controller/FCICalculationController.class
+com/bymatech/calculateregulationdisarrangement/dto/FCICompositionVO.class
 com/bymatech/calculateregulationdisarrangement/dto/OperationAdviceSpecieType.class
 com/bymatech/calculateregulationdisarrangement/service/PrimaryAPIService.class
 com/bymatech/calculateregulationdisarrangement/dto/OperationAdviceSpecieType$OperationAdviceSpecieTypeBuilder.class

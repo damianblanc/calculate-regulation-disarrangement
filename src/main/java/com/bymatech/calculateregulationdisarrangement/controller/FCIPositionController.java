@@ -34,24 +34,24 @@ public class FCIPositionController {
     }
 
     @GetMapping("/fci/{symbol}/position")
-    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) throws Exception {
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol) {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol);
     }
 
     @GetMapping("/fci/{symbol}/position/{positionId}/filtered")
-    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbolFiltered(@PathVariable String symbol, @PathVariable String positionId) throws Exception {
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbolFiltered(@PathVariable String symbol, @PathVariable String positionId) {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol)
                 .stream().filter(p -> Integer.parseInt(positionId) == p.getId()).toList();
     }
 
     @GetMapping("/fci/{symbol}/position/page/{pageNumber}")
-    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable Integer pageNumber) throws Exception {
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable Integer pageNumber) {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol)
                 .stream().skip(Constants.begin(pageNumber)).limit(Constants.PAGE_SIZE).toList();
     }
 
     @GetMapping("/fci/{symbol}/position/page/{pageNumber}/page_size/{pageSize}")
-    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable Integer pageNumber, @PathVariable Integer pageSize) throws Exception {
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbol(@PathVariable String symbol, @PathVariable Integer pageNumber, @PathVariable Integer pageSize) {
         return fciPositionService.listPositionsByFCIRegulationSymbol(symbol)
                 .stream().skip(Constants.begin(pageNumber, pageSize)).limit(pageSize).toList();
     }

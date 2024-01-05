@@ -22,7 +22,7 @@ public class SpecieTypeDto implements Comparable<SpecieTypeDto> {
 
     @Override
     public int compareTo(@NotNull SpecieTypeDto specieTypeDto) {
-        if (this.getFciSpecieTypeId().equals(specieTypeDto.getFciSpecieTypeId())) return 0;
-        return this.getFciSpecieTypeId() < specieTypeDto.getFciSpecieTypeId() ? 1 : -1;
+        if (fciSpecieTypeId.equals(specieTypeDto.getFciSpecieTypeId())) return 0;
+        return fciSpecieTypeId < specieTypeDto.getFciSpecieTypeId() ? 1 : -1;
     }
 }

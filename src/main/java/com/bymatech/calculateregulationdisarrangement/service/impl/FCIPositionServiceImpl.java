@@ -148,7 +148,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Override
     public Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGrouped(String fciRegulationSymbol) {
-        Set<FCIPosition> fciPositions = listPositionByFCIRegulation(fciRegulationSymbol);
+        List<FCIPosition> fciPositions = listPositionByFCIRegulation(fciRegulationSymbol);
         Map<String, IntSummaryStatistics> groupedPositionsPerMonth = fciPositions.stream().map(FCIPosition::getDateCreatedOn)
                 .collect(Collectors.groupingBy(date -> DateOperationHelper.month(date.getMonth()), Collectors.summarizingInt(x -> 1)));
 
@@ -175,11 +175,11 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
-        Set<FCIPosition> positions = fciRegulation.getPositions();
+        List<FCIPosition> positions = fciRegulation.getPositions();
                 return positions.stream().map(p -> createFCIPositionVO(fciRegulationSymbol, p)).sorted().collect(Collectors.toList());
     }
 
-    public Set<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol) {
+    public List<FCIPosition> listPositionByFCIRegulation(String fciRegulationSymbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
@@ -199,7 +199,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
     }
 
     private Boolean validatePosition(FCIPosition fciPosition, FCIRegulation fciRegulation) throws Exception {
-        Set<FCIComposition> fciCompositions = fciRegulation.getComposition();
+        List<FCIComposition> fciCompositions = fciRegulation.getComposition();
         List<Integer> fciRegulationSpecieTypeIds = fciCompositions.stream().map(FCIComposition::getFciSpecieTypeId).toList();
         List<FCIPositionCompositionVO> positionComposition = FCIPosition.getPositionComposition(fciPosition, false);
         List<String> incomingNames = positionComposition.stream().map(FCIPositionCompositionVO::getSpecieType).toList();

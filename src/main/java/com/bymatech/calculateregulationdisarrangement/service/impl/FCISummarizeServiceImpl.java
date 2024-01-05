@@ -1,7 +1,9 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
+import com.bymatech.calculateregulationdisarrangement.dto.FCICompositionVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
+import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
@@ -25,24 +27,24 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
 
     @Override
     public SummarizeOverviewVO retrieveSummarizeOverview() throws Exception {
-        List<FCIRegulation> fciRegulations = fciRegulationCRUDService.listFCIRegulations();
+        List<FCIRegulationVO> fciRegulations = fciRegulationCRUDService.listFCIRegulations();
 
         /** Regulation Composition Percentages */
-        Map<String, List<FCIPercentageVO>> fciRegulationCompositions = fciRegulations.stream().map(fciRegulation -> Map.entry(fciRegulation.getSymbol(),
-                        fciRegulationCRUDService.listFCIRegulationPercentages(fciRegulation.getSymbol())))
+        Map<String, List<FCICompositionVO>> fciRegulationCompositions = fciRegulations.stream().map(fciRegulation -> Map.entry(fciRegulation.getFciSymbol(),
+                        fciRegulationCRUDService.listFCIRegulationPercentages(fciRegulation.getFciSymbol())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         /** Regulation Position Quantity */
         Map<String, Integer> fciRegulationPositions = fciRegulations.stream()
-                .map(fciRegulation -> Map.entry(fciRegulation.getSymbol(), fciRegulation.getPositions().size()))
+                .map(fciRegulation -> Map.entry(fciRegulation.getFciSymbol(), fciRegulation.getPositions().size()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         /** Total Position Quantity*/
-        Integer totalPositionQuantity = fciRegulations.stream().map(FCIRegulation::getPositions).map(Set::size).reduce(Integer::sum).orElseThrow();
+        Integer totalPositionQuantity = fciRegulations.stream().map(FCIRegulationVO::getPositions).map(List::size).reduce(Integer::sum).orElseThrow();
 
-        /**Regulation Position Quantity Per Month last Year */
+        /** Regulation Position Quantity Per Month last Year */
         Map<String, Map<String, Integer>> positionsPerMonth = fciRegulations.stream().map(fciRegulation ->
-            Map.entry(fciRegulation.getSymbol(), fciPositionService.listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(fciRegulation.getSymbol())))
+            Map.entry(fciRegulation.getFciSymbol(), fciPositionService.listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(fciRegulation.getFciSymbol())))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 //        Map<String, Integer> positionsPerMonthOpened = positionsPerMonth.entrySet().stream().map(entry ->

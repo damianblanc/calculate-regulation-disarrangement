@@ -178,7 +178,7 @@ public class FCICRUDTestSuite {
         FCIComposition fciCompositionBond = FCIComposition.builder().percentage(30.0).fciSpecieTypeId(banks.getFciSpecieTypeId()).build();
         FCIComposition fciCompositionShareMarket = FCIComposition.builder().percentage(50.0).fciSpecieTypeId(energies.getFciSpecieTypeId()).build();
         FCIComposition fciCompositionCash = FCIComposition.builder().percentage(20.0).fciSpecieTypeId(agricultures.getFciSpecieTypeId()).build();
-        Set<FCIComposition> fciCompositionList = Set.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
+        List<FCIComposition> fciCompositionList = List.of(fciCompositionShareMarket, fciCompositionBond, fciCompositionCash);
         fciRegulation.setComposition(fciCompositionList);
         return fciRegulation;
     }

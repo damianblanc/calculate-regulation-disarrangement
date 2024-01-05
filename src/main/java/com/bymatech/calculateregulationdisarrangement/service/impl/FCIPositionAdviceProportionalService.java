@@ -39,7 +39,7 @@ public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorS
     public List<OperationAdviceSpecieType> advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
         AtomicInteger index = new AtomicInteger();
         List<OperationAdviceSpecieType> specieTypeAdvices = new ArrayList<>();
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
+        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulationEntity(fciRegulationSymbol);
         FCIPosition fciPosition = fciRegulation.getPositions().stream().filter(p -> p.getId().equals(Integer.valueOf(fciPositionId))).findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.FCI_POSITION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol, fciPositionId)));
         List<FCISpeciePosition> fciSpeciesInPosition = FCIPosition.getSpeciePositions(fciPosition, true);

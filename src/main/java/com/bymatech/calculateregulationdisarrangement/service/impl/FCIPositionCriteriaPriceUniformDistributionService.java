@@ -44,7 +44,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     @Override
     public List<OperationAdviceSpecieType> advice(String fciRegulationSymbol, String fciPositionId) throws Exception {
         Multimap<SpecieTypeGroupEnum, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
+        fciRegulationCRUDService.findFCIRegulationEntity(fciRegulationSymbol);
 
         ImmutableMap<SpecieTypeGroupEnum, Function<SpecieData, Multimap<SpecieTypeGroupEnum, OperationAdviceVO>>> specieTypeProcess =
                 ImmutableMap.<SpecieTypeGroupEnum, Function<SpecieData, Multimap<SpecieTypeGroupEnum, OperationAdviceVO>>>builder()

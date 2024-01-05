@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,7 +24,6 @@ import java.util.Set;
  * Represents FCI Regulation Composition by defining each {@link SpecieTypeGroupEnum} and its percentage
  */
 public class FCIRegulation implements Comparable<FCIRegulation> {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "fci_regulation_id", unique = true, nullable = false)
@@ -38,34 +38,12 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
     @Column(name = "description")
     private String description;
 
-//    @Column(name = "composition")
-//    @OneToMany(mappedBy = "fciRegulationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OneToMany(mappedBy = "fciRegulationId", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OneToMany(mappedBy="fciRegulation", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name="fci_regulation_id")
-//    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-
-//    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
-//    @JoinTable(name = "fci_composition_by_regulation",
-//            joinColumns = @JoinColumn(name = "fci_regulation_id"),
-//            inverseJoinColumns = @JoinColumn(name = "fci_composition_id"))
-    //@GeneratedValue(strategy = GenerationType.AUTO)
-//    @JoinTable(name = "fci_composition_by_regulation",
-//            joinColumns =
-//                    { @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id") },
-//            inverseJoinColumns =
-//                    { @JoinColumn(name = "COMPOSITION_ID", referencedColumnName = "fci_composition_id") })
     @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id")
-//    @JoinTable(name = "fci_composition_by_regulation",
-//            joinColumns = @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id")
-    private Set<FCIComposition> composition;
-
-//    private Set<FCIComposition> fciCompositionWithId;
+    private List<FCIComposition> composition;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<FCIPosition> positions;
+    private List<FCIPosition> positions;
 
     @Column(name = "created_on")
     private Timestamp createdOn;
@@ -92,7 +70,7 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 //    }
 
-    public void setComposition(Set<FCIComposition> composition) {
+    public void setComposition(List<FCIComposition> composition) {
         if(this.composition == null) {
             this.composition = composition;
         } else {
