@@ -71,4 +71,6 @@ public interface FCIPositionService {
      * Complements retrieved position quantity per month, centering current month, with empty month quantities
      */
     Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(String fciRegulationSymbol);
+
+    Integer deleteFCIPosition(String fciRegulationSymbol, Integer fciPositionId);
 }

@@ -8,10 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "FCIRegulation")
@@ -43,6 +40,7 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
     private List<FCIComposition> composition;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "REGULATION_ID", referencedColumnName = "fci_regulation_id")
     private List<FCIPosition> positions;
 
     @Column(name = "created_on")
@@ -58,6 +56,10 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
 
     public Date getDateCreatedOn() {
         return new Date(createdOn.getTime());
+    }
+
+    public List<FCIPosition> getPositions() {
+        return Objects.nonNull(positions) ? positions : List.of();
     }
 
     @Override

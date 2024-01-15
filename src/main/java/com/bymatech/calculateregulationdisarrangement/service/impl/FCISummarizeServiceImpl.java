@@ -1,19 +1,17 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCICompositionVO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationVO;
+import com.bymatech.calculateregulationdisarrangement.dto.PositionPerMonthVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISummarizeService;
+import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,18 +38,22 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         /** Total Position Quantity*/
-        Integer totalPositionQuantity = fciRegulations.stream().map(FCIRegulationVO::getPositions).map(List::size).reduce(Integer::sum).orElseThrow();
+        Integer totalPositionQuantity = !fciRegulations.isEmpty() ? fciRegulations.stream().map(FCIRegulationVO::getPositions).map(List::size).reduce(Integer::sum).orElseThrow() : 0;
 
-        /** Regulation Position Quantity Per Month last Year */
-        Map<String, Map<String, Integer>> positionsPerMonth = fciRegulations.stream().map(fciRegulation ->
+        /** Regulation Position Quantity Per Month last year */
+        Map<String, Map<String, Integer>> positionsPerMonthByFCI = fciRegulations.stream().map(fciRegulation ->
             Map.entry(fciRegulation.getFciSymbol(), fciPositionService.listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(fciRegulation.getFciSymbol())))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-//        Map<String, Integer> positionsPerMonthOpened = positionsPerMonth.entrySet().stream().map(entry ->
-//                Map.entry(entry.getValue()., entry.getValue().)
-//                )
+        Map<String, Integer> positionsPerMonthOpened = new LinkedHashMap<>();
+        DateOperationHelper.months.forEach(month -> positionsPerMonthOpened.put(month, 0));
+        positionsPerMonthByFCI.values().forEach(m -> m.keySet().forEach(month ->
+                positionsPerMonthOpened.put(month, positionsPerMonthOpened.get(month) + m.get(month))));
 
-        // Retrieve 5 FCI with most positions per day
+            //        Posiciones por mes
+//
+//        Retrieve 5 FCI with most positions per day  (then  month - year)
+//        5 FCIs fluctuations related to its regulations, related to a specie type group?
 
 
         return SummarizeOverviewVO.builder()
@@ -59,7 +61,24 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
                 .fciRegulationCompositions(fciRegulationCompositions)
                 .fciRegulationPositionsQuantity(fciRegulationPositions)
                 .fciPositionQuantity(totalPositionQuantity)
-//                .fciPositionsPerMothLastYear(positionsPerMonthOpened)
+                .fciPositionsPerMothLastYear(positionsPerMonthOpened)
                 .build();
+    }
+
+    @Override
+    /** Regulation Position Quantity Per Month last year */
+    public List<PositionPerMonthVO> retrievePositionsPerMonth() {
+        List<FCIRegulationVO> fciRegulations = fciRegulationCRUDService.listFCIRegulations();
+        Map<String, Map<String, Integer>> positionsPerMonthByFCI = fciRegulations.stream().map(fciRegulation ->
+                        Map.entry(fciRegulation.getFciSymbol(), fciPositionService.listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(fciRegulation.getFciSymbol())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        Map<String, Integer> positionsPerMonthOpened = new LinkedHashMap<>();
+        positionsPerMonthByFCI.get(fciRegulations.get(0).getFciSymbol()).forEach((k,v) -> positionsPerMonthOpened.put(k, 0));
+        positionsPerMonthByFCI.values().forEach(m -> m.keySet().forEach(month ->
+                positionsPerMonthOpened.put(month, positionsPerMonthOpened.get(month) + m.get(month))));
+
+        return positionsPerMonthOpened.entrySet().stream()
+                .map(entry -> new PositionPerMonthVO(entry.getKey(), entry.getValue())).toList();
     }
 }

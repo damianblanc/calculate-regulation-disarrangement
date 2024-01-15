@@ -51,7 +51,7 @@ public class FCIRegulationController {
             if (fciRegulationSymbol.isEmpty()) return listFCIRegulations();
             return List.of(fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol));
         } catch(final Exception e) {
-            return List.of();
+                return List.of();
         }
     }
 

@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,8 +24,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class FCIPositionServiceImpl implements FCIPositionService {
-
-    private final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     private FCIRegulationRepository fciRegulationRepository;
@@ -51,7 +50,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         return summarizedPosition.values().stream().reduce(Double::sum).orElseThrow();
     }
 
-    public Map<FCISpecieType, Double>  getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position) {
+    public Map<FCISpecieType, Double> getValuedPositionBySpecieType(Map<FCISpecieType, List<FCISpeciePosition>> position) {
         return position.entrySet().stream()
                 .map(entry ->
                         Map.entry(entry.getKey(),
@@ -77,6 +76,16 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         fciRegulation.getPositions().add(fciPosition);
         fciRegulationRepository.save(fciRegulation);
         return createFCIPositionVO(fciRegulationSymbol, fciPosition);
+    }
+
+    @Override
+    public Integer deleteFCIPosition(String fciRegulationSymbol, Integer fciPositionId) {
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+        fciRegulation.getPositions().removeIf(fciPosition -> fciPosition.getId().equals(fciPositionId));
+        fciRegulationRepository.save(fciRegulation);
+        return fciPositionId;
     }
 
     @Override
@@ -159,12 +168,21 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Override
     public Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(String fciRegulationSymbol) {
+        Map<String, Integer> sortedMonthMap = new LinkedHashMap<>();
         Map<String, Integer> partialPositionGroupedList = listPositionsByFCIRegulationSymbolMonthlyGrouped(fciRegulationSymbol);
-        return DateOperationHelper.months.stream().map(month ->
-                Map.entry(month, partialPositionGroupedList.getOrDefault(month, 0)))
+        Map<String, Integer> groupedPositionsPerMonth = DateOperationHelper.months.stream().map(month ->
+                        Map.entry(month, partialPositionGroupedList.getOrDefault(month, 0)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
 
+        Month currentMonth = LocalDate.now().getMonth();
+        for (int i = 0; i < 12; i++) {
+            String m = currentMonth.minus(i).toString();
+            String k = m.substring(0, 1).toUpperCase() + m.substring(1).toLowerCase();
+            sortedMonthMap.put(k, groupedPositionsPerMonth.get(k));
+        }
+
+        return sortedMonthMap;
+    }
 
     private Boolean isUpdatable(List<FCISpecieType> fciSpecieTypes, String fciSpecieTypeName) {
         return fciSpecieTypes.stream().filter(fciSpecieType -> fciSpecieType.getName().equals(fciSpecieTypeName)).findFirst().orElseThrow().getUpdatable();
@@ -190,7 +208,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         return FCIPositionVO.builder()
                         .id(fciPosition.getId())
                         .fciSymbol(fciRegulationSymbol)
-                        .timestamp(fciPosition.getCreatedOn(DATE_TIME_FORMAT))
+                        .timestamp(fciPosition.getCreatedOn(DateOperationHelper.DATE_TIME_FORMAT))
                         .overview(fciPosition.getOverview())
                         .jsonPosition(fciPosition.getJsonPosition())
                         .updatedMarketPosition(fciPosition.getUpdatedMarketPosition())

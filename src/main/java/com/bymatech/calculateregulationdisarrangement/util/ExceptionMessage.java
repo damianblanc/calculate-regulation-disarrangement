@@ -33,7 +33,7 @@ public enum ExceptionMessage {
 
     MARKET_CEDEAR_INFORMATION_NOT_AVAILABLE("Market Cedears Information is not currently available, try again later"),
 
-    MARKET_PRICE_NOT_AVAILABLE("Market prices are not available in this moment, try again later"),
+    MARKET_PRICE_NOT_AVAILABLE("Market prices are not available at this moment, try again later"),
 
     MARKET_TIMEOUT_RESPONSE("Market is not currently available, try again later"),
 

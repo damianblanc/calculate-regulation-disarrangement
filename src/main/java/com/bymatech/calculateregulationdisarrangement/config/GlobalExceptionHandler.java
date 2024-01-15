@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.config;
 
 import com.bymatech.calculateregulationdisarrangement.dto.ErrorInfo;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
+import com.bymatech.calculateregulationdisarrangement.exception.MarketResponseException;
 import com.bymatech.calculateregulationdisarrangement.exception.PositionValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,12 @@ public class GlobalExceptionHandler {
         ErrorInfo errorInfo = new ErrorInfo(index.getAndIncrement(),"Position Validation Error", e.getMessage());
         return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(MarketResponseException.class)
+    public ResponseEntity<ErrorInfo> handleMarketResponseException(MarketResponseException e) {
+        ErrorInfo errorInfo = new ErrorInfo(index.getAndIncrement(),"Market not available Error", e.getMessage());
+        return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }

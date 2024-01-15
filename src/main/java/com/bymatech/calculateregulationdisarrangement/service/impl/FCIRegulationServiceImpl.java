@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIComposition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
@@ -9,6 +10,7 @@ import com.bymatech.calculateregulationdisarrangement.service.FCICompositionServ
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
+import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -64,18 +66,8 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulation.getSymbol())));
         foundFciRegulation.setName(fciRegulation.getName());
         foundFciRegulation.setDescription(fciRegulation.getDescription());
-//        foundFciRegulation.getComposition().remove(fciRegulation.getComposition())
         foundFciRegulation.setComposition(fciRegulation.getComposition());
-//        Set<FCIComposition> fciCompositions = fciRegulation.getComposition().stream().peek(c -> c.setFciRegulation(foundFciRegulation)).collect(Collectors.toSet());
-//        foundFciRegulation.getComposition().addAll(fciRegulation.getComposition());
-
         FCIRegulation savedFciRegulation = fciRegulationRepository.saveAndFlush(foundFciRegulation);
-
-//        fciRegulation.getComposition().forEach(fciComposition -> {
-//            fciComposition.setFciRegulation(foundFciRegulation);
-//            fciCompositionService.updateComposition(fciComposition);
-//        });
-//TODO:SEE  Duplicate entry '2' for key 'fci_composition_by_regulation.UK_rwo8fqqo3luww4recmq67kun2' when updating!
         return toValueObject(savedFciRegulation);
     }
 
@@ -83,7 +75,6 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     public FCIRegulationVO findFCIRegulation(String symbol) {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
                 String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-//        fciRegulation.setFCIPositionAdvices(fciPositionAdviceService.listAllAdvices());
         return toValueObject(fciRegulation);
     }
 
@@ -147,6 +138,18 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
         }).toList();
     }
 
+    private FCIPositionVO toValueObject(String fciRegulationSymbol, FCIPosition fciPosition) {
+        return FCIPositionVO.builder()
+                .id(fciPosition.getId())
+                .fciSymbol(fciRegulationSymbol)
+                .timestamp(fciPosition.getCreatedOn(DateOperationHelper.DATE_TIME_FORMAT))
+                .overview(fciPosition.getOverview())
+                .jsonPosition(fciPosition.getJsonPosition())
+                .updatedMarketPosition(fciPosition.getUpdatedMarketPosition())
+                .composition(FCIPosition.getPositionComposition(fciPosition, true))
+                .build();
+    }
+
     private FCIRegulationVO toValueObject(FCIRegulation fciRegulation) {
         return FCIRegulationVO.builder()
                 .id(fciRegulation.getId())
@@ -154,6 +157,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
                 .name(fciRegulation.getName())
                 .description(fciRegulation.getDescription())
                 .composition(toValueObject(fciRegulation.getComposition()))
+                .positions(fciRegulation.getPositions().stream().map(position -> toValueObject(fciRegulation.getSymbol(), position)).toList())
                 .build();
     }
 
