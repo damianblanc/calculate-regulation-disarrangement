@@ -4,9 +4,11 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieTy
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
+import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieTypeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -130,12 +132,29 @@ public interface FCISpecieTypeGroupService {
     Optional<FCISpecieToSpecieType> findOptionalSpecieToSpecieTypeAssociation(String specieSymbol);
 
     /**
-     * List all available associations association between a specie and a specie type within a specie group
+     * List all available associations between a specie and a specie type within a specie group
      */
     List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName);
 
     /**
-     * List all available associations association between a specie and a specie type within a specie group filtered by indicated specie type
+     * List all available associations between a specie and a specie type within a specie group filtered by indicated specie type
      */
     List<SpecieToSpecieTypeVO> listSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName);
+
+    /**
+     * List all persisted associations between a specie and a specie type with specie group
+     */
+    List<SpecieToSpecieType> listAllSpecieToSpecieTypeAssociations();
+
+    /**
+     * Persists received species / specie type associations in order to be used as a base to receive further positions
+     * @param fciSpecieToSpecieTypes contains species of indicated {@link FCISpecieTypeGroup} defined specie type groups
+     */
+    List<SpecieToSpecieTypeVO>  createSpecieToSpecieTypeAssociations(String specieTypeGroupName, List<FCISpecieToSpecieType> fciSpecieToSpecieTypes);
+
+    /**
+     * Persists received species / specie type associations in order to be used as a base to receive further positions
+     * @param fciSpecieToSpecieTypes contains species for all defined specie type groups
+     */
+    List<SpecieToSpecieTypeVO> createSpecieToSpecieTypeAssociations(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes);
 }

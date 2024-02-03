@@ -10,6 +10,7 @@ import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +61,16 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    /**
+     * All species included in {@link FCIPosition} must be associated to a {@link FCISpecieType }, then to a {@link FCISpecieTypeGroup}
+     */
     @Override
     public FCIPositionVO createFCIPosition(String fciRegulationSymbol, FCIPosition fciPosition) throws Exception {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+
+        attachSpecieTypeAndGroup(fciPosition);
 
         validatePosition(fciPosition, fciRegulation);
 
@@ -76,6 +82,16 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         fciRegulation.getPositions().add(fciPosition);
         fciRegulationRepository.save(fciRegulation);
         return createFCIPositionVO(fciRegulationSymbol, fciPosition);
+    }
+
+    private void attachSpecieTypeAndGroup(FCIPosition fciPosition) throws JsonProcessingException {
+        List<SpecieToSpecieType> specieToSpecieTypes = fciSpecieTypeGroupService.listAllSpecieToSpecieTypeAssociations();
+        List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, false).stream()
+                .peek(fciSpeciePosition ->
+                        specieToSpecieTypes.stream().filter(association -> fciSpeciePosition.getSymbol().equals(association.getSpecieSymbol())).findFirst().orElseThrow(
+                                () -> new EntityNotFoundException(
+                                        String.format(ExceptionMessage.SPECIE_TO_SPECIE_TYPE_DOES_NOT_EXIST.msg, fciSpeciePosition.getSymbol())))).toList();
+        fciPosition.setTransientJsonPosition(fciSpeciePositions);
     }
 
     @Override
@@ -216,6 +232,18 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                         .build();
     }
 
+    /**
+     * Sets associated species to indicated position
+     * Associated species are those that are bound to a specie type, in turn to a specie group
+     *
+     * Position JsonNode is to be changed to be added specie type and specie group, to avoid uploading these values.
+     *
+     * @param fciPosition incoming position
+     */
+    private void setAssociatedSpeciesToPosition(FCIPosition fciPosition) {
+
+    }
+
     private Boolean validatePosition(FCIPosition fciPosition, FCIRegulation fciRegulation) throws Exception {
         List<FCIComposition> fciCompositions = fciRegulation.getComposition();
         List<Integer> fciRegulationSpecieTypeIds = fciCompositions.stream().map(FCIComposition::getFciSpecieTypeId).toList();
@@ -249,7 +277,7 @@ public class FCIPositionServiceImpl implements FCIPositionService {
             }
         });
 
-        /* All species in position must be valid symbols */
+        /* All species in position must be valid market symbols */
         List<FCISpeciePosition> speciePositions = FCIPosition.getSpeciePositions(fciPosition, false);
         List<String> marketSpecieSymbols = marketHttpService.getAllWorkableSpecies().stream().map(MarketResponse::getMarketSymbol).toList();
         List<FCISpeciePosition> fciSpeciePositions = speciePositions.stream().filter(speciePosition -> !speciePosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).toList();
@@ -258,6 +286,8 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                 throw new PositionValidationException(String.format(ExceptionMessage.INVALID_POSITION_SPECIE_SYMBOL.msg, speciePosition.getSymbol()));
             }
         });
+
+        /* All species in position must be associated to a specie type */
 
         /* All specie groups in position must be defined */
         List<SpecieTypeGroupDto> specieTypeGroups = fciSpecieTypeGroupService.listFCISpecieTypeGroups();

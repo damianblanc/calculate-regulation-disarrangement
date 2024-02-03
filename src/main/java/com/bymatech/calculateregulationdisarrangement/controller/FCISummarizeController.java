@@ -6,6 +6,7 @@ import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCISummarizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +28,11 @@ public class FCISummarizeController {
     @GetMapping("/positions-per-month")
     public List<PositionPerMonthVO> listPositionsPerMonth() throws Exception {
         return fciSummarizeService.retrievePositionsPerMonth();
+    }
+
+    @GetMapping("/positions-per-month/fci/{fciRegulationSymbol}")
+    public List<PositionPerMonthVO> listRegulationPositionsPerMonth(@PathVariable String fciRegulationSymbol) throws Exception {
+        return fciSummarizeService.retrieveRegulationPositionsPerMonth(fciRegulationSymbol);
     }
 
 }

@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface FCIRegulationCRUDService {
      * Finds a FCIRegulation indicated by its symbol
      * @return Found FCIRegulation
      */
-    FCIRegulation findFCIRegulationEntity(String symbol);
+    FCIRegulation findFCIRegulationEntity(String symbol) throws EntityNotFoundException;
 
     /**
      * Finds a FCIRegulation indicated by its symbol

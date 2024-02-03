@@ -79,10 +79,9 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     }
 
     @Override
-    public FCIRegulation findFCIRegulationEntity(String symbol) {
-        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(symbol).orElseThrow(() -> new EntityNotFoundException(
-                String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
-        return fciRegulation;
+    public FCIRegulation findFCIRegulationEntity(String symbol) throws EntityNotFoundException {
+        return fciRegulationRepository.findBySymbol(symbol).orElseThrow(() ->
+                new EntityNotFoundException(String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, symbol)));
     }
 
     @Override

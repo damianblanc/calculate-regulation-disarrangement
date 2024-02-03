@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieTypeVO;
@@ -75,6 +76,17 @@ public class FCIComponentController {
     @GetMapping("/specie-type")
     public List<FCISpecieType> listSpecieTypes() {
         return fciSpecieTypeGroupService.listFCISpecieTypes();
+    }
+
+    @PostMapping("specie-to-specie-type-associations")
+    public void createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@RequestBody List<FCISpecieToSpecieType> associations) {
+       fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(associations); //See Whether to return sth
+    }
+
+    @PostMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/bind")
+    public void createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@PathVariable String specieTypeGroupName,
+                                                                              @RequestBody List<FCISpecieToSpecieType> associations) {
+        fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(specieTypeGroupName, associations); //See Whether to return sth
     }
 
     @GetMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")

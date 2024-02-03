@@ -53,6 +53,10 @@ public enum ExceptionMessage {
 
     CASH_SPECIE_TYPE_QUANTITY_NOT_ONE("Cash Specie Type must define Quantity equals to one"),
 
+    SPECIE_TO_SPECIE_TYPE_DOES_NOT_EXIST("Specie symbol [%s] is not associated to any Specie Type"),
+
+    SPECIE_TYPE_DOES_NOT_BELONG_TO_GROUP("Specie Type [%s - %s] does not belong to indicated group [%s]"),
+
     ;
 
     public final String msg;

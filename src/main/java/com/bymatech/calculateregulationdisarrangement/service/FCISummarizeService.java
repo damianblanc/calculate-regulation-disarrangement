@@ -13,4 +13,9 @@ public interface FCISummarizeService {
     SummarizeOverviewVO retrieveSummarizeOverview() throws Exception;
 
     List<PositionPerMonthVO> retrievePositionsPerMonth();
+
+    /**
+     * Calculates uploaded positions per month for a {@link com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation}
+     */
+    List<PositionPerMonthVO> retrieveRegulationPositionsPerMonth(String fciRegulationSymbol);
 }

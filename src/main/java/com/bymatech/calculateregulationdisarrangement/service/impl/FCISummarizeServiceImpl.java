@@ -1,13 +1,17 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCICompositionVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationVO;
 import com.bymatech.calculateregulationdisarrangement.dto.PositionPerMonthVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
+import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISummarizeService;
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
+import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,7 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
 
     @Autowired
     private FCIRegulationCRUDService fciRegulationCRUDService;
+
 
     @Autowired
     private FCIPositionService fciPositionService;
@@ -80,5 +85,12 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
 
         return positionsPerMonthOpened.entrySet().stream()
                 .map(entry -> new PositionPerMonthVO(entry.getKey(), entry.getValue())).toList();
+    }
+
+    @Override
+    public List<PositionPerMonthVO> retrieveRegulationPositionsPerMonth(String fciRegulationSymbol) {
+        fciRegulationCRUDService.findFCIRegulationEntity(fciRegulationSymbol);
+        Map<String, Integer> m = fciPositionService.listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(fciRegulationSymbol);
+        return m.entrySet().stream().map(entry -> new PositionPerMonthVO(entry.getKey(), entry.getValue())).toList();
     }
 }
