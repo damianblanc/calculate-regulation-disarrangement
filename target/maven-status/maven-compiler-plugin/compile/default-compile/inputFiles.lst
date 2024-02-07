@@ -21,6 +21,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIAdviceController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/CriteriaAdvisorServiceFactory.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/User.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PositionPerMonthVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCISummarizeServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SummarizeOverviewVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/BymaAPIServiceGenerator.java
@@ -92,6 +93,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/RegulationLagVerboseVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/MarketHttpServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionService.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SpecieToSpecieType.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionAdviceService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/PrimaryHttpService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement-no-security/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PriceUniformlyDistributionCriteriaParameterDTO.java

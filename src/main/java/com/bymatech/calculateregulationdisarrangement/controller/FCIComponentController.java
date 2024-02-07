@@ -79,14 +79,14 @@ public class FCIComponentController {
     }
 
     @PostMapping("specie-to-specie-type-associations")
-    public void createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@RequestBody List<FCISpecieToSpecieType> associations) {
-       fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(associations); //See Whether to return sth
+    public List<SpecieToSpecieTypeVO>  createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@RequestBody List<FCISpecieToSpecieType> associations) {
+       return fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(associations);
     }
 
-    @PostMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/bind")
-    public void createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@PathVariable String specieTypeGroupName,
+    @PostMapping("specie-to-specie-type-associations/specie-type-group/{specieTypeGroupName}/bind")
+    public List<SpecieToSpecieTypeVO> createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@PathVariable String specieTypeGroupName,
                                                                               @RequestBody List<FCISpecieToSpecieType> associations) {
-        fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(specieTypeGroupName, associations); //See Whether to return sth
+        return fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(specieTypeGroupName, associations);
     }
 
     @GetMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")

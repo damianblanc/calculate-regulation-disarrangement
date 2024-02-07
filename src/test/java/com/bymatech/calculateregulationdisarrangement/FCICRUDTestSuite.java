@@ -187,4 +187,24 @@ public class FCICRUDTestSuite {
         return "{\"id\":1,\"symbol\":\"ALFA\",\"name\":\"Alpha Mix Rent FCI\",\"description\":\"Comprehends a mix of Equities, Bunds and Cash to allow retrievals\",\"composition\":[{\"fciCompositionId\":3,\"fciSpecieType\":{\"fciSpecieTypeId\":1,\"name\":\"Banks\",\"description\":\"Comprehends all bank type equities\"},\"percentage\":30.0},{\"fciCompositionId\":1,\"fciSpecieType\":{\"fciSpecieTypeId\":3,\"name\":\"Agricultures\",\"description\":\"Comprehends all agriculture companies type equities\"},\"percentage\":20.0},{\"fciCompositionId\":2,\"fciSpecieType\":{\"fciSpecieTypeId\":2,\"name\":\"Energies\",\"description\":\"Comprehends all energy companies type equities\"},\"percentage\":50.0}]}";
 //        return "{\"id\":1,\"name\":\"Alpha Mix Rent FCI\",\"symbol\":\"ALFA\",\"composition\":[{\"id\":2,\"specieType\":\"BOND\",\"percentage\":30.0},{\"id\":3,\"specieType\":\"CASH\",\"percentage\":20.0},{\"id\":1,\"specieType\":\"MARKET_SHARE\",\"percentage\":50.0}],\"fciregulationComposition\":{\"MARKET_SHARE\":50.0,\"BOND\":30.0,\"CASH\":20.0},\"compositionAsSpecieType\":{\"MARKET_SHARE\":50.0,\"CASH\":20.0,\"BOND\":30.0}}";
     }
+
+    @Test
+    public void a() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        FCISpecieToSpecieType fciSpecieToSpecieTypeALUA = FCISpecieToSpecieType.builder()
+                .specieSymbol("ALUA")
+                .fciSpecieType(FCISpecieType.builder().fciSpecieTypeId(2).name("Energies").build())
+                .build();
+
+        FCISpecieToSpecieType fciSpecieToSpecieTypeGGAL = FCISpecieToSpecieType.builder()
+                .specieSymbol("ALUA")
+                .fciSpecieType(FCISpecieType.builder().fciSpecieTypeId(1).name("Banks").build())
+                .build();
+
+        List<FCISpecieToSpecieType> list = List.of(fciSpecieToSpecieTypeALUA, fciSpecieToSpecieTypeGGAL);
+
+        mapper.writeValueAsString(list);
+
+        /* [{"id":null,"specieSymbol":"ALUA","fciSpecieType":{"fciSpecieTypeId":2,"name":"Energies","description":null,"updatable":null,"specieQuantity":null}},{"id":null,"specieSymbol":"ALUA","fciSpecieType":{"fciSpecieTypeId":1,"name":"Banks","description":null,"updatable":null,"specieQuantity":null}}] */
+    }
 }

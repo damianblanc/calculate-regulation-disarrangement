@@ -260,7 +260,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
         List<SpecieToSpecieTypeVO> savedAssociations = new ArrayList<>();
 
         /* Verify that all specie types belong to specified group before persisting them */
-        fciSpecieToSpecieTypes.forEach(fciSpecieToSpecieType -> 
+        fciSpecieToSpecieTypes.forEach(fciSpecieToSpecieType ->
                     fciSpecieTypes.stream()
                             .filter(fciSpecieType -> fciSpecieType.getFciSpecieTypeId().equals(fciSpecieToSpecieType.getFciSpecieType().getFciSpecieTypeId()))
                             .findFirst()

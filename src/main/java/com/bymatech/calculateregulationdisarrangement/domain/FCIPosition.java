@@ -75,7 +75,6 @@ public class FCIPosition {
     public void setTransientJsonPosition(List<FCISpeciePosition> fciSpeciePositions) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         this.jsonPosition = mapper.writeValueAsString(fciSpeciePositions);
-
     }
 
     public static List<FCISpeciePosition> getSpeciePositions(FCIPosition fciPosition, boolean updatedMarketPosition) throws JsonProcessingException {
@@ -115,6 +114,11 @@ public class FCIPosition {
             log.warn(ex.getMessage());
         }
         return List.of();
+    }
+
+    public void updateOriginalPosition(List<FCISpeciePosition> fciSpeciePositionList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        setJsonPosition(mapper.writeValueAsString(fciSpeciePositionList));
     }
 
     public void updateMarketPosition(List<FCISpeciePosition> fciSpeciePositionList) throws JsonProcessingException {

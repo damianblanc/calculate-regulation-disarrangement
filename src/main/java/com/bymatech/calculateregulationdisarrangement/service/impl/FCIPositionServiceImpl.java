@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.DoubleBuffer;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
@@ -74,6 +75,8 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
         validatePosition(fciPosition, fciRegulation);
 
+        adaptCashGroupInPosition(fciPosition);
+
         fciPosition.setCreatedOn();
         List<FCISpeciePosition> currentMarketPriceToPosition = updateCurrentMarketPriceToPosition(fciPosition, true);
         fciPosition.updateMarketPosition(currentMarketPriceToPosition);
@@ -84,13 +87,32 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         return createFCIPositionVO(fciRegulationSymbol, fciPosition);
     }
 
+    /**
+     * Since simplification to receive cash total in quantity column it must be changed its setting, being quantity = 1
+     * and currentMarketPrice = quantity, the amount of cash in position
+     */
+    private static void adaptCashGroupInPosition(FCIPosition fciPosition) throws JsonProcessingException {
+        List<FCISpeciePosition> speciePositions = FCIPosition.getSpeciePositions(fciPosition, false);
+        Optional<FCISpeciePosition> optionalCash = speciePositions.stream().filter(specieInPosition ->
+                specieInPosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).findFirst();
+        if (optionalCash.isPresent()) {
+            FCISpeciePosition cash = optionalCash.get();
+            cash.setCurrentMarketPrice((double) cash.getQuantity());
+            cash.setQuantity(1);
+        }
+        fciPosition.updateOriginalPosition(speciePositions);
+    }
+
     private void attachSpecieTypeAndGroup(FCIPosition fciPosition) throws JsonProcessingException {
         List<SpecieToSpecieType> specieToSpecieTypes = fciSpecieTypeGroupService.listAllSpecieToSpecieTypeAssociations();
         List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, false).stream()
-                .peek(fciSpeciePosition ->
-                        specieToSpecieTypes.stream().filter(association -> fciSpeciePosition.getSymbol().equals(association.getSpecieSymbol())).findFirst().orElseThrow(
-                                () -> new EntityNotFoundException(
-                                        String.format(ExceptionMessage.SPECIE_TO_SPECIE_TYPE_DOES_NOT_EXIST.msg, fciSpeciePosition.getSymbol())))).toList();
+                .peek(fciSpeciePosition -> {
+                            SpecieToSpecieType specieToSpecieType = specieToSpecieTypes.stream().filter(association -> fciSpeciePosition.getSymbol().equals(association.getSpecieSymbol())).findFirst()
+                                    .orElseThrow(() -> new EntityNotFoundException(
+                                            String.format(ExceptionMessage.SPECIE_TO_SPECIE_TYPE_DOES_NOT_EXIST.msg, fciSpeciePosition.getSymbol())));
+                            fciSpeciePosition.setFciSpecieType(specieToSpecieType.getSpecieTypeName());
+                            fciSpeciePosition.setFciSpecieGroup(specieToSpecieType.getSpecieTypeGroupName());
+                        }).toList();
         fciPosition.setTransientJsonPosition(fciSpeciePositions);
     }
 
@@ -299,18 +321,8 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         });
 
         /* Cash Specie Type must be included in Position */
-        FCISpeciePosition cash = speciePositions.stream().filter(specieInPosition -> specieInPosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).findFirst()
+        speciePositions.stream().filter(specieInPosition -> specieInPosition.getSymbol().equals(SpecieTypeGroupEnum.Cash.name())).findFirst()
                 .orElseThrow(() -> new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_NOT_INCLUDED_POSITION.msg));
-
-        /* Cash Specie Type must define currentMarketPrice */
-        if (Constants.CASH_NOT_DEFINED_MARKET_PRICE.equals(cash.getCurrentMarketPrice())) {
-            throw new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_PRICE_NOT_DEFINED.msg);
-        }
-
-        /* Cash Quantity must be one */
-        if (cash.getQuantity() != 1) {
-            throw new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_QUANTITY_NOT_ONE.msg);
-        }
 
         return true;
     }
