@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.config;
 
 import com.bymatech.calculateregulationdisarrangement.dto.ErrorInfo;
+import com.bymatech.calculateregulationdisarrangement.exception.AuthorizationException;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.exception.MarketResponseException;
 import com.bymatech.calculateregulationdisarrangement.exception.PositionValidationException;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
         ErrorInfo errorInfo = new ErrorInfo(index.getAndIncrement(),"Market not available Error", e.getMessage());
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorInfo> handleAuthorizationException(AuthorizationException e) {
+        ErrorInfo errorInfo = new ErrorInfo(index.getAndIncrement(),"Authorization Error", e.getMessage());
+        return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
+    }
+
 
 
 }

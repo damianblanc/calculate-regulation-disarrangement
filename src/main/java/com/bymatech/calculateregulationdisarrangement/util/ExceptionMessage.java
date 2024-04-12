@@ -57,6 +57,12 @@ public enum ExceptionMessage {
 
     SPECIE_TYPE_DOES_NOT_BELONG_TO_GROUP("Specie Type [%s - %s] does not belong to indicated group [%s]"),
 
+    USER_NAME_DOES_NOT_EXIST("User name is incorrect or not registered"),
+
+    USER_INCORRECT_PASSWORD("User password is incorrect or not recognized"),
+
+    USER_NAME_ALREADY_REGISTERED("User name is incorrect or not registered"),
+
     ;
 
     public final String msg;

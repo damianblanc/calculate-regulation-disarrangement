@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceSpecieType;
+import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceSpecieTypeFlatFormat;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceVerboseVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -20,6 +21,8 @@ public interface FCIPositionAdvisorService {
      * @throws JsonProcessingException
      */
     List<OperationAdviceSpecieType> advice(String fciRegulationSymbol, String fciPositionId) throws Exception;
+
+    List<OperationAdviceSpecieTypeFlatFormat> adviceFlatFormat(String fciRegulationSymbol, String fciPositionId) throws Exception;
 
     OperationAdviceVerboseVO adviceVerbose(String fciRegulationSymbol, String fciPositionId) throws Exception;
 

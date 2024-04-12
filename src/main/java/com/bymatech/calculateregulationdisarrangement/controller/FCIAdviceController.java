@@ -14,13 +14,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 public class FCIAdviceController {
-
-
     private ImmutableMap<AdviceCalculationCriteria, FCIPositionAdvisorService> services;
-
     @Autowired
     private CriteriaAdvisorServiceFactory criteriaAdvisorServiceFactory;
-
     @Autowired
     private FCIPositionAdviceService fciPositionAdviceService;
 
@@ -31,6 +27,15 @@ public class FCIAdviceController {
                 .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
                 .advice(symbol, id);
     }
+
+    @GetMapping("/calculate-bias/fci/{symbol}/position/{id}/advice/criteria/{criteria}/flat")
+    public List<OperationAdviceSpecieTypeFlatFormat> advicePositionByCriteriaFlat(
+        @PathVariable String symbol, @PathVariable String id, @PathVariable String criteria) throws Exception {
+        return criteriaAdvisorServiceFactory
+            .select(AdviceCalculationCriteria.valueOf(criteria.toUpperCase()))
+            .adviceFlatFormat(symbol, id);
+    }
+
 
 //    @PostMapping("/calculate-disarrangement/fci/{symbol}/advice/criteria/{criteria}/specie-type/{specieType}")
 //    public List<Map.Entry<SpecieType, Collection<OperationAdviceVO>>> advicePositionByCriteriaSpecieType(

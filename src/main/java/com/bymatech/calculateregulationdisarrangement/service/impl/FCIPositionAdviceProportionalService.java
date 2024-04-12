@@ -86,6 +86,23 @@ public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorS
     }
 
     @Override
+    public List<OperationAdviceSpecieTypeFlatFormat> adviceFlatFormat(String fciRegulationSymbol, String fciPositionId) throws Exception {
+        List<OperationAdviceSpecieType> advices = advice(fciRegulationSymbol, fciPositionId);
+        return advices.stream().flatMap(advice ->
+            advice.getOperationAdvices().stream().map(operationAdvice ->
+                OperationAdviceSpecieTypeFlatFormat.builder()
+                    .specieTypeGroup(advice.getSpecieTypeGroup())
+                    .specieType(advice.getSpecieType())
+                    .specieName(operationAdvice.getSpecieName())
+                    .operationAdvice(operationAdvice.getOperationAdvice())
+                    .price(operationAdvice.getPrice())
+                    .quantity(operationAdvice.getQuantity())
+                    .value(operationAdvice.getPrice() * operationAdvice.getQuantity())
+                    .build())).toList();
+    }
+
+
+    @Override
     public OperationAdviceVerboseVO adviceVerbose(String fciRegulationSymbol, String fciPositionId) throws Exception {
         return null;
     }

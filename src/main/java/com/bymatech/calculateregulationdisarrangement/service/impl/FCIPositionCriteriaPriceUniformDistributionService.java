@@ -83,6 +83,12 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
     }
 
     @Override
+    public List<OperationAdviceSpecieTypeFlatFormat> adviceFlatFormat(String fciRegulationSymbol,
+        String fciPositionId) throws Exception {
+        return null;
+    }
+
+    @Override
     public OperationAdviceVerboseVO adviceVerbose(String fciRegulationSymbol, String fciPositionId) throws Exception {
 //        return advice(fciRegulationSymbol, fciPositionId);
         return null;
