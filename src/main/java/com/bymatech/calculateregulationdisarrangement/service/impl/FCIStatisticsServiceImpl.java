@@ -17,16 +17,22 @@ public class FCIStatisticsServiceImpl implements FCIStatisticService {
 
   @Override
   public void updateStatistics(StatisticDTO statisticDTO) {
-      fciStatisticsRepository.save(Statistic.builder()
-          .reportQuantity(statisticDTO.getReportQuantity())
-          .adviceQuantity(statisticDTO.getAdviceQuantity()).build());
+    List<Statistic> statistics = fciStatisticsRepository.findAll();
+    if(!statistics.isEmpty()) {
+      Statistic statistic = statistics.get(0);
+      statistic.setAdviceQuantity(statisticDTO.getAdviceQuantity());
+      statistic.setReportQuantity(statisticDTO.getReportQuantity());
+      fciStatisticsRepository.save(statistic);
+    }
   }
 
   @Override
   public StatisticDTO retrieveStatistics() {
     List<Statistic> statistics = fciStatisticsRepository.findAll(); // Only one row
     if (statistics.isEmpty()) {
+      fciStatisticsRepository.save(Statistic.builder().adviceQuantity(0).reportQuantity(0).build());
       return new StatisticDTO(0, 0);
+
     }
     return new StatisticDTO(statistics.get(0).getReportQuantity(), statistics.get(0).getAdviceQuantity());
   }
