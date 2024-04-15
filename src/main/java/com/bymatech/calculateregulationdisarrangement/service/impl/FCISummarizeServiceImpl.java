@@ -4,10 +4,12 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCICompositionVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationVO;
 import com.bymatech.calculateregulationdisarrangement.dto.PositionPerMonthVO;
+import com.bymatech.calculateregulationdisarrangement.dto.StatisticDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIStatisticService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISummarizeService;
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
@@ -28,6 +30,9 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
     @Autowired
     private FCIPositionService fciPositionService;
 
+    @Autowired
+    private FCIStatisticService fciStatisticService;
+
     @Override
     public SummarizeOverviewVO retrieveSummarizeOverview() throws Exception {
         List<FCIRegulationVO> fciRegulations = fciRegulationCRUDService.listFCIRegulations();
@@ -42,8 +47,16 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
                 .map(fciRegulation -> Map.entry(fciRegulation.getFciSymbol(), fciRegulation.getPositions().size()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        /** Total Position Quantity*/
+        /** Total Position Quantity */
         Integer totalPositionQuantity = !fciRegulations.isEmpty() ? fciRegulations.stream().map(FCIRegulationVO::getPositions).map(List::size).reduce(Integer::sum).orElseThrow() : 0;
+
+        StatisticDTO statisticDTO = fciStatisticService.retrieveStatistics();
+
+        /** Total Reports Quantity */
+        Integer reportQuantity = statisticDTO.getReportQuantity();
+
+        /** Total Advices Quantity */
+        Integer adviceQuantity = statisticDTO.getAdviceQuantity();
 
         /** Regulation Position Quantity Per Month last year */
         Map<String, Map<String, Integer>> positionsPerMonthByFCI = fciRegulations.stream().map(fciRegulation ->
@@ -63,9 +76,12 @@ public class FCISummarizeServiceImpl implements FCISummarizeService {
 
         return SummarizeOverviewVO.builder()
                 .fciRegulationQuantity(fciRegulations.size())
+                .fciPositionQuantity(totalPositionQuantity)
+                .fciReportsQuantity(reportQuantity)
+                .fciAdvicesQuantity(adviceQuantity)
                 .fciRegulationCompositions(fciRegulationCompositions)
                 .fciRegulationPositionsQuantity(fciRegulationPositions)
-                .fciPositionQuantity(totalPositionQuantity)
+
                 .fciPositionsPerMothLastYear(positionsPerMonthOpened)
                 .build();
     }
