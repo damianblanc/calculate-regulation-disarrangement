@@ -39,8 +39,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public String login(final LoginUser loginUser) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-    User user = userRepository.findByUsername(loginUser.getUsername()).orElseThrow(() -> new EntityNotFoundException(ExceptionMessage.USER_NAME_DOES_NOT_EXIST.msg));
+    User user = userRepository.findByUsername(loginUser.getUsername())
+        .orElseThrow(() -> new AuthorizationException(ExceptionMessage.USER_NAME_DOES_NOT_EXIST.msg));
     if (passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
       return generateToken(loginUser.getUsername());
     }

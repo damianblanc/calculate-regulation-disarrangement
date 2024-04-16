@@ -48,7 +48,4 @@ public class GlobalExceptionHandler {
         ErrorInfo errorInfo = new ErrorInfo(index.getAndIncrement(),"Authorization Error", e.getMessage());
         return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
     }
-
-
-
 }
