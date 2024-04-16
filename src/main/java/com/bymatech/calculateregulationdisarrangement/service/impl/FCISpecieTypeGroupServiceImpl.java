@@ -63,9 +63,19 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     @Override
     public FCISpecieTypeGroup findFCISpecieTypeGroup(String fciSpecieTypeGroupName) {
-        return fciSpecieTypeGroupRepository.findByName(fciSpecieTypeGroupName)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeGroupName)));
+        FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(
+                fciSpecieTypeGroupName)
+            .orElseThrow(() -> new EntityNotFoundException(
+                String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg,
+                    fciSpecieTypeGroupName)));
+        List<FCISpecieType> specieTypesWithSpecieQuantity = fciSpecieTypeGroup.getFciSpecieTypes().stream()
+            .peek(fciSpecieType -> {
+                int speciesInSpecieTypeQuantity = listSpecieToSpecieTypeAssociation(
+                    fciSpecieTypeGroupName, fciSpecieType.getName()).size();
+                fciSpecieType.setSpecieQuantity(speciesInSpecieTypeQuantity);
+            }).toList();
+        fciSpecieTypeGroup.setFciSpecieTypes(specieTypesWithSpecieQuantity);
+        return fciSpecieTypeGroup;
     }
 
     public List<SpecieTypeGroupDto> listFCISpecieTypeGroups() {
@@ -73,10 +83,13 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
             .map(fciSpecieTypeGroup ->
                     new SpecieTypeGroupDto(fciSpecieTypeGroup.getId(),
                         fciSpecieTypeGroup.getName(), fciSpecieTypeGroup.getDescription(), fciSpecieTypeGroup.getUpdatable(),
-                        fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType ->
-                                new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(), fciSpecieType.getName(),
-                                        fciSpecieType.getDescription(), fciSpecieType.getUpdatable(), fciSpecieType.getSpecieQuantity()))
-                                .sorted().toList()))
+                        fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType -> {
+                            return new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(),
+                                    fciSpecieType.getName(),
+                                    fciSpecieType.getDescription(), fciSpecieType.getUpdatable(),
+                                listSpecieToSpecieTypeAssociation(
+                                    fciSpecieTypeGroup.getName(), fciSpecieType.getName()).size());
+                            }).sorted().toList()))
             .sorted().toList();
     }
 
@@ -222,12 +235,8 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeName)));
         List<FCISpecieToSpecieType> fciSpecieToSpecieTypes = fciSpecieToSpecieTypeRepository.listBySpecieType(foundFCISpecieType);
 
-        if (SpecieTypeGroupEnum.Equity.name().equals(specieTypeGroupName)) {
-            return marketService.getTotalEquities().stream().map(specie ->
-                    getSpecieToSpecieTypeVO(fciSpecieToSpecieTypes, specie.getSymbol(), index)).toList();
-        }
-        return marketService.getTotalBonds().stream().map(specie ->
-                getSpecieToSpecieTypeVO(fciSpecieToSpecieTypes, specie.getSymbol(), index)).toList();
+        return fciSpecieToSpecieTypes.stream().map(specie ->
+            getSpecieToSpecieTypeVO(fciSpecieToSpecieTypes, specie.getSpecieSymbol(), index)).toList();
     }
 
     @Override

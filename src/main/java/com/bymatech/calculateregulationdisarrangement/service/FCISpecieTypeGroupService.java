@@ -150,7 +150,7 @@ public interface FCISpecieTypeGroupService {
      * Persists received species / specie type associations in order to be used as a base to receive further positions
      * @param fciSpecieToSpecieTypes contains species of indicated {@link FCISpecieTypeGroup} defined specie type groups
      */
-    List<SpecieToSpecieTypeVO>  createSpecieToSpecieTypeAssociations(String specieTypeGroupName, List<FCISpecieToSpecieType> fciSpecieToSpecieTypes);
+    List<SpecieToSpecieTypeVO> createSpecieToSpecieTypeAssociations(String specieTypeGroupName, List<FCISpecieToSpecieType> fciSpecieToSpecieTypes);
 
     /**
      * Persists received species / specie type associations in order to be used as a base to receive further positions
