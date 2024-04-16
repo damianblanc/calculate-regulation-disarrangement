@@ -4,8 +4,10 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/EmbeddedCompositionId.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/exception/MarketResponseException.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationPercentageVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCIStatisticsServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PriceUniformlyDistributionCriteriaParameterDTO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIReportController.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/UserService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCICalculationServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionCriteriaPriceUniformDistributionService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIPositionVO.java
@@ -16,10 +18,12 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIRegulationComponentService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/Retrieval.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/MarketEquityResponse.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/StatisticController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/FCIRegulation.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/FCIPositionAdviceRepository.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/BymaHttpService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationSymbolAndNameVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/StatisticDTO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/Market.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/RegulationLagVerboseVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/config/GlobalExceptionHandler.java
@@ -28,10 +32,12 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/MarketEquityAuthBean.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/MarketBondResponse.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/config/ApplicationPropertiesController.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIStatisticService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIReportService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/BymaAPIServiceGenerator.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SpecieToSpecieTypeVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SummarizeOverviewVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/config/SecurityConfig.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/MarketHttpService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIPositionController.java
@@ -65,9 +71,11 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/exception/FailedValidationException.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/util/DomainExtractionHelper.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCIReportTypeImpl.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/Statistic.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionAdviceService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/FCISpecieType.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/LoginUser.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/UserController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/config/ApplicationPropertiesConfigBean.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCIPositionAdvisorService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/FCIRegulationRepository.java
@@ -75,6 +83,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/CalculateRegulationDisarrangementApplication.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCISpecieTypeGroupService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PositionPerMonthVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/UserRepository.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/FCISpeciePosition.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/PrimaryServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/PrimaryAPIServiceGenerator.java
@@ -103,8 +112,10 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCICompositionVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/controller/FCIComponentController.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIValuedVO.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/FCIStatisticsRepository.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/SpecieTypeGroupEnum.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/util/ExceptionMessage.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/UserServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIRegulationValuedVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/FCIPositionValuedVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/OperationAdvice.java

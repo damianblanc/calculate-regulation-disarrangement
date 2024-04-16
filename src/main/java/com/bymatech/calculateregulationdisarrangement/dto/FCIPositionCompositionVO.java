@@ -13,7 +13,7 @@ public class FCIPositionCompositionVO {
 
     private String specieType;
 
-    private String specieName;
+//    private String specieName;
 
     private String specieSymbol;
 
