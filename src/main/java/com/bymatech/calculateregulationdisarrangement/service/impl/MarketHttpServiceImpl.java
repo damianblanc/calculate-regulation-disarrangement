@@ -7,6 +7,7 @@ import com.bymatech.calculateregulationdisarrangement.exception.FailedValidation
 import com.bymatech.calculateregulationdisarrangement.exception.MarketResponseException;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.http.BymaAPIServiceGenerator;
+import com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -24,17 +25,41 @@ import java.util.List;
 @Slf4j
 public class MarketHttpServiceImpl implements MarketHttpService {
 
-    public List<MarketCedearResponse> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean) {
-        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service = BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
-        Call<List<MarketCedearResponse>> callSync = service.getCedears(marketCedearAuthBean);
+    public MarketCedearResponse getCedears(@Body MarketCedearAuthBean marketCedearAuthBean) {
+        BymaHttpService service = BymaAPIServiceGenerator.createService(BymaHttpService.class);
+        Call<MarketCedearResponse> callSync = service.getCedears(marketCedearAuthBean);
 
         try {
-            Response<List<MarketCedearResponse>> response = callSync.execute();
+            Response<MarketCedearResponse> response = callSync.execute();
             return response.body();
         } catch (Exception ex) {
             log.warn(ex.getMessage());
         }
-        return List.of();
+        return MarketCedearResponse.create();
+    }
+
+    public List<MarketCedearResponse.MarketCedearResponseElement> getTotalCedears() {
+        MarketCedearResponse marketCedears = getCedears(MarketCedearAuthBean.create(1));
+        List<MarketCedearResponse.MarketCedearResponseElement> cedears = new ArrayList<>();
+
+        for (int i = 1; i <= marketCedears.getContent().getPageCount(); i++) {
+            List<MarketCedearResponse.MarketCedearResponseElement> marketCedearResponses =
+                getCedears(MarketCedearAuthBean.create(i)).getMarketCedearResponses().stream().peek(cedear -> {
+                    cedear.setMarketSymbol(cedear.getSymbol());
+                    cedear.setMarketPrice(cedear.getTrade());
+                    cedear.setFciSpecieType();
+                }).toList();
+            cedears.addAll(marketCedearResponses);
+        }
+
+        if (cedears.isEmpty())
+            throw new MarketResponseException(ExceptionMessage.MARKET_CEDEAR_INFORMATION_NOT_AVAILABLE.msg);
+
+        if (cedears.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
+            Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
+            throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
+
+        return cedears;
     }
 
     public List<MarketBondResponse.MarketBondResponseElement> getTotalBonds() {
@@ -63,7 +88,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
 
     @Override
     public MarketBondResponse getBonds(@Body MarketBondAuthBean marketBondAuthBean) {
-        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service = BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
+        BymaHttpService service = BymaAPIServiceGenerator.createService(BymaHttpService.class);
         Call<MarketBondResponse> callSync = service.getBonds(marketBondAuthBean);
 
         try {
@@ -100,8 +125,8 @@ public class MarketHttpServiceImpl implements MarketHttpService {
 
     @Override
     public MarketEquityResponse getLeadingEquities(MarketEquityAuthBean marketEquityAuthBean) {
-        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service =
-                BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
+        BymaHttpService service =
+                BymaAPIServiceGenerator.createService(BymaHttpService.class);
         Call<MarketEquityResponse> callSync = service.getLeadingEquities(marketEquityAuthBean);
 
         try {
@@ -115,8 +140,8 @@ public class MarketHttpServiceImpl implements MarketHttpService {
 
     @Override
     public MarketEquityResponse getGeneralEquities(MarketEquityAuthBean marketEquityAuthBean) {
-        com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService service =
-                BymaAPIServiceGenerator.createService(com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService.class);
+        BymaHttpService service =
+                BymaAPIServiceGenerator.createService(BymaHttpService.class);
         Call<MarketEquityResponse> callSync = service.getGeneralEquities(marketEquityAuthBean);
 
         try {
@@ -186,6 +211,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
         ArrayList<MarketResponse> responses = new ArrayList<>();
         responses.addAll(getTotalBonds());
         responses.addAll(getTotalEquities());
+        responses.addAll(getTotalCedears());
         return responses;
     }
 }

@@ -5,12 +5,14 @@ import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
+import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieToSpecieTypeRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieTypeGroupRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.stream.Stream;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     @Autowired
     private MarketHttpService marketService;
+
 
     /* FCISpecieTypeGroup */
     @Override
@@ -83,13 +86,12 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
             .map(fciSpecieTypeGroup ->
                     new SpecieTypeGroupDto(fciSpecieTypeGroup.getId(),
                         fciSpecieTypeGroup.getName(), fciSpecieTypeGroup.getDescription(), fciSpecieTypeGroup.getUpdatable(),
-                        fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType -> {
-                            return new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(),
+                        fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType ->
+                            new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(),
                                     fciSpecieType.getName(),
                                     fciSpecieType.getDescription(), fciSpecieType.getUpdatable(),
                                 listSpecieToSpecieTypeAssociation(
-                                    fciSpecieTypeGroup.getName(), fciSpecieType.getName()).size());
-                            }).sorted().toList()))
+                                    fciSpecieTypeGroup.getName(), fciSpecieType.getName()).size())).sorted().toList()))
             .sorted().toList();
     }
 
@@ -97,6 +99,14 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     /* FCISpecieType */
     @Override
     public FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType fciSpecieType) {
+        List<FCISpecieTypeGroup> fciSpecieTypeGroups = fciSpecieTypeGroupRepository.findAll();
+        if (fciSpecieTypeGroups.stream()
+            .map(FCISpecieTypeGroup::getFciSpecieTypes)
+            .flatMap(fciSpecieTypes -> fciSpecieTypes.stream()
+                .map(FCISpecieType::getName)).anyMatch(specieTypeName -> fciSpecieType.getName().equals(specieTypeName))) {
+            throw new FailedValidationException(String.format(ExceptionMessage.SPECIE_TYPE_NAME_ALREADY_EXISTS.msg));
+        }
+
         FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(groupName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, groupName)));
@@ -106,11 +116,17 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     }
 
     @Override
-    public String deleteFCISpecieType(String fciSpecieTypeNameGroup, String fciSpecieTypeName) {
-        FCISpecieTypeGroup FCISpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeName)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroup)));
-        FCISpecieTypeGroup.getFciSpecieTypes().removeIf(sp -> sp.getName().equals(fciSpecieTypeName));
-        fciSpecieTypeGroupRepository.save(FCISpecieTypeGroup);
+    public String deleteFCISpecieType(String fciSpecieTypeNameGroupName, String fciSpecieTypeName) {
+        //TODO: What happens with species configured to specie type, are they assigned another specie type or they start to remain unbound?
+
+        FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(fciSpecieTypeNameGroupName)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, fciSpecieTypeNameGroupName)));
+
+        if (!listSpecieToSpecieTypeAssociation(fciSpecieTypeNameGroupName, fciSpecieTypeName).isEmpty())
+            throw new FailedValidationException(String.format(ExceptionMessage.SPECIE_TYPE_CANNOT_BE_DELETED_SPECIES_BOUND.msg, fciSpecieTypeNameGroupName, fciSpecieTypeName));
+
+        fciSpecieTypeGroup.getFciSpecieTypes().removeIf(sp -> sp.getName().equals(fciSpecieTypeName));
+        fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
         return fciSpecieTypeName;
     }
 

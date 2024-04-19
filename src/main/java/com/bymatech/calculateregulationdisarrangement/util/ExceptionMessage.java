@@ -25,6 +25,8 @@ public enum ExceptionMessage {
 
     SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND("Specie Type Group cannot be found with name [%s]"),
 
+    SPECIE_TYPE_NAME_ALREADY_EXISTS("Specie Type name already exists, please provide a new name"),
+
     POSITION_CONTAINS_NOT_RETRIEVED_SPECIE("Position contains specie [%s] which is not informed by Market"),
 
     MARKET_EQUITY_INFORMATION_NOT_AVAILABLE("Market Equities Information is not currently available, try again later"),
@@ -56,6 +58,10 @@ public enum ExceptionMessage {
     SPECIE_TO_SPECIE_TYPE_DOES_NOT_EXIST("Specie symbol [%s] is not associated to any Specie Type"),
 
     SPECIE_TYPE_DOES_NOT_BELONG_TO_GROUP("Specie Type [%s - %s] does not belong to indicated group [%s]"),
+
+    SPECIE_TYPE_CANNOT_BE_DELETED_SPECIES_BOUND("Specie Type [%s - %s] cannot be deleted since it has associated species"),
+
+    SPECIE_TYPE_CANNOT_BE_DELETED_POSITION_BOUND("Specie Type [%s - %s] cannot be deleted since it has positions referring them"),
 
     USER_NAME_DOES_NOT_EXIST("User name is incorrect or not registered"),
 

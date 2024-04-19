@@ -60,7 +60,7 @@ public interface FCISpecieTypeGroupService {
     /**
      * Deletes a {@link SpecieTypeGroupEnum} indicated by its name
      */
-    String deleteFCISpecieType(String groupName, String specieTypeName);
+    String deleteFCISpecieType(String fciSpecieTypeNameGroup, String fciSpecieTypeName);
 
     /**
      * Updates a {@link SpecieTypeGroupEnum} by incoming state

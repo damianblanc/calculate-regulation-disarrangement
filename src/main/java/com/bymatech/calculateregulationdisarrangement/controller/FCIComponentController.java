@@ -54,8 +54,8 @@ public class FCIComponentController {
     }
 
     @DeleteMapping("/specie-type-group/{specie-type-group-name}/specie-type/{specie-type-name}")
-    public String deleteSpecieType(@PathVariable ("specie-type-group-name") String FCISpecieTypeGroupName, @PathVariable String specieTypeName) {
-        return fciSpecieTypeGroupService.deleteFCISpecieType(FCISpecieTypeGroupName, specieTypeName);
+    public String deleteSpecieType(@PathVariable ("specie-type-group-name") String fciSpecieTypeGroupName, @PathVariable("specie-type-name") String fciSpecieTypeName) {
+        return fciSpecieTypeGroupService.deleteFCISpecieType(fciSpecieTypeGroupName, fciSpecieTypeName);
     }
 
     @PutMapping("/specie-type-group/{specie-type-group-name}/specie-type")

@@ -17,7 +17,7 @@ public interface MarketHttpService {
 
     List<MarketResponse> marketResponses = new ArrayList<>();
 
-    List<MarketCedearResponse> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
+    MarketCedearResponse getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
 
     List<MarketBondResponse.MarketBondResponseElement> getTotalBonds();
 
@@ -34,6 +34,8 @@ public interface MarketHttpService {
     MarketEquityResponse getGeneralEquities(@Body MarketEquityAuthBean marketEquityAuthBean);
 
     List<MarketEquityResponse.MarketEquityResponseElement> getTotalEquities();
+
+    List<MarketCedearResponse.MarketCedearResponseElement> getTotalCedears();
 
     List<MarketResponse> getEquityOrderedByPrice(OrderType orderType);
 
@@ -72,8 +74,21 @@ public interface MarketHttpService {
             if (equities.isEmpty()) {
                 throw new IllegalArgumentException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
             }
+
+
+            CompletableFuture<List<MarketCedearResponse.MarketCedearResponseElement>> futureCedearsTask = CompletableFuture.supplyAsync(this::getTotalCedears);
+            List<MarketCedearResponse.MarketCedearResponseElement> cedears = new ArrayList<>();
+            while (!futureCedearsTask.isDone()) {
+                cedears = futureCedearsTask.get();
+
+            }
+            if (cedears.isEmpty()) {
+                throw new IllegalArgumentException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
+            }
+
             marketResponses.addAll(bonds);
             marketResponses.addAll(equities);
+            marketResponses.addAll(cedears);
             return marketResponses;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
