@@ -79,7 +79,7 @@ public class FCIComponentController {
     }
 
     @PostMapping("specie-to-specie-type-associations")
-    public List<SpecieToSpecieTypeVO>  createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@RequestBody List<FCISpecieToSpecieType> associations) {
+    public List<SpecieToSpecieTypeVO> createSpecieToSpecieTypeAssociationBySpecieGroupAndSpecieType(@RequestBody List<FCISpecieToSpecieType> associations) {
        return fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociations(associations);
     }
 

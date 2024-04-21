@@ -132,6 +132,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
                     specieType.getFciSpecieTypeId().equals(fciComposition.getFciSpecieTypeId())).findFirst().orElseThrow();
             return new FCICompositionVO(
                     index.getAndIncrement(),
+                    fciSpecieType.getFciSpecieTypeId(),
                     fciSpecieType.getName(),
                     String.valueOf(fciComposition.getPercentage()));
         }).toList();

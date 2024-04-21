@@ -25,32 +25,30 @@ import java.util.List;
 @Slf4j
 public class MarketHttpServiceImpl implements MarketHttpService {
 
-    public MarketCedearResponse getCedears(@Body MarketCedearAuthBean marketCedearAuthBean) {
+    public List<MarketCedearResponse> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean) {
         BymaHttpService service = BymaAPIServiceGenerator.createService(BymaHttpService.class);
-        Call<MarketCedearResponse> callSync = service.getCedears(marketCedearAuthBean);
+        Call<List<MarketCedearResponse>> callSync = service.getCedears(marketCedearAuthBean);
 
         try {
-            Response<MarketCedearResponse> response = callSync.execute();
+            Response<List<MarketCedearResponse>> response = callSync.execute();
             return response.body();
         } catch (Exception ex) {
             log.warn(ex.getMessage());
         }
-        return MarketCedearResponse.create();
+        return List.of(MarketCedearResponse.create());
     }
 
-    public List<MarketCedearResponse.MarketCedearResponseElement> getTotalCedears() {
-        MarketCedearResponse marketCedears = getCedears(MarketCedearAuthBean.create(1));
-        List<MarketCedearResponse.MarketCedearResponseElement> cedears = new ArrayList<>();
+    public List<MarketCedearResponse> getTotalCedears() {
+        List<MarketCedearResponse> marketCedears = getCedears(MarketCedearAuthBean.create(1));
+        List<MarketCedearResponse> cedears = new ArrayList<>();
 
-        for (int i = 1; i <= marketCedears.getContent().getPageCount(); i++) {
-            List<MarketCedearResponse.MarketCedearResponseElement> marketCedearResponses =
-                getCedears(MarketCedearAuthBean.create(i)).getMarketCedearResponses().stream().peek(cedear -> {
-                    cedear.setMarketSymbol(cedear.getSymbol());
-                    cedear.setMarketPrice(cedear.getTrade());
-                    cedear.setFciSpecieType();
-                }).toList();
-            cedears.addAll(marketCedearResponses);
-        }
+        List<MarketCedearResponse> marketCedearResponses =
+           marketCedears.stream().peek(cedear -> {
+                cedear.setMarketSymbol(cedear.getSymbol());
+                cedear.setMarketPrice(String.valueOf(cedear.getTrade()));
+                cedear.setFciSpecieType();
+            }).toList();
+        cedears.addAll(marketCedearResponses);
 
         if (cedears.isEmpty())
             throw new MarketResponseException(ExceptionMessage.MARKET_CEDEAR_INFORMATION_NOT_AVAILABLE.msg);

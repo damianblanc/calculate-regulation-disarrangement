@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface BymaHttpService {
         @POST("/vanoms-be-core/rest/api/bymadata/free/cedears")
-        Call<MarketCedearResponse> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
+        Call<List<MarketCedearResponse>> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
 
         @POST("vanoms-be-core/rest/api/bymadata/free/bnown/seriesHistoricas/iamc/bonos")
         Call<MarketBondResponse> getBonds(@Body MarketBondAuthBean marketBondAuthBean);

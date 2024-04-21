@@ -7,7 +7,7 @@ public enum SpecieTypeGroupEnum {
     Equity,
     Bond,
 
-    Cedear,
+    Cedears,
     Cash,
     ;
 }

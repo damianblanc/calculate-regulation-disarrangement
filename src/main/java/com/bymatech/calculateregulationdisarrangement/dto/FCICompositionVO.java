@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 public class FCICompositionVO {
     private Integer id;
-    private String specieType;
+    private Integer specieTypeId;
+    private String specieTypeName;
     private String percentage;
 }

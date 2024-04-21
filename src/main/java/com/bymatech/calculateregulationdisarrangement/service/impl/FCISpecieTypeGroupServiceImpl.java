@@ -238,6 +238,13 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
             return marketService.getTotalEquities().stream().map(specie ->
                     getSpecieToSpecieTypeVO(specieToSpecieTypes, specie.getSymbol(), index)).toList();
         }
+        if (SpecieTypeGroupEnum.Cedears.name().equals(specieTypeGroupName)) {
+            return marketService.getTotalCedears().stream().map(specie ->
+                getSpecieToSpecieTypeVO(specieToSpecieTypes, specie.getSymbol(), index)).toList();
+        }
+        if (SpecieTypeGroupEnum.Cash.name().equals(specieTypeGroupName)) {
+            return List.of(getSpecieToSpecieTypeVO(specieToSpecieTypes, "Cash", index));
+        }
         return marketService.getTotalBonds().stream().map(specie ->
                 getSpecieToSpecieTypeVO(specieToSpecieTypes, specie.getSymbol(), index)).toList();
     }

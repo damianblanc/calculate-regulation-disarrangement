@@ -18,7 +18,7 @@ public class FCIMarketController {
     private MarketHttpService marketService;
 
     @GetMapping("/cedears")
-    public MarketCedearResponse getCedears() throws Exception {
+    public List<MarketCedearResponse> getCedears() throws Exception {
         return marketService.getCedears(MarketCedearAuthBean.create(1));
     }
 

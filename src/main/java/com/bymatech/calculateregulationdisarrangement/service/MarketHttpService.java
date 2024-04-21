@@ -17,7 +17,7 @@ public interface MarketHttpService {
 
     List<MarketResponse> marketResponses = new ArrayList<>();
 
-    MarketCedearResponse getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
+    List<MarketCedearResponse> getCedears(@Body MarketCedearAuthBean marketCedearAuthBean);
 
     List<MarketBondResponse.MarketBondResponseElement> getTotalBonds();
 
@@ -35,7 +35,7 @@ public interface MarketHttpService {
 
     List<MarketEquityResponse.MarketEquityResponseElement> getTotalEquities();
 
-    List<MarketCedearResponse.MarketCedearResponseElement> getTotalCedears();
+    List<MarketCedearResponse> getTotalCedears();
 
     List<MarketResponse> getEquityOrderedByPrice(OrderType orderType);
 
@@ -76,8 +76,8 @@ public interface MarketHttpService {
             }
 
 
-            CompletableFuture<List<MarketCedearResponse.MarketCedearResponseElement>> futureCedearsTask = CompletableFuture.supplyAsync(this::getTotalCedears);
-            List<MarketCedearResponse.MarketCedearResponseElement> cedears = new ArrayList<>();
+            CompletableFuture<List<MarketCedearResponse>> futureCedearsTask = CompletableFuture.supplyAsync(this::getTotalCedears);
+            List<MarketCedearResponse> cedears = new ArrayList<>();
             while (!futureCedearsTask.isDone()) {
                 cedears = futureCedearsTask.get();
 
