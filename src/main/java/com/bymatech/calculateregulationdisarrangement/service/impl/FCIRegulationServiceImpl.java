@@ -13,6 +13,7 @@ import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroup
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,7 +114,8 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
     @Override
     public List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbolsAndNames() {
         AtomicInteger index = new AtomicInteger();
-        return fciRegulationRepository.findAll().stream().sorted().map(fciRegulation ->
+        List<FCIRegulation> fciRegulations = fciRegulationRepository.findAll();
+        return fciRegulations.stream().sorted().map(fciRegulation ->
             new FCIRegulationSymbolAndNameVO(index.getAndIncrement(), fciRegulation.getSymbol(), fciRegulation.getName())).toList();
     }
 
@@ -156,6 +158,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
                 .fciSymbol(fciRegulation.getSymbol())
                 .name(fciRegulation.getName())
                 .description(fciRegulation.getDescription())
+                .createdOn(fciRegulation.getCreatedOn())
                 .composition(toValueObject(fciRegulation.getComposition()))
                 .positions(fciRegulation.getPositions().stream().map(position -> toValueObject(fciRegulation.getSymbol(), position)).toList())
                 .build();

@@ -64,13 +64,9 @@ public class FCIRegulation implements Comparable<FCIRegulation> {
 
     @Override
     public int compareTo(@NotNull FCIRegulation fciRegulation) {
-        return fciRegulation.getId().equals(this.getId()) ? 0 : -1;
+        return (fciRegulation.getCreatedOn().equals(this.getCreatedOn())
+        && !fciRegulation.getPositions().isEmpty()) ? 0 : 1;
     }
-
-//    public Map<FCISpecieType, Double> getCompositionAsSpecieType() {
-//        return fciComposition.stream().map(c -> Map.entry(c.getFciSpecieType(), c.getPercentage()))
-//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//    }
 
     public void setComposition(List<FCIComposition> composition) {
         if(this.composition == null) {

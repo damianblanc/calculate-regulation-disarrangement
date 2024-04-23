@@ -1,9 +1,11 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+import java.sql.Timestamp;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,8 @@ public class FCIRegulationVO implements Comparable<FCIRegulationVO> {
     private List<FCICompositionVO> composition;
 
     private List<FCIPositionVO> positions;
+
+    private Timestamp createdOn;
 
     public List<FCIPositionVO> getPositions() {
         return Objects.isNull(positions) ? List.of() : positions;

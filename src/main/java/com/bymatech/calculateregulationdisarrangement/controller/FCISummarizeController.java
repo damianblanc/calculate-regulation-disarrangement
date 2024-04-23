@@ -1,7 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
-import com.bymatech.calculateregulationdisarrangement.domain.ReportType;
-import com.bymatech.calculateregulationdisarrangement.dto.PositionPerMonthVO;
+import com.bymatech.calculateregulationdisarrangement.dto.SummaryPerMonthVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SummarizeOverviewVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCISummarizeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/summarize")
@@ -25,14 +23,29 @@ public class FCISummarizeController {
         return fciSummarizeService.retrieveSummarizeOverview();
     }
 
+    @GetMapping("/regulations-per-month")
+    public List<SummaryPerMonthVO> listRegulationsPerMonth() throws Exception {
+        return fciSummarizeService.retrieveRegulationsPerMonth();
+    }
+
     @GetMapping("/positions-per-month")
-    public List<PositionPerMonthVO> listPositionsPerMonth() throws Exception {
+    public List<SummaryPerMonthVO> listPositionsPerMonth() throws Exception {
         return fciSummarizeService.retrievePositionsPerMonth();
     }
 
     @GetMapping("/positions-per-month/fci/{fciRegulationSymbol}")
-    public List<PositionPerMonthVO> listRegulationPositionsPerMonth(@PathVariable String fciRegulationSymbol) throws Exception {
+    public List<SummaryPerMonthVO> listRegulationPositionsPerMonth(@PathVariable String fciRegulationSymbol) throws Exception {
         return fciSummarizeService.retrieveRegulationPositionsPerMonth(fciRegulationSymbol);
+    }
+
+    @GetMapping("/reports-per-month")
+    public List<SummaryPerMonthVO> listReportsPerMonth() throws Exception {
+        return fciSummarizeService.retrieveReportsPerMonth();
+    }
+
+    @GetMapping("/advices-per-month")
+    public List<SummaryPerMonthVO> listAdvicesPerMonth() throws Exception {
+        return fciSummarizeService.retrieveAdvicesPerMonth();
     }
 
 }

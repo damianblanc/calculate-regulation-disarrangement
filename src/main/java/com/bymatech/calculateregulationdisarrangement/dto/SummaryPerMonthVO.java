@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class PositionPerMonthVO {
+public class SummaryPerMonthVO {
 
     private String month;
     private Integer quantity;

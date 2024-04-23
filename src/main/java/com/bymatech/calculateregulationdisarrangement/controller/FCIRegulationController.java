@@ -66,7 +66,7 @@ public class FCIRegulationController {
                 .stream().sorted().skip(Constants.begin(pageNumber, pageSize)).limit(pageSize).toList();
     }
 
-    @GetMapping("/fci/symbol-name")
+    @GetMapping("/fci/regulations")
     public List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbols() {
         return fciRegulationCRUDService.listFCIRegulationSymbolsAndNames();
     }

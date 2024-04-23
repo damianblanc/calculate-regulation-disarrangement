@@ -3,7 +3,10 @@ package com.bymatech.calculateregulationdisarrangement.util;
 import com.google.common.base.Strings;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -30,4 +33,10 @@ public class DateOperationHelper {
     }
 
     public static String month(int index) { return months.get(index); }
+
+    public static String getMonth(Timestamp timestamp) {
+        LocalDateTime localDateTime = timestamp.toLocalDateTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM");
+        return localDateTime.format(formatter);
+    }
 }
