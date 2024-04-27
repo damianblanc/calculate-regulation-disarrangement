@@ -82,7 +82,6 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/MarketCedearResponse.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/CalculateRegulationDisarrangementApplication.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/FCISpecieTypeGroupService.java
-/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/PositionPerMonthVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/UserRepository.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/domain/FCISpeciePosition.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/PrimaryServiceImpl.java
@@ -102,6 +101,7 @@
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/exception/PositionValidationException.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCISummarizeServiceImpl.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/http/PrimaryHttpService.java
+/Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/SummaryPerMonthVO.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/service/impl/FCIPositionCriteriaVolumeMaxTradingService.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/dto/OperationAdviceSpecieType.java
 /Users/damianblanc/workspace/byma/calculate-regulation-disarrangement/src/main/java/com/bymatech/calculateregulationdisarrangement/repository/ReportTypeRepository.java

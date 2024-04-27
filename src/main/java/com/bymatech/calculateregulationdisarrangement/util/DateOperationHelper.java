@@ -5,6 +5,8 @@ import com.google.common.base.Strings;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,22 +16,17 @@ import java.util.List;
  */
 public class DateOperationHelper {
 
-    public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static List<String> months = List.of("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
-    public static Boolean isInRange(String c, String from, String to) {
-        if (Strings.isNullOrEmpty(from) && Strings.isNullOrEmpty(to)) return true;
-        if (Strings.isNullOrEmpty(from) && !Strings.isNullOrEmpty(to)) {
-            return Date.valueOf(c).before(Date.valueOf(to));
-        }
-        if (!Strings.isNullOrEmpty(from) && Strings.isNullOrEmpty(to)) {
-            return Date.valueOf(from).before(Date.valueOf(c));
-        }
-        if (!Strings.isNullOrEmpty(from) && !Strings.isNullOrEmpty(to)) {
-            return Date.valueOf(from).before(Date.valueOf(c)) && Date.valueOf(c).before(Date.valueOf(to));
-        }
-        return true;
+    public static boolean isInRange(String fromDate, String toDate, String elementTimestamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate from = LocalDate.parse(fromDate, formatter);
+        LocalDate to = LocalDate.parse(toDate, formatter);
+        LocalDate elementDate = LocalDate.parse(elementTimestamp, DateTimeFormatter.ISO_DATE);
+
+        return elementDate.isAfter(from.minusDays(1)) && elementDate.isBefore(to.plusDays(1));
     }
 
     public static String month(int index) { return months.get(index); }

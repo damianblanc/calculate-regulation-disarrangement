@@ -63,14 +63,28 @@ public class FCIPositionController {
                 .stream().skip(Constants.begin(pageNumber, pageSize)).limit(pageSize).toList();
     }
 
-    @GetMapping("/fci/{fciRegulationSymbol}/position/from/{fromDate}/to/{toDate}/page/{pageNumber}")
+    @GetMapping("/fci/{fciRegulationSymbol}/position/{fciPositionId}/from/{fromDate}/to/{toDate}/page/{pageNumber}")
     public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbolFiltered(@PathVariable String fciRegulationSymbol,
+        @PathVariable Integer fciPositionId,
+        @PathVariable String fromDate,
+        @PathVariable String toDate) {
+        return fciPositionService.listPositionsByFCIRegulationSymbol(fciRegulationSymbol).stream()
+            .filter(p -> DateOperationHelper.isInRange(fromDate, toDate, p.getTimestamp()))
+            .filter(p -> fciPositionId == 0 || p.getId().equals(fciPositionId))
+            .toList();
+    }
+
+    @GetMapping("/fci/{fciRegulationSymbol}/position/{fciPositionId}/from/{fromDate}/to/{toDate}/page/{pageNumber}/page_size/{pageSize}")
+    public List<FCIPositionVO> listFCIPositionsByFCIRegulationSymbolFilteredWithPageSize(@PathVariable String fciRegulationSymbol,
+                                                                             @PathVariable Integer fciPositionId,
                                                                              @PathVariable String fromDate,
                                                                              @PathVariable String toDate,
-                                                                             @PathVariable Integer pageNumber) throws Exception {
-        return fciPositionService.listPositionsByFCIRegulationSymbol(fciRegulationSymbol)
-                .stream().filter(p -> DateOperationHelper.isInRange(p.getTimestamp(), fromDate, toDate))
-                .skip(Constants.begin(pageNumber)).limit(Constants.PAGE_SIZE).toList();
+                                                                             @PathVariable Integer pageNumber,
+                                                                             @PathVariable Integer pageSize) {
+        return fciPositionService.listPositionsByFCIRegulationSymbol(fciRegulationSymbol).stream()
+            .filter(p -> DateOperationHelper.isInRange(fromDate, toDate, p.getTimestamp()))
+            .filter(p -> fciPositionId == 0 || p.getId().equals(fciPositionId))
+            .skip(Constants.begin(pageNumber)).limit(pageSize).toList();
     }
 
     @GetMapping("/fci/{symbol}/position/id-created-on")
