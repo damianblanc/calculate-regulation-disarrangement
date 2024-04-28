@@ -138,4 +138,8 @@ public class FCIPosition {
             this.overview = String.format("Species:%d - Valued: $ %s - Totals: %s", fciSpeciePositions.size(), NumberFormatHelper.format(totalPosition),
                 specieTypeSums.toString().replace(" $0 ", " N/A ")).replace("¤", "");
     }
+
+    public Timestamp retrieveCreatedOn() {
+        return this.createdOn;
+    }
 }

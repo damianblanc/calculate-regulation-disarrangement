@@ -73,4 +73,9 @@ public interface FCIPositionService {
     Map<String, Integer> listPositionsByFCIRegulationSymbolMonthlyGroupedTotal(String fciRegulationSymbol);
 
     Integer deleteFCIPosition(String fciRegulationSymbol, Integer fciPositionId);
+
+    /**
+     * Retrieves the oldest position of a FCI
+     */
+    FCIPositionIdCreatedOnVO getOldestPosition(String fciRegulationSymbol);
 }

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
  */
 public class FCISpeciePosition {
 
-    private String name;
     private String symbol;
     private String fciSpecieType;
     private String fciSpecieGroup;

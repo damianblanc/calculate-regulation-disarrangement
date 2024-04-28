@@ -6,6 +6,7 @@ import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionVO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -84,11 +85,16 @@ public class FCIPositionController {
         return fciPositionService.listPositionsByFCIRegulationSymbol(fciRegulationSymbol).stream()
             .filter(p -> DateOperationHelper.isInRange(fromDate, toDate, p.getTimestamp()))
             .filter(p -> fciPositionId == 0 || p.getId().equals(fciPositionId))
-            .skip(Constants.begin(pageNumber)).limit(pageSize).toList();
+            .skip(Constants.begin(pageNumber, pageSize)).limit(pageSize).toList();
     }
 
-    @GetMapping("/fci/{symbol}/position/id-created-on")
-    public List<FCIPositionIdCreatedOnVO> listFCIPositionsByFCIRegulationSymbolIdCreatedOn(@PathVariable String symbol) throws Exception {
-        return fciPositionService.listPositionsByFCIRegulationSymbolIdCreatedOn(symbol);
+    @GetMapping("/fci/{fciRegulationSymbol}/position/id-created-on")
+    public List<FCIPositionIdCreatedOnVO> listFCIPositionsByFCIRegulationSymbolIdCreatedOn(@PathVariable String fciRegulationSymbol) throws Exception {
+        return fciPositionService.listPositionsByFCIRegulationSymbolIdCreatedOn(fciRegulationSymbol);
+    }
+
+    @GetMapping("fci/{fciRegulationSymbol}/position/oldest")
+    public FCIPositionIdCreatedOnVO getFCIRegulationSymbolIdOldestPosition(@PathVariable String fciRegulationSymbol) {
+        return fciPositionService.getOldestPosition(fciRegulationSymbol);
     }
 }

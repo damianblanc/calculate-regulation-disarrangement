@@ -12,6 +12,8 @@ import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,6 +126,17 @@ public class FCIPositionServiceImpl implements FCIPositionService {
         fciRegulation.getPositions().removeIf(fciPosition -> fciPosition.getId().equals(fciPositionId));
         fciRegulationRepository.save(fciRegulation);
         return fciPositionId;
+    }
+
+    @Override
+    public FCIPositionIdCreatedOnVO getOldestPosition(String fciRegulationSymbol) {
+        FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol)
+            .orElseThrow(() -> new EntityNotFoundException(
+                String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
+        return fciRegulation.getPositions().stream()
+            .min(Comparator.comparing(FCIPosition::retrieveCreatedOn))
+            .map(oldestPosition -> new FCIPositionIdCreatedOnVO(oldestPosition.getId(), oldestPosition.getCreatedOn().toString()))
+            .orElseGet(() -> new FCIPositionIdCreatedOnVO(0, Timestamp.from(Instant.now()).toString()));
     }
 
     @Override
