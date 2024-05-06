@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
+import com.bymatech.calculateregulationdisarrangement.domain.StatisticComponent;
 import com.bymatech.calculateregulationdisarrangement.dto.StatisticDTO;
 import com.bymatech.calculateregulationdisarrangement.service.FCIStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,14 @@ public class StatisticController {
     return fciStatisticService.retrieveStatistics();
   }
 
-  @PutMapping("update")
-  public void updateStatistics(@RequestBody StatisticDTO statisticDTO) {
-      fciStatisticService.updateStatistics(statisticDTO);
+  @PutMapping("update/report-quantity")
+  public void updateStatisticsReportQuantity(@RequestBody StatisticDTO statisticDTO) {
+      fciStatisticService.updateStatistics(statisticDTO, StatisticComponent.REPORT);
+  }
+
+  @PutMapping("update/advice-quantity")
+  public void updateStatisticsAdvicesQuantity(@RequestBody StatisticDTO statisticDTO) {
+    fciStatisticService.updateStatistics(statisticDTO, StatisticComponent.ADVICE);
   }
 
 }

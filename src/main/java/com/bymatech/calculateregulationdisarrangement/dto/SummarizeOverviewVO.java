@@ -17,17 +17,16 @@ public class SummarizeOverviewVO {
     private Integer fciSpecieTypesQuantity;
     private Map<String, List<String>> fciSpecieTypes;
 
+    private Integer fciRegulationQuantity; // OK
+    private Integer fciPositionQuantity; // OK
+    private Long fciReportsQuantity; // OK
+    private Long fciAdvicesQuantity; // OK
 
-    private Integer fciRegulationQuantity; //OK
-    private Integer fciPositionQuantity; //OK
-    private Integer fciReportsQuantity;
-    private Integer fciAdvicesQuantity;
+    private Map<String, List<FCICompositionVO>> fciRegulationCompositions; // OK
 
-
-    private Map<String, List<FCICompositionVO>> fciRegulationCompositions; //OK
-
-    private Map<String, Integer> fciRegulationPositionsQuantity; //OK
-
-
-    private Map<String, Integer> fciPositionsPerMothLastYear; //OK
+    private Map<String, Integer> fciRegulationPositionsQuantity;
+    private Map<String, Integer> fciRegulationsPerMothLastYear; // OK
+    private Map<String, Integer> fciPositionsPerMothLastYear; // OK
+    private Map<String, Integer> fciReportsPerMothLastYear; // OK
+    private Map<String, Integer> fciAdvicesPerMothLastYear; // OK
 }

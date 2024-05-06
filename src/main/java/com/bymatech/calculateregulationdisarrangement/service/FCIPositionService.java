@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIPositionIdCreatedOnVO;
@@ -78,4 +79,9 @@ public interface FCIPositionService {
      * Retrieves the oldest position of a FCI
      */
     FCIPositionIdCreatedOnVO getOldestPosition(String fciRegulationSymbol);
+
+    /**
+     * Lists sorted on year from current month backwards grouped record list
+     */
+    Map<String, Integer> listPositionsGroupedByMonthForOneYear();
 }

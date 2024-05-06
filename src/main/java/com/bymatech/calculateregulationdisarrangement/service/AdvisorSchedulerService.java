@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCISpeciePositionDTO;
 import com.bymatech.calculateregulationdisarrangement.dto.OperationAdviceSpecieType;
 import com.bymatech.calculateregulationdisarrangement.service.impl.FCIPositionCriteriaPriceUniformDistributionService;
@@ -25,7 +24,7 @@ public class AdvisorSchedulerService {
     private FCIPositionAdviceService FCIPositionAdviceService;
 
     @Autowired
-    private FCIRegulationCRUDService fciRegulationCRUDService;
+    private FCIRegulationService fciRegulationService;
 
     private static final String BYMA_AUTOMATED_ADVISOR = "Byma Automated Advisor";
 

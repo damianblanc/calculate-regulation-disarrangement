@@ -4,6 +4,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.*;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.exception.PositionValidationException;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
+import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.function.BiFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,9 @@ public class FCIPositionServiceImpl implements FCIPositionService {
 
     @Autowired
     private FCISpecieTypeGroupService fciSpecieTypeGroupService;
+
+    @Autowired
+    private FCIRegulationService fciRegulationService;
 
 
     public Map<FCISpecieType, List<FCISpeciePosition>> groupPositionBySpecieType(List<FCISpeciePosition> position, List<FCISpecieType> fciSpecieTypes) {
@@ -338,5 +343,27 @@ public class FCIPositionServiceImpl implements FCIPositionService {
                 .orElseThrow(() -> new PositionValidationException(ExceptionMessage.CASH_SPECIE_TYPE_NOT_INCLUDED_POSITION.msg));
 
         return true;
+    }
+
+
+    @Override
+    public Map<String, Integer> listPositionsGroupedByMonthForOneYear() {
+        Map<String, Integer> positionsPerMonth = new LinkedHashMap<>();
+        Month currentMonth = LocalDate.now().getMonth();
+
+        /* Initialize positions per month quantity */
+        for (int i = 0; i < DateOperationHelper.months.size(); i++) {
+            String m = currentMonth.minus(i).toString();
+            String k = m.substring(0, 1).toUpperCase() + m.substring(1).toLowerCase();
+            positionsPerMonth.put(k, 0);
+        }
+
+        List<FCIRegulation> fciRegulations = fciRegulationRepository.findAll();
+        List<FCIPosition> flattenedPositions = fciRegulations.stream().map(FCIRegulation::getPositions).flatMap(List::stream).toList();
+        flattenedPositions.stream()
+            .map(fciPositionVO -> DateOperationHelper.getMonth(fciPositionVO.getCreatedOn()))
+            .forEach(month -> positionsPerMonth.compute(month, (k, v) -> v == null ? 1 : v + 1));
+
+        return positionsPerMonth;
     }
 }

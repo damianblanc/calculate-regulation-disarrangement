@@ -3,16 +3,17 @@ package com.bymatech.calculateregulationdisarrangement.service;
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Comprehends CRUD operations over {@link FCIRegulation}
+ * Comprehends operations over {@link FCIRegulation}
  */
 @Service
-public interface FCIRegulationCRUDService {
+public interface FCIRegulationService {
 
     /**
      * Creates a new FCIRegulation
@@ -67,4 +68,10 @@ public interface FCIRegulationCRUDService {
     List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbolsAndNames();
 
     List<FCICompositionVO> listFCIRegulationPercentages(String fciRegulationSymbol);
+
+    /**
+     * Lists sorted on year from current month backwards grouped record list
+     */
+    Map<String, Integer> listRegulationsGroupedByMonthForOneYear();
+
 }

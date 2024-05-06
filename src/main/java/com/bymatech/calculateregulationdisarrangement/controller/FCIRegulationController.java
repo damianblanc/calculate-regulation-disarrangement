@@ -2,14 +2,11 @@ package com.bymatech.calculateregulationdisarrangement.controller;
 
 import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
 import com.bymatech.calculateregulationdisarrangement.dto.FCICompositionVO;
-import com.bymatech.calculateregulationdisarrangement.dto.FCIPercentageVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationSymbolAndNameVO;
 import com.bymatech.calculateregulationdisarrangement.dto.FCIRegulationVO;
-import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
-import jakarta.persistence.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,34 +19,34 @@ import java.util.List;
 public class FCIRegulationController {
 
     @Autowired
-    private FCIRegulationCRUDService fciRegulationCRUDService;
+    private FCIRegulationService fciRegulationService;
 
 
     @PostMapping("/fci")
     public FCIRegulationVO createFCIRegulation(@RequestBody FCIRegulation fciRegulation) {
-        return fciRegulationCRUDService.createFCIRegulation(fciRegulation);
+        return fciRegulationService.createFCIRegulation(fciRegulation);
     }
 
     @DeleteMapping("/fci/{fciRegulationSymbol}")
     public String deleteFCIRegulation(@PathVariable String fciRegulationSymbol) {
-        return fciRegulationCRUDService.deleteFCIRegulation(fciRegulationSymbol);
+        return fciRegulationService.deleteFCIRegulation(fciRegulationSymbol);
     }
 
     @PutMapping("/fci/{fciRegulationSymbol}")
     public FCIRegulationVO updateFCIRegulation(@RequestBody FCIRegulation fciRegulation) {
-        return fciRegulationCRUDService.updateFCIRegulation(fciRegulation);
+        return fciRegulationService.updateFCIRegulation(fciRegulation);
     }
 
     @GetMapping("/fci/{fciRegulationSymbol}")
     public FCIRegulationVO getFCIRegulation(@PathVariable String fciRegulationSymbol) {
-        return fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol);
+        return fciRegulationService.findFCIRegulation(fciRegulationSymbol);
     }
 
     @GetMapping("/fci/{fciRegulationSymbol}/filtered")
     public List<FCIRegulationVO> getFCIRegulationFiltered(@PathVariable String fciRegulationSymbol) {
         try {
             if (fciRegulationSymbol.isEmpty()) return listFCIRegulations();
-            return List.of(fciRegulationCRUDService.findFCIRegulation(fciRegulationSymbol));
+            return List.of(fciRegulationService.findFCIRegulation(fciRegulationSymbol));
         } catch(final Exception e) {
                 return List.of();
         }
@@ -57,23 +54,23 @@ public class FCIRegulationController {
 
     @GetMapping("/fci")
     public List<FCIRegulationVO> listFCIRegulations() {
-        return fciRegulationCRUDService.listFCIRegulations().stream().sorted().toList();
+        return fciRegulationService.listFCIRegulations().stream().sorted().toList();
     }
 
     @GetMapping("/fci/page/{pageNumber}/page_size/{pageSize}")
     public List<FCIRegulationVO> listFCIRegulationsFiltered(@PathVariable Integer pageNumber, @PathVariable Integer pageSize) {
-        return fciRegulationCRUDService.listFCIRegulations()
+        return fciRegulationService.listFCIRegulations()
                 .stream().sorted().skip(Constants.begin(pageNumber, pageSize)).limit(pageSize).toList();
     }
 
     @GetMapping("/fci/regulations")
     public List<FCIRegulationSymbolAndNameVO> listFCIRegulationSymbols() {
-        return fciRegulationCRUDService.listFCIRegulationSymbolsAndNames();
+        return fciRegulationService.listFCIRegulationSymbolsAndNames();
     }
 
 
     @GetMapping("/fci/{fciRegulationSymbol}/regulation-percentages")
     public List<FCICompositionVO> getFCIRegulationPercentages(@PathVariable String fciRegulationSymbol) {
-        return fciRegulationCRUDService.listFCIRegulationPercentages(fciRegulationSymbol);
+        return fciRegulationService.listFCIRegulationPercentages(fciRegulationSymbol);
     }
 }

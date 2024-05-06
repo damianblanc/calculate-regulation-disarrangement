@@ -8,12 +8,17 @@ import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.service.FCICompositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionAdviceService;
-import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.util.DateOperationHelper;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Comparator;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 @Transactional
-public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
+public class FCIRegulationServiceImpl implements FCIRegulationService {
 
     @Autowired
     private FCIRegulationRepository fciRegulationRepository;
@@ -124,6 +129,24 @@ public class FCIRegulationServiceImpl implements FCIRegulationCRUDService {
         FCIRegulation fciRegulation = fciRegulationRepository.findBySymbol(fciRegulationSymbol).orElseThrow(() -> new EntityNotFoundException(
                 String.format(ExceptionMessage.FCI_REGULATION_ENTITY_NOT_FOUND.msg, fciRegulationSymbol)));
         return toValueObject(fciRegulation.getComposition());
+    }
+
+    @Override
+    public Map<String, Integer> listRegulationsGroupedByMonthForOneYear() {
+        List<FCIRegulationVO> fciRegulations = listFCIRegulations();
+
+        Map<String, List<FCIRegulationVO>> groupedRegulationsPerMonth = fciRegulations.stream()
+            .collect(Collectors.groupingBy(regulation -> DateOperationHelper.getMonth(regulation.getCreatedOn())));
+
+        Map<String, Integer> groupedRegulations = new LinkedHashMap<>();
+        Month currentMonth = LocalDate.now().getMonth();
+        for (int i = 0; i < 12; i++) {
+            String m = currentMonth.minus(i).toString();
+            String k = m.substring(0, 1).toUpperCase() + m.substring(1).toLowerCase();
+            groupedRegulations.put(k, Objects.nonNull(groupedRegulationsPerMonth.get(k)) ? groupedRegulationsPerMonth.get(k).size() : 0);
+        }
+
+        return groupedRegulations;
     }
 
     private List<FCICompositionVO> toValueObject(List<FCIComposition> fciCompositions) {

@@ -1,8 +1,10 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.Report;
 import com.bymatech.calculateregulationdisarrangement.domain.ReportType;
+import com.bymatech.calculateregulationdisarrangement.repository.ReportRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.ReportTypeRepository;
-import com.bymatech.calculateregulationdisarrangement.service.FCIReportService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIReportTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +14,7 @@ import java.util.List;
  * Performs {@link ReportType} operations
  */
 @Service
-public class FCIReportTypeImpl implements FCIReportService {
-
+public class FCIReportTypeServiceImpl implements FCIReportTypeService {
     @Autowired
     private ReportTypeRepository reportTypeRepository;
 

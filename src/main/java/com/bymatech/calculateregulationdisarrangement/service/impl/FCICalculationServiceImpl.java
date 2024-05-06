@@ -5,7 +5,7 @@ import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
 import com.bymatech.calculateregulationdisarrangement.service.FCICalculationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
-import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationCRUDService;
+import com.bymatech.calculateregulationdisarrangement.service.FCIRegulationService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.util.CalculationServiceHelper;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class FCICalculationServiceImpl implements FCICalculationService {
 
     @Autowired
-    private FCIRegulationCRUDService fciRegulationCRUDService;
+    private FCIRegulationService fciRegulationService;
 
     @Autowired
     private FCIPositionService fciPositionService;
@@ -40,7 +40,7 @@ public class FCICalculationServiceImpl implements FCICalculationService {
 //TODO:Create a cache and load a refreshed market price indicated position, in order to avoid processing when asking to flavours
     @Override
     public RegulationLagOutcomeVO calculatePositionBias(String fciRegulationSymbol, String fciPositionId, Boolean refresh) throws Exception {
-        FCIRegulation fciRegulation = fciRegulationCRUDService.findFCIRegulationEntity(fciRegulationSymbol);
+        FCIRegulation fciRegulation = fciRegulationService.findFCIRegulationEntity(fciRegulationSymbol);
         FCIPosition fciPosition = fciPositionService.findFCIPositionById(fciRegulationSymbol, Integer.valueOf(fciPositionId));
         List<FCISpeciePosition> fciSpeciePositions = FCIPosition.getSpeciePositions(fciPosition, true);
         if (refresh) updateCurrentMarketPriceToPosition(fciPosition, true);
