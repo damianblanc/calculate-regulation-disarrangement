@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +18,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summarizingDouble;
 
 @Entity
 @Table(name = "FCIPosition")
@@ -126,17 +124,21 @@ public class FCIPosition {
         setUpdatedMarketPosition(mapper.writeValueAsString(fciSpeciePositionList));
     }
 
-    public void setOverview(List<FCISpeciePosition> fciSpeciePositions) {
+    public void createOverview(Map<FCISpeciePosition, FCISpecieTypeGroup> fciSpeciePositions) {
         StringBuffer specieTypeSums = new StringBuffer();
 
-        Map<String, DoubleSummaryStatistics> m = fciSpeciePositions.stream().collect(groupingBy(FCISpeciePosition::getFciSpecieType,
-                        summarizingDouble(FCISpeciePosition::valuePosition)));
+        Map<String, DoubleSummaryStatistics> m = fciSpeciePositions.entrySet().stream()
+            .collect(Collectors.groupingBy(
+                    entry -> entry.getKey().getFciSpecieType(),
+                    Collectors.summarizingDouble(entry -> entry.getKey().valueSpecieInPosition(entry.getValue().getLot()))));
 
-        m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(NumberFormatHelper.format(value.getSum())).append(" "));
+        m.forEach((key, value) -> specieTypeSums.append(key).append(": $").append(NumberFormatHelper.format(value.getSum())).append(" - "));
         Double totalPosition = m.values().stream().map(DoubleSummaryStatistics::getSum).reduce(Double::sum).orElseThrow();
 
-            this.overview = String.format("Species:%d - Valued: $ %s - Totals: %s", fciSpeciePositions.size(), NumberFormatHelper.format(totalPosition),
-                specieTypeSums.toString().replace(" $0 ", " N/A ")).replace("¤", "");
+        String overview = String.format("Species:%d - Valued: $%s Totals: %s",
+            fciSpeciePositions.size(), NumberFormatHelper.format(totalPosition),
+            specieTypeSums.toString().replace(" $0 ", " N/A ")).replace("¤", "");
+        this.overview = overview.substring(0, overview.length() - 1);
     }
 
     public Timestamp retrieveCreatedOn() {

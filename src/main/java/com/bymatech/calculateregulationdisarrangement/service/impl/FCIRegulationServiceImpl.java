@@ -184,6 +184,7 @@ public class FCIRegulationServiceImpl implements FCIRegulationService {
                 .createdOn(fciRegulation.getCreatedOn())
                 .composition(toValueObject(fciRegulation.getComposition()))
                 .positions(fciRegulation.getPositions().stream().map(position -> toValueObject(fciRegulation.getSymbol(), position)).toList())
+                .positionQuantity(fciRegulation.getPositions().size())
                 .build();
     }
 

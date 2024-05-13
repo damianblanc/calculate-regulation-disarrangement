@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.service;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
@@ -7,6 +8,7 @@ import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieType;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieToSpecieTypeVO;
 import com.bymatech.calculateregulationdisarrangement.dto.SpecieTypeGroupDto;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -107,9 +109,9 @@ public interface FCISpecieTypeGroupService {
     List<FCISpecieType> listNotUpdatableSpecieTypes();
 
     /**
-     * Creates an association between a specie and a specie type within a specie group
+     * Creates or update an association between a specie and a specie type within a specie group
      */
-    SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
+    SpecieToSpecieTypeVO upsertSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
 
     /**
      * Deletes, unbind an association between a specie and a specie type within a specie group
@@ -157,4 +159,37 @@ public interface FCISpecieTypeGroupService {
      * @param fciSpecieToSpecieTypes contains species for all defined specie type groups
      */
     List<SpecieToSpecieTypeVO> createSpecieToSpecieTypeAssociations(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes);
+
+    /**
+     * Retrieves indirectly bound {@link FCISpecieTypeGroup} for indicated {@link FCISpeciePosition}
+     * @param fciSpeciePosition specie to search bound group for
+     */
+    Optional<FCISpecieTypeGroup> findSpecieTypeGroup(FCISpeciePosition fciSpeciePosition);
+
+    /**
+     * Retrieves {@link FCISpecieToSpecieType} binding for indicated {@link FCISpeciePosition}
+     * @param fciSpeciePosition specie to search bound group for
+     */
+    Optional<FCISpecieToSpecieType> findSpecieToSpecieType(FCISpeciePosition fciSpeciePosition);
+
+    /**
+     * Retrieves a {@link FCISpecieTypeGroup} lot bound to indicated {@link FCISpeciePosition}
+     * @param fciSpeciePosition specie to search bound group for
+     */
+    Integer retrieveGroupLot(FCISpeciePosition fciSpeciePosition);
+
+    Map<FCISpeciePosition, FCISpecieTypeGroup> listSpecieTypeGroupBindings(List<FCISpeciePosition> fciSpeciePositions);
+
+    /**
+     * Retrieves a {@link FCISpecieType} bound list for indicated {@link FCISpeciePosition} list
+     * @param fciSpeciePositions specie to search bound specie type for
+     */
+    Map<FCISpeciePosition, Optional<SpecieToSpecieType>> listSpecieTypeBindings(List<FCISpeciePosition> fciSpeciePositions);
+
+    /**
+     * Retrieves {@link FCISpecieTypeGroup} bound to indicated Position
+     * @param fciSpeciePositions Represents the Position to worh with
+     */
+    Map<FCISpeciePosition, FCISpecieTypeGroup> listSpecieTypeGroupBindings(Map<FCISpecieType, List<FCISpeciePosition>> fciSpeciePositions);
+
 }

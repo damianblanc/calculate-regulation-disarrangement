@@ -49,6 +49,8 @@ public enum ExceptionMessage {
 
     INVALID_POSITION_SPECIE_GROUP("Uploaded Position contains an unrecognized FCI Specie Type Group identified with name [%s]"),
 
+    INVALID_POSITION_REGULATION_COMPOSITION("Uploaded Position does not include any Specie for Specie Type [%s] defined in FCI Regulation [%s]"),
+
     CASH_SPECIE_TYPE_NOT_INCLUDED_POSITION("Cash Specie Type must be included in uploaded Position"),
 
     CASH_SPECIE_TYPE_PRICE_NOT_DEFINED("Cash Specie Type must define Price"),
@@ -62,6 +64,10 @@ public enum ExceptionMessage {
     SPECIE_TYPE_CANNOT_BE_DELETED_SPECIES_BOUND("Specie Type [%s - %s] cannot be deleted since it has associated species"),
 
     SPECIE_TYPE_CANNOT_BE_DELETED_POSITION_BOUND("Specie Type [%s - %s] cannot be deleted since it has positions referring them"),
+
+    SPECIE_NOT_BOUND_TO_ANY_SPECIE_TYPE("Specie [%s] is not associated to any specie type"),
+
+    SPECIE_REFERENCED_BY_POSITION("Cannot change Specie Type to Specie [%s], due to it is referenced by [%d] FCI Positions. These are some of them: [%s]"),
 
     USER_NAME_DOES_NOT_EXIST("User name is incorrect or not registered"),
 

@@ -19,6 +19,8 @@ public class SpecieTypeGroupDto implements Comparable<SpecieTypeGroupDto> {
 
     private String description;
 
+    private Integer lot;
+
     private Boolean updatable;
 
     private List<SpecieTypeDto> fciSpecieTypes = new ArrayList<>();

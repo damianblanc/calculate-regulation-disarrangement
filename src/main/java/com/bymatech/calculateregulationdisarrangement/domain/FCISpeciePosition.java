@@ -26,8 +26,14 @@ public class FCISpeciePosition {
     private Double currentMarketPrice = -1.0;
     private Integer quantity;
 
-    public Double valuePosition() {
+    public Double valueSpecieInPosition() {
         return currentMarketPrice * quantity;
     }
 
+    /**
+     * Each FCISpeciePosition is not aware of group lot definition, meaning that must be taken from specie indirectly binding to group
+     */
+    public Double valueSpecieInPosition(Integer lot) {
+        return currentMarketPrice * quantity / lot;
+    }
 }

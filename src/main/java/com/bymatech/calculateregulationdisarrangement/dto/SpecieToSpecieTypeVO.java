@@ -13,4 +13,5 @@ public class SpecieToSpecieTypeVO {
     private String specieSymbol;
     private Integer fciSpecieTypeId;
     private String specieTypeName;
+    private Integer fciReferencedPositionQuantity;
 }

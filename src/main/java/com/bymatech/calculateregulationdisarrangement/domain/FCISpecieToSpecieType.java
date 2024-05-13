@@ -1,6 +1,7 @@
 package com.bymatech.calculateregulationdisarrangement.domain;
 
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,4 +30,7 @@ public class FCISpecieToSpecieType {
     @JoinColumn(name = "fci_specie_type_id")
     private FCISpecieType fciSpecieType;
 
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "specie_to_specie_type_position_Id", referencedColumnName = "id")
+    private List<FCISpecieToSpecieTypePosition> positions;
 }

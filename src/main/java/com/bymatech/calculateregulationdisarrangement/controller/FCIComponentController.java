@@ -92,7 +92,13 @@ public class FCIComponentController {
     @GetMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")
     public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,
                                                                           @PathVariable String specieTypeName, @PathVariable String specieSymbol) {
-        return fciSpecieTypeGroupService.createSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
+        return fciSpecieTypeGroupService.upsertSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
+    }
+
+    @DeleteMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")
+    public void deleteSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,
+                                                                         @PathVariable String specieTypeName, @PathVariable String specieSymbol) {
+        fciSpecieTypeGroupService.deleteSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
     }
 
     @GetMapping("/specie-type-group/{specieTypeGroupName}/bind")

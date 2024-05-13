@@ -27,6 +27,8 @@ public class FCIRegulationVO implements Comparable<FCIRegulationVO> {
 
     private List<FCIPositionVO> positions;
 
+    private Integer positionQuantity;
+
     private Timestamp createdOn;
 
     public List<FCIPositionVO> getPositions() {

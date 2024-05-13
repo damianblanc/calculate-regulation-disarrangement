@@ -53,6 +53,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         /** Preconditions */
         analyseBiasPreconditions(fciRegulationCompositionBySpecieType, groupedPositionBySpecieType, fciSpecieTypesNames);
 
+        Map<FCISpeciePosition, FCISpecieTypeGroup> bindings = fciSpecieTypeGroupService.listSpecieTypeGroupBindings(groupedPositionBySpecieType);
+
         /** Position grouping calculation */
         Map<FCISpecieType, Double> valuedPositionBySpecieType = fciPositionService.getValuedPositionBySpecieType(groupedPositionBySpecieType);
         Map<FCISpecieType, Double> percentagePositionBySpecieType = calculatePercentagePositionBySpecieType(valuedPositionBySpecieType);
@@ -73,12 +75,12 @@ public class FCICalculationServiceImpl implements FCICalculationService {
         Map<FCISpecieType, Double> specieTypeValueWeightRelativeToPosition = calculateSpecieTypeValueOverPosition(valuedPositionBySpecieType, totalSummarizedPosition);
 
         /** FCI Specie over Specie Type */
-        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToFCISpecieType = calculateSpeciePercentageOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType);
-        Map<FCISpeciePosition, Double> specieValueWeightRelativeToFCISpecieType = calculateSpecieValueOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType);
+        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToFCISpecieType = calculateSpeciePercentageOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType, bindings);
+        Map<FCISpeciePosition, Double> specieValueWeightRelativeToFCISpecieType = calculateSpecieValueOverSpecieType(fciSpeciePositions, valuedPositionBySpecieType, bindings);
 
         /** FCI Specie over Position */
-        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToPosition = calculateSpeciePercentageOverPosition(fciSpeciePositions, totalSummarizedPosition);
-        Map<FCISpeciePosition, Double> specieValueWeightRelativeToPosition = calculateSpecieValueOverPosition(fciSpeciePositions, totalSummarizedPosition);
+        Map<FCISpeciePosition, Double> speciePercentageWeightRelativeToPosition = calculateSpeciePercentageOverPosition(fciSpeciePositions, totalSummarizedPosition, bindings);
+        Map<FCISpeciePosition, Double> specieValueWeightRelativeToPosition = calculateSpecieValueOverPosition(fciSpeciePositions, totalSummarizedPosition, bindings);
 
         return new RegulationLagOutcomeVO(
                 biasPercentagePositionBySpecieType,
@@ -156,8 +158,8 @@ public class FCICalculationServiceImpl implements FCICalculationService {
                 String.format("%.2f", n.get(n.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
                 String.format("%.2f", p.get(p.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
                 String.format("%.2f", q.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
-                String.format("%.2f", r.get(p.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
-                String.format("%.2f", s.get(q.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))))
+                String.format("%.2f", r.get(r.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow())),
+                String.format("%.2f", s.get(s.keySet().stream().filter(k -> k.getFciSpecieTypeId().equals(e.getKey().getFciSpecieTypeId())).findFirst().orElseThrow()))))
                 .collect(Collectors.toList());
     }
 
@@ -178,21 +180,21 @@ public class FCICalculationServiceImpl implements FCICalculationService {
     }
 
     /* Specie over Specie Type */
-    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
+    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType, Map<FCISpeciePosition, FCISpecieTypeGroup> bindings) {
         return fciSpeciePositions.stream()
                 .map(fciSpeciePosition -> {
                     Double fciSpecieTypeValued = valuedPositionBySpecieType.entrySet().stream()
                             .filter(vpst -> vpst.getKey().getName().equals(fciSpeciePosition.getFciSpecieType())).findFirst().orElseThrow().getValue();
-                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued * 100);
+                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valueSpecieInPosition(bindings.get(fciSpeciePosition).getLot()) / fciSpecieTypeValued * 100);
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private  Map<FCISpeciePosition, Double> calculateSpecieValueOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType) {
+    private  Map<FCISpeciePosition, Double> calculateSpecieValueOverSpecieType(List<FCISpeciePosition> fciSpeciePositions, Map<FCISpecieType, Double> valuedPositionBySpecieType, Map<FCISpeciePosition, FCISpecieTypeGroup> bindings) {
         return fciSpeciePositions.stream()
                 .map(fciSpeciePosition -> {
                     Double fciSpecieTypeValued = valuedPositionBySpecieType.entrySet().stream()
                             .filter(vpst -> vpst.getKey().getName().equals(fciSpeciePosition.getFciSpecieType())).findFirst().orElseThrow().getValue();
-                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valuePosition() / fciSpecieTypeValued);
+                    return Map.entry(fciSpeciePosition, fciSpeciePosition.valueSpecieInPosition(bindings.get(fciSpeciePosition).getLot()) / fciSpecieTypeValued);
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -203,10 +205,11 @@ public class FCICalculationServiceImpl implements FCICalculationService {
      * @param  totalSummarizedPosition Represents total valued position as sum of individual valued contained species
      * @return A List of species with their relative percentage over position
      */
-    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition) {
+    private Map<FCISpeciePosition, Double> calculateSpeciePercentageOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition, Map<FCISpeciePosition, FCISpecieTypeGroup> bindings) {
         return speciesInPosition.stream()
                 .map(fciSpeciePosition -> Map.entry(fciSpeciePosition,
-                        fciSpeciePosition.valuePosition() * totalSummarizedPosition / 100))
+                        fciSpeciePosition.valueSpecieInPosition(bindings.get(fciSpeciePosition).getLot())
+                            * totalSummarizedPosition / 100))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -216,10 +219,10 @@ public class FCICalculationServiceImpl implements FCICalculationService {
      * @param  totalSummarizedPosition Represents total valued position as sum of individual valued contained species
      * @return A List of species with their relative percentage over position
      */
-    private Map<FCISpeciePosition, Double> calculateSpecieValueOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition) {
+    private Map<FCISpeciePosition, Double> calculateSpecieValueOverPosition(List<FCISpeciePosition> speciesInPosition, Double totalSummarizedPosition, Map<FCISpeciePosition, FCISpecieTypeGroup> bindings) {
         return speciesInPosition.stream()
                 .map(fciSpeciePosition -> Map.entry(fciSpeciePosition,
-                                (fciSpeciePosition.valuePosition() * totalSummarizedPosition / 100) * totalSummarizedPosition))
+                                (fciSpeciePosition.valueSpecieInPosition(bindings.get(fciSpeciePosition).getLot()) * totalSummarizedPosition / 100) * totalSummarizedPosition))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

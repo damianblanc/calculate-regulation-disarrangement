@@ -1,17 +1,27 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
+import com.bymatech.calculateregulationdisarrangement.domain.FCIPosition;
+import com.bymatech.calculateregulationdisarrangement.domain.FCIRegulation;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpeciePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieType;
+import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieToSpecieTypePosition;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieType;
 import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.domain.SpecieTypeGroupEnum;
 import com.bymatech.calculateregulationdisarrangement.dto.*;
 import com.bymatech.calculateregulationdisarrangement.exception.FailedValidationException;
+import com.bymatech.calculateregulationdisarrangement.repository.FCIRegulationRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieToSpecieTypeRepository;
 import com.bymatech.calculateregulationdisarrangement.repository.FCISpecieTypeGroupRepository;
+import com.bymatech.calculateregulationdisarrangement.service.FCIPositionService;
 import com.bymatech.calculateregulationdisarrangement.service.FCISpecieTypeGroupService;
 import com.bymatech.calculateregulationdisarrangement.service.MarketHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import com.bymatech.calculateregulationdisarrangement.util.NumberFormatHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
@@ -35,12 +45,17 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     private FCISpecieToSpecieTypeRepository fciSpecieToSpecieTypeRepository;
 
     @Autowired
+    private FCIRegulationRepository fciRegulationRepository;
+
+    @Autowired
     private MarketHttpService marketService;
 
-
-    /* FCISpecieTypeGroup */
     @Override
     public FCISpecieTypeGroup createFCISpecieTypeGroup(FCISpecieTypeGroup fciSpecieTypeGroup) {
+        List<FCISpecieType> renamedSpecieTypes = fciSpecieTypeGroup.getFciSpecieTypes().stream()
+            .peek(fciSpecieType -> fciSpecieType.setName(
+                "(" + fciSpecieTypeGroup.getName().charAt(0) + ") " + fciSpecieType.getName())).toList();
+        fciSpecieTypeGroup.setFciSpecieTypes(renamedSpecieTypes);
         return fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
     }
 
@@ -85,7 +100,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
         return fciSpecieTypeGroupRepository.findAll().stream()
             .map(fciSpecieTypeGroup ->
                     new SpecieTypeGroupDto(fciSpecieTypeGroup.getId(),
-                        fciSpecieTypeGroup.getName(), fciSpecieTypeGroup.getDescription(), fciSpecieTypeGroup.getUpdatable(),
+                        fciSpecieTypeGroup.getName(), fciSpecieTypeGroup.getDescription(), fciSpecieTypeGroup.getLot(), fciSpecieTypeGroup.getUpdatable(),
                         fciSpecieTypeGroup.getFciSpecieTypes().stream().map(fciSpecieType ->
                             new SpecieTypeDto(fciSpecieType.getFciSpecieTypeId(),
                                     fciSpecieType.getName(),
@@ -95,8 +110,6 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
             .sorted().toList();
     }
 
-
-    /* FCISpecieType */
     @Override
     public FCISpecieTypeGroup createFCISpecieType(String groupName, FCISpecieType fciSpecieType) {
         List<FCISpecieTypeGroup> fciSpecieTypeGroups = fciSpecieTypeGroupRepository.findAll();
@@ -110,6 +123,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
         FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(groupName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, groupName)));
+        fciSpecieType.setName("(" + fciSpecieType.getName().charAt(0) + ") " + fciSpecieTypeGroup.getName());
         fciSpecieType.setUpdatable(fciSpecieTypeGroup.getUpdatable());
         fciSpecieTypeGroup.getFciSpecieTypes().add(fciSpecieType);
         return fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
@@ -187,38 +201,74 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     }
 
     @Override
-    public SpecieToSpecieTypeVO createSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+    public SpecieToSpecieTypeVO upsertSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+        StringBuffer referencedPositions = new StringBuffer();
+
         FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(specieTypeGroupName)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
         FCISpecieType f = fciSpecieTypeGroup.getFciSpecieTypes().stream().filter(FCISpecieType -> FCISpecieType.getName().equals(specieTypeName)).findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
+
+        /* FCI Position Reference Restriction */
+        fciSpecieToSpecieTypeRepository.findByName(specieSymbol).ifPresent(bind -> {
+            List<FCISpecieToSpecieTypePosition> positionReferences = bind.getPositions();
+            if (!positionReferences.isEmpty()) {
+                List<FCISpecieToSpecieTypePosition> firstPositionReferences = positionReferences.stream().limit(5).toList();
+                firstPositionReferences.forEach(positionReference -> referencedPositions
+                    .append("#")
+                    .append(positionReference.getFciPositionId()).append(" - ")
+                    .append(positionReference.getFciPositionCreatedOn())
+                    .append(", "));
+                throw new FailedValidationException(String.format(ExceptionMessage.SPECIE_REFERENCED_BY_POSITION.msg,
+                    specieSymbol, positionReferences.size(), referencedPositions));
+            }
+        });
+
         f.setSpecieQuantity(f.getSpecieQuantity() + 1);
         fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
         FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(FCISpecieToSpecieType.builder().specieSymbol(specieSymbol).fciSpecieType(f).build());
-        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
+        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(), s.getFciSpecieType().getSpecieQuantity());
     }
 
     @Override
     public void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
-        FCISpecieToSpecieType specieToSpecieTypeAssociation = findSpecieToSpecieTypeAssociation(specieSymbol);
-        fciSpecieToSpecieTypeRepository.delete(specieToSpecieTypeAssociation);
+        StringBuffer referencedPositions = new StringBuffer();
+
+        findSpecieToSpecieTypeAssociationOptional(specieSymbol).ifPresent(bind -> {
+            List<FCISpecieToSpecieTypePosition> positionReferences = bind.getPositions();
+            if (!positionReferences.isEmpty()) {
+                List<FCISpecieToSpecieTypePosition> firstPositionReferences = positionReferences.stream().limit(5).toList();
+                firstPositionReferences.forEach(positionReference -> referencedPositions
+                    .append("#")
+                    .append(positionReference.getFciPositionId()).append(" - ")
+                    .append(positionReference.getFciPositionCreatedOn())
+                    .append(", "));
+                throw new FailedValidationException(String.format(ExceptionMessage.SPECIE_REFERENCED_BY_POSITION.msg,
+                    specieSymbol, positionReferences.size(), referencedPositions));
+             }
+            fciSpecieToSpecieTypeRepository.delete(bind);
+        });
     }
 
     /**
-     * Updating an association can only change specie type bound for an specie within specie type group
+     * Updating an association can only change specie type bound for a specie within specie type group
      */
     @Override
     public SpecieToSpecieTypeVO updateSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
         FCISpecieToSpecieType specieToSpecieTypeAssociation = findSpecieToSpecieTypeAssociation(specieSymbol);
         specieToSpecieTypeAssociation.setFciSpecieType(findFCISpecieType(specieTypeGroupName, specieTypeName));
         FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(specieToSpecieTypeAssociation);
-        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
+        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(), s.getFciSpecieType().getSpecieQuantity());
     }
 
     @Override
     public FCISpecieToSpecieType findSpecieToSpecieTypeAssociation(String specieSymbol) {
         return fciSpecieToSpecieTypeRepository.findBySpecieSymbol(specieSymbol)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ASSOCIATION_ENTITY_NOT_FOUND.msg, specieSymbol)));
+    }
+
+    public Optional<FCISpecieToSpecieType> findSpecieToSpecieTypeAssociationOptional(String specieSymbol) {
+        return fciSpecieToSpecieTypeRepository.findByName(specieSymbol);
     }
 
     @Override
@@ -278,10 +328,67 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
        List<SpecieToSpecieTypeVO> savedAssociations = new ArrayList<>();
        fciSpecieToSpecieTypes.forEach(fciSpecieToSpecieType -> {
            FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(fciSpecieToSpecieType);
-           SpecieToSpecieTypeVO specieToSpecieTypeVO = new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
+           SpecieToSpecieTypeVO specieToSpecieTypeVO = new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(), s.getFciSpecieType().getSpecieQuantity());
            savedAssociations.add(specieToSpecieTypeVO);
        });
        return savedAssociations;
+    }
+
+    @Override
+    public Optional<FCISpecieTypeGroup> findSpecieTypeGroup(FCISpeciePosition fciSpeciePosition) {
+        return listAllSpecieToSpecieTypeAssociations().stream()
+            .filter(bind -> bind.getSpecieSymbol().equals(fciSpeciePosition.getSymbol()))
+            .map(bind -> fciSpecieTypeGroupRepository.findByName(bind.getSpecieTypeGroupName()))
+            .flatMap(Optional::stream)
+            .findFirst().stream().findFirst();
+    }
+
+    @Override
+    public Optional<FCISpecieToSpecieType> findSpecieToSpecieType(FCISpeciePosition fciSpeciePosition) {
+        return fciSpecieToSpecieTypeRepository.findByName(fciSpeciePosition.getSymbol());
+    }
+
+    public Integer retrieveGroupLot(FCISpeciePosition fciSpeciePosition) {
+        return findSpecieTypeGroup(fciSpeciePosition)
+            .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_NOT_BOUND_TO_ANY_SPECIE_TYPE.msg, fciSpeciePosition.getSymbol())))
+            .getLot();
+    }
+
+    @Override
+    public Map<FCISpeciePosition, FCISpecieTypeGroup> listSpecieTypeGroupBindings(List<FCISpeciePosition> fciSpeciePositions) {
+        Map<FCISpeciePosition, FCISpecieTypeGroup> bindings = new HashMap<>();
+        List<SpecieToSpecieType> specieToSpecieTypes = listAllSpecieToSpecieTypeAssociations();
+
+        fciSpeciePositions.forEach(fciSpeciePosition -> {
+            FCISpecieTypeGroup fciSpecieTypeGroup = specieToSpecieTypes.stream()
+                .filter(bind -> bind.getSpecieSymbol().equals(fciSpeciePosition.getSymbol()))
+                .map(bind -> fciSpecieTypeGroupRepository.findByName(bind.getSpecieTypeGroupName()))
+                .flatMap(Optional::stream)
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(
+                    String.format(ExceptionMessage.SPECIE_NOT_BOUND_TO_ANY_SPECIE_TYPE.msg,
+                        fciSpeciePosition.getSymbol())));
+            bindings.put(fciSpeciePosition, fciSpecieTypeGroup);
+        });
+
+        return bindings;
+    }
+
+    public Map<FCISpeciePosition, Optional<SpecieToSpecieType>> listSpecieTypeBindings(List<FCISpeciePosition> fciSpeciePositions) {
+        Map<FCISpeciePosition, Optional<SpecieToSpecieType>> bindings = new HashMap<>();
+        List<SpecieToSpecieType> specieToSpecieTypes = listAllSpecieToSpecieTypeAssociations();
+
+        fciSpeciePositions.forEach(fciSpeciePosition ->
+            bindings.put(fciSpeciePosition, specieToSpecieTypes.stream()
+                .filter(bind -> bind.getSpecieSymbol().equals(fciSpeciePosition.getSymbol())).findFirst()));
+
+        return bindings;
+    }
+
+    @Override
+    public Map<FCISpeciePosition, FCISpecieTypeGroup> listSpecieTypeGroupBindings(Map<FCISpecieType, List<FCISpeciePosition>> fciSpeciePositions) {
+        Map<FCISpeciePosition, FCISpecieTypeGroup> bindings = new HashMap<>();
+        fciSpeciePositions.values().forEach(fciSpeciePosition -> bindings.putAll(listSpecieTypeGroupBindings(fciSpeciePosition)));
+        return bindings;
     }
 
     @Override
@@ -301,7 +408,7 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
         fciSpecieToSpecieTypes.forEach(fciSpecieToSpecieType -> {
             FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(fciSpecieToSpecieType);
-            SpecieToSpecieTypeVO specieToSpecieTypeVO = new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName());
+            SpecieToSpecieTypeVO specieToSpecieTypeVO = new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(), s.getFciSpecieType().getSpecieQuantity());
             savedAssociations.add(specieToSpecieTypeVO);
         });
         return savedAssociations;
@@ -319,12 +426,11 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
     private SpecieToSpecieTypeVO getSpecieToSpecieTypeVO(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes, String specie, AtomicInteger index) {
         Optional<FCISpecieToSpecieType> association = findFCISpecieToSpecieType(fciSpecieToSpecieTypes, specie);
         return association.map(specieToSpecieType -> new SpecieToSpecieTypeVO(index.getAndIncrement() + 1, specie,
-                        specieToSpecieType.getFciSpecieType().getFciSpecieTypeId(), specieToSpecieType.getFciSpecieType().getName()))
+                        specieToSpecieType.getFciSpecieType().getFciSpecieTypeId(), specieToSpecieType.getFciSpecieType().getName(), specieToSpecieType.getPositions().size()))
                 .orElseGet(() -> SpecieToSpecieTypeVO.builder().id(index.getAndIncrement() + 1).specieSymbol(specie).build());
     }
 
     private Optional<FCISpecieToSpecieType> findFCISpecieToSpecieType(List<FCISpecieToSpecieType> fciSpecieToSpecieTypes, String specieSymbol) {
         return fciSpecieToSpecieTypes.stream().filter(fciSpecieToSpecieType -> fciSpecieToSpecieType.getSpecieSymbol().equals(specieSymbol)).findFirst();
     }
-
 }

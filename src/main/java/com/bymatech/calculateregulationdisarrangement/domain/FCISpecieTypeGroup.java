@@ -34,6 +34,11 @@ public class FCISpecieTypeGroup {
 
     private Boolean updatable;
 
+    /** Indicates specie quantity set, one unit for individual
+     * or quantity lot, like 100, for grouped representation */
+    @Column(name = "lot")
+    private Integer lot;
+
     @OneToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "fci_specie_type_by_group", joinColumns = @JoinColumn(name = "fci_specie_type_group_id"), inverseJoinColumns = @JoinColumn(name = "fci_specie_type_id"))
     private List<FCISpecieType> fciSpecieTypes = new ArrayList<>();
