@@ -1,10 +1,12 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
+import com.bymatech.calculateregulationdisarrangement.domain.User;
 import com.bymatech.calculateregulationdisarrangement.dto.LoginUser;
 import com.bymatech.calculateregulationdisarrangement.service.UserService;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +26,8 @@ public class UserController {
     return ResponseEntity.ok(login);
   }
 
-  @PostMapping("register")
-  public void register(@RequestBody LoginUser loginUser) throws Exception {
-    userService.registerUser(loginUser);
+  @PostMapping("register/secret/{secretPass}")
+  public User register(@PathVariable String secretPass,  @RequestBody LoginUser loginUser) throws Exception {
+    return userService.registerUser(secretPass, loginUser);
   }
 }

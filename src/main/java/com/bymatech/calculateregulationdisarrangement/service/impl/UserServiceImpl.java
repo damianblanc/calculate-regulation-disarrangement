@@ -1,13 +1,17 @@
 package com.bymatech.calculateregulationdisarrangement.service.impl;
 
 import com.bymatech.calculateregulationdisarrangement.domain.User;
+import com.bymatech.calculateregulationdisarrangement.dto.ConfigurationPropertyDto;
 import com.bymatech.calculateregulationdisarrangement.dto.LoginUser;
 import com.bymatech.calculateregulationdisarrangement.exception.AuthorizationException;
 import com.bymatech.calculateregulationdisarrangement.repository.UserRepository;
+import com.bymatech.calculateregulationdisarrangement.service.ConfigurationService;
+import com.bymatech.calculateregulationdisarrangement.service.EncryptionService;
 import com.bymatech.calculateregulationdisarrangement.service.UserService;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
 import io.jsonwebtoken.Jwts;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +33,13 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  private ConfigurationService configurationService;
+  @Autowired
+  private EncryptionService encryptionService;
+
 
   public UserServiceImpl(@Value("${jwt.secret.key}") String jwtSecretKey) {
     this.jwtSecretKey = jwtSecretKey;
@@ -48,18 +56,24 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void registerUser(LoginUser loginUser) {
-    userRepository.findByUsername(loginUser.getUsername())
-        .ifPresent(user -> {
-          throw new IllegalArgumentException(ExceptionMessage.USER_NAME_ALREADY_REGISTERED.msg);
-        });
+  public User registerUser(final String secretPassKey, LoginUser loginUser) throws Exception {
+    Optional<ConfigurationPropertyDto> secretProperty = configurationService.getProperty("secret");
+    String encryptedSecretPassKey = encryptionService.encrypt(secretPassKey);
+    if (secretProperty.isPresent() && encryptedSecretPassKey.equals(secretProperty.get().getValue())) {
+      userRepository.findByUsername(loginUser.getUsername())
+          .ifPresent(user -> {
+            throw new IllegalArgumentException(ExceptionMessage.USER_NAME_ALREADY_REGISTERED.msg);
+          });
 
-    User newUser =
-        User.builder()
-        .username(loginUser.getUsername())
-        .password(passwordEncoder.encode(loginUser.getPassword()))
-        .enable(true).build();
-    userRepository.save(newUser);
+      User newUser =
+          User.builder()
+              .username(loginUser.getUsername())
+              .password(passwordEncoder.encode(loginUser.getPassword()))
+              .enable(true).build();
+     return userRepository.save(newUser);
+    } else {
+      throw new AuthorizationException(ExceptionMessage.SECRET_PROPERTY_DOES_NOT_MATCH.msg);
+    }
   }
 
 

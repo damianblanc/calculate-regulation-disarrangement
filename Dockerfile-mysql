@@ -1,0 +1,10 @@
+FROM mysql:latest
+
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=fci_regulation_bias
+ENV MYSQL_USER=root
+ENV MYSQL_PASSWORD=root
+
+#COPY ./init-db.sql /docker-entrypoint-initdb.d/
+
+EXPOSE 3307

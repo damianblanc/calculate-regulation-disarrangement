@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  crbfe-app:
+    image: crbfe-app:latest
+    ports:
+      - "3000:3000"
+
+  crbbe-app:
+    image: crbbe-app:latest
+    ports:
+      - "8098:8098"
+    depends_on:
+      - mysql-db
+    restart: on-failure
+
+  mysql-db:
+    container_name: crbdb-mysql
+    image: mysql:latest
+    restart: unless-stopped
+    ports:
+       - "3306:3306"
+    volumes:
+       - crdb-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=crbapp
+      - MYSQL_PASSWORD=synergy
+      - MYSQL_DATABASE=fci_regulation_bias
+      - SLEEP_LENGTH=5
+    networks:
+      crb-network:
+        ipv4_address: 172.22.0.4
+
+volumes:
+  crdb-data:
+    driver: local
+    driver_opts:
+      type: osxfs
+      device: /Users/damianblanc/Desktop/crbdb
+      o: bind
+
+networks:
+  crb-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
+#networks:
+#  crb-network:
+#    name: crb-network
+#    external: true

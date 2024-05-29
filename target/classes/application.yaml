@@ -13,31 +13,31 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
-
-spring:
-  application:
-    name: calculate-regulation-disarrangement
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
-    initialize: true
-    initialization-mode: always
-    hikari:
-      connection-timeout: 6000
-      initialization-fail-timeout: 0
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        enable_lazy_load_no_trans: true
+#
+#spring:
+#  application:
+#    name: calculate-regulation-disarrangement
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/fci_regulation_bias?createDatabaseIfNotExist=true&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false&characterEncoding=UTF-8
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: root
+#    initialize: true
+#    initialization-mode: always
+#    hikari:
+#      connection-timeout: 6000
+#      initialization-fail-timeout: 0
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      ddl-auto: update
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+#        enable_lazy_load_no_trans: true
   #h2:
   #  console:
   #    enabled: true

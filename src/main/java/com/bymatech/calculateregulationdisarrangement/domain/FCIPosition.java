@@ -30,6 +30,7 @@ public class FCIPosition {
     @Transient
     private JsonNode position;
 
+    @Lob
     @Column(name = "marketPosition", length = 8192)
     private String updatedMarketPosition;
 
@@ -38,10 +39,11 @@ public class FCIPosition {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "originalPosition", length = 4096)
+    @Lob
+    @Column(name = "originalPosition", length = 8192)
     private String jsonPosition;
 
-    @Column(name = "overview")
+    @Column(name = "overview", length = 8192)
     private String overview;
 
     @Column(name = "created_on")

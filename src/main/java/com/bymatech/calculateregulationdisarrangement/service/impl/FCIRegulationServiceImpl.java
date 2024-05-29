@@ -52,7 +52,12 @@ public class FCIRegulationServiceImpl implements FCIRegulationService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public FCIRegulationVO createFCIRegulation(FCIRegulation request) {
-       request.setCreatedOn();
+        if (fciRegulationRepository.findBySymbol(request.getSymbol()).isPresent()) {
+            throw new IllegalArgumentException(
+                String.format(ExceptionMessage.FCI_REGULATION_ENTITY_ALREADY_EXISTS.msg,
+                    request.getSymbol()));
+        }
+        request.setCreatedOn();
        return toValueObject(fciRegulationRepository.save(request));
     }
 

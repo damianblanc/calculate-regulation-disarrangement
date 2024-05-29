@@ -20,9 +20,10 @@ public class DateOperationHelper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate from = LocalDate.parse(fromDate, formatter);
         LocalDate to = LocalDate.parse(toDate, formatter);
-        LocalDate elementDate = LocalDate.parse(elementTimestamp, DateTimeFormatter.ISO_DATE);
+        LocalDate elementDateTime = LocalDateTime.parse(elementTimestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            .toLocalDate();
 
-        return elementDate.isAfter(from.minusDays(1)) && elementDate.isBefore(to.plusDays(1));
+        return elementDateTime.isAfter(from.minusDays(1)) && elementDateTime.isBefore(to.plusDays(1));
     }
 
     public static String month(int index) { return months.get(index); }

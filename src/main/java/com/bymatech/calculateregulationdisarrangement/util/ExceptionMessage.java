@@ -13,6 +13,8 @@ public enum ExceptionMessage {
 
     ADVISE_CRITERIA_PARAMETER_NOT_DEFINED("Indicated advise Criteria parameters are not configured - [%s]"),
 
+    FCI_REGULATION_ENTITY_ALREADY_EXISTS("FCI Regulation with symbol [%s] is already created"),
+
     FCI_REGULATION_ENTITY_NOT_FOUND("FCI Regulation cannot be found with symbol [%s]"),
 
     FCI_COMPOSITION_ENTITY_NOT_FOUND("FCI Composition cannot be found with id [%s]"),
@@ -73,7 +75,13 @@ public enum ExceptionMessage {
 
     USER_INCORRECT_PASSWORD("User password is incorrect or not recognized"),
 
-    USER_NAME_ALREADY_REGISTERED("User name is incorrect or not registered"),
+    USER_NAME_ALREADY_REGISTERED("User name is already registered"),
+
+    SECRET_PROPERTY_DOES_NOT_MATCH("Indicate a valid secret password to register user"),
+
+    PROPERTY_KEY_ALREADY_DEFINED("Property [%s] is already defined"),
+
+    ALGORITHM_PROPERTY_NOT_DEFINED("Algorithm property is not configured"),
 
     ;
 
