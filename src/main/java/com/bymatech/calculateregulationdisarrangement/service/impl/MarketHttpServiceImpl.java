@@ -10,6 +10,7 @@ import com.bymatech.calculateregulationdisarrangement.service.http.BymaAPIServic
 import com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
@@ -75,7 +76,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
         }
 
         if (bonds.isEmpty())
-            throw new MarketResponseException(ExceptionMessage.MARKET_EQUITY_INFORMATION_NOT_AVAILABLE.msg);
+            throw new MarketResponseException(ExceptionMessage.MARKET_BOND_INFORMATION_NOT_AVAILABLE.msg);
 
         if (bonds.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
                 Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
@@ -157,23 +158,29 @@ public class MarketHttpServiceImpl implements MarketHttpService {
         MarketEquityResponse marketLeadingEquities = getLeadingEquities(MarketEquityAuthBean.create(1));
         List<MarketEquityResponse.MarketEquityResponseElement> equities = new ArrayList<>();
 
-        for (int i = 1; i <= marketLeadingEquities.getContent().getPageCount(); i++) {
-            List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
-                    getLeadingEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
-                        equity.setMarketSymbol(equity.getSymbol());
-                        equity.setMarketPrice(equity.getTrade());
-                    }).toList();
-            equities.addAll(marketEquityResponses);
+        if (Objects.nonNull(marketLeadingEquities.getContent())) {
+            for (int i = 1; i <= marketLeadingEquities.getContent().getPageCount(); i++) {
+                List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
+                    getLeadingEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses()
+                        .stream().peek(equity -> {
+                            equity.setMarketSymbol(equity.getSymbol());
+                            equity.setMarketPrice(equity.getTrade());
+                        }).toList();
+                equities.addAll(marketEquityResponses);
+            }
         }
 
         MarketEquityResponse marketGeneralEquities = getGeneralEquities(MarketEquityAuthBean.create(1));
-        for (int i = 1; i <= marketGeneralEquities.getContent().getPageCount(); i++) {
-            List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
-                    getGeneralEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses().stream().peek(equity -> {
-                        equity.setMarketSymbol(equity.getSymbol());
-                        equity.setMarketPrice(equity.getTrade());
-                    }).toList();
-            equities.addAll(marketEquityResponses);
+        if (Objects.nonNull(marketGeneralEquities.getContent())) {
+            for (int i = 1; i <= marketGeneralEquities.getContent().getPageCount(); i++) {
+                List<MarketEquityResponse.MarketEquityResponseElement> marketEquityResponses =
+                    getGeneralEquities(MarketEquityAuthBean.create(i)).getMarketEquityResponses()
+                        .stream().peek(equity -> {
+                            equity.setMarketSymbol(equity.getSymbol());
+                            equity.setMarketPrice(equity.getTrade());
+                        }).toList();
+                equities.addAll(marketEquityResponses);
+            }
         }
 
         if (equities.isEmpty())

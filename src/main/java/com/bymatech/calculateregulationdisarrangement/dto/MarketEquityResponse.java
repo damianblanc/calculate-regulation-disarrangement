@@ -1,5 +1,6 @@
 package com.bymatech.calculateregulationdisarrangement.dto;
 
+import com.bymatech.calculateregulationdisarrangement.dto.MarketBondResponse.MarketBondResponseElement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -24,9 +25,11 @@ import java.util.List;
  *             "imbalance": 0.0255,
  *             "previousSettlementPrice": 605.5,
  *             "offerPrice": 641,
+ *             "openInterest": 0,
  *             "vwap": 613.3957937,
  *             "numberOfOrders": 0,
  *             "openingPrice": 605,
+ *             "tickDirection": 2,
  *             "securityDesc": "",
  *             "securitySubType": "M",
  *             "previousClosingPrice": 605.5,
@@ -83,9 +86,7 @@ public class MarketEquityResponse {
      * Byma bonds Http Response
      */
     @Data
-    public class MarketEquityResponseElement extends MarketResponse
-            implements Comparable<MarketEquityResponseElement> {
-
+    public static class MarketEquityResponseElement extends MarketResponse implements Comparable<MarketEquityResponseElement>, Market {
         @SerializedName("tradeVolume")
         @Expose
         private String tradeVolume;
@@ -101,6 +102,9 @@ public class MarketEquityResponse {
         @SerializedName("offerPrice")
         @Expose
         private String offerPrice;
+        @SerializedName("openInterest")
+        @Expose
+        private String openInterest;
         @SerializedName("vwap")
         @Expose
         private String vwap;
@@ -110,6 +114,9 @@ public class MarketEquityResponse {
         @SerializedName("openingPrice")
         @Expose
         private String openingPrice;
+        @SerializedName("tickDirection")
+        @Expose
+        private String tickDirection;
         @SerializedName("securityDesc")
         @Expose
         private String securityDesc;
@@ -172,10 +179,8 @@ public class MarketEquityResponse {
         }
 
         public void setFciSpecieType() {
-            super.setFciSpecieType("Equity");  //TODO: This has to be bound to correct specie type once created relation in model (getting species from market,
-                                             //TODO: allowing to relate them to created specie types)
+            super.setFciSpecieType("Equity");
         }
-
 
         @Override
         public int compareTo(@NotNull MarketEquityResponseElement e) {

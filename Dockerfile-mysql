@@ -1,5 +1,7 @@
-FROM mysql:latest
+FROM mysql:8.0.13
 
+ENV MYSQL_HOST=crb-app-mysql
+ENV MYSQL_PORT=3307
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=fci_regulation_bias
 ENV MYSQL_USER=root

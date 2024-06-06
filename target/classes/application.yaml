@@ -1,5 +1,8 @@
 server:
+  address: 0.0.0.0
   port: 8098
+  connection-timeout: 5s
+
   #ssl:
   #  key-store: keystore.p12
   #  key-store-password: springboot
