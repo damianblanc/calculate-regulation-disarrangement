@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Byma Cedears http response bean
  */
 @Data
-public class MarketCedearResponse  extends MarketResponse {
+public class MarketCedearResponse extends MarketResponse implements Comparable<MarketCedearResponse> {
     @SerializedName("tradeVolume")
     @Expose
     private Double tradeVolume;
@@ -111,4 +112,20 @@ public class MarketCedearResponse  extends MarketResponse {
         super.setFciSpecieType("Cedear");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MarketCedearResponse r)) return false;
+        return Objects.equals(getSymbol(), r.getSymbol());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSymbol());
+    }
+
+    @Override
+    public int compareTo(MarketCedearResponse other) {
+        return symbol.compareTo(other.symbol);
+    }
 }

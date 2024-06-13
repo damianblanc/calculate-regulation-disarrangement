@@ -10,8 +10,11 @@ import com.bymatech.calculateregulationdisarrangement.service.http.BymaAPIServic
 import com.bymatech.calculateregulationdisarrangement.service.http.BymaHttpService;
 import com.bymatech.calculateregulationdisarrangement.util.Constants;
 import com.bymatech.calculateregulationdisarrangement.util.ExceptionMessage;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -41,15 +44,13 @@ public class MarketHttpServiceImpl implements MarketHttpService {
 
     public List<MarketCedearResponse> getTotalCedears() {
         List<MarketCedearResponse> marketCedears = getCedears(MarketCedearAuthBean.create(1));
-        List<MarketCedearResponse> cedears = new ArrayList<>();
-
         List<MarketCedearResponse> marketCedearResponses =
-           marketCedears.stream().peek(cedear -> {
+            new HashSet<>(marketCedears).stream().peek(cedear -> {
                 cedear.setMarketSymbol(cedear.getSymbol());
                 cedear.setMarketPrice(String.valueOf(cedear.getTrade()));
                 cedear.setFciSpecieType();
             }).toList();
-        cedears.addAll(marketCedearResponses);
+        List<MarketCedearResponse> cedears = new ArrayList<>(marketCedearResponses.stream().sorted().toList());
 
         if (cedears.isEmpty())
             throw new MarketResponseException(ExceptionMessage.MARKET_CEDEAR_INFORMATION_NOT_AVAILABLE.msg);
@@ -59,30 +60,6 @@ public class MarketHttpServiceImpl implements MarketHttpService {
             throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
 
         return cedears;
-    }
-
-    public List<MarketBondResponse.MarketBondResponseElement> getTotalBonds() {
-        MarketBondResponse marketBonds = getBonds(MarketBondAuthBean.create(1));
-        List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>();
-
-        for (int i = 1; i <= marketBonds.getContent().getPageCount(); i++) {
-            List<MarketBondResponse.MarketBondResponseElement> marketBondResponses =
-                    getBonds(MarketBondAuthBean.create(i)).getMarketBondResponses().stream().peek(bond -> {
-                        bond.setMarketSymbol(bond.getSymbol());
-                        bond.setMarketPrice(bond.getPrice());
-                        bond.setFciSpecieType();
-                    }).toList();
-            bonds.addAll(marketBondResponses);
-        }
-
-        if (bonds.isEmpty())
-            throw new MarketResponseException(ExceptionMessage.MARKET_BOND_INFORMATION_NOT_AVAILABLE.msg);
-
-        if (bonds.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
-                Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
-            throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
-
-        return bonds;
     }
 
     @Override
@@ -97,6 +74,30 @@ public class MarketHttpServiceImpl implements MarketHttpService {
             log.warn(ex.getMessage());
         }
         return MarketBondResponse.create();
+    }
+
+    public List<MarketBondResponse.MarketBondResponseElement> getTotalBonds() {
+        MarketBondResponse marketBonds = getBonds(MarketBondAuthBean.create(1));
+        List<MarketBondResponse.MarketBondResponseElement> bonds = new ArrayList<>();
+
+        for (int i = 1; i <= marketBonds.getContent().getPageCount(); i++) {
+            List<MarketBondResponse.MarketBondResponseElement> marketBondResponses =
+                getBonds(MarketBondAuthBean.create(i)).getMarketBondResponses().stream().peek(bond -> {
+                        bond.setMarketSymbol(bond.getSymbol());
+                        bond.setMarketPrice(bond.getPrice());
+                        bond.setFciSpecieType();
+                    }).toList();
+            bonds.addAll(new HashSet<>(marketBondResponses));
+        }
+
+        if (bonds.isEmpty())
+            throw new MarketResponseException(ExceptionMessage.MARKET_BOND_INFORMATION_NOT_AVAILABLE.msg);
+
+        if (bonds.stream().map(MarketResponse::getMarketPrice).allMatch(marketPrice ->
+                Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
+            throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
+
+        return bonds.stream().sorted().toList();
     }
 
     @Override
@@ -166,7 +167,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                             equity.setMarketSymbol(equity.getSymbol());
                             equity.setMarketPrice(equity.getTrade());
                         }).toList();
-                equities.addAll(marketEquityResponses);
+                equities.addAll(new HashSet<>(marketEquityResponses));
             }
         }
 
@@ -179,7 +180,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                             equity.setMarketSymbol(equity.getSymbol());
                             equity.setMarketPrice(equity.getTrade());
                         }).toList();
-                equities.addAll(marketEquityResponses);
+                equities.addAll(new HashSet<>(marketEquityResponses));
             }
         }
 
@@ -190,7 +191,7 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                 Constants.MARKET_UNAVAILABLE_PRICES.equals(Double.parseDouble(marketPrice))))
             throw new MarketResponseException(ExceptionMessage.MARKET_PRICE_NOT_AVAILABLE.msg);
 
-        return equities;
+        return equities.stream().sorted().toList();
     }
 
     @Override
@@ -199,6 +200,24 @@ public class MarketHttpServiceImpl implements MarketHttpService {
                 .filter(equity -> speciesPosition.stream()
                         .anyMatch(specie -> specie.getSymbol().equals(equity.getMarketSymbol())))
                 .toList();
+    }
+
+    @Override
+    public List<MarketResponse> getCedearsOrderedByPrice(OrderType orderType) {
+        List<MarketCedearResponse> marketCedears = getCedears(MarketCedearAuthBean.create(1));
+        List<MarketCedearResponse> cedears = marketCedears.stream().sorted(Comparator.comparing(MarketCedearResponse::getTrade)).toList();
+        List<MarketCedearResponse> marketCedearResponses = orderType == OrderType.DESC ? cedears :
+            cedears.stream().sorted(Collections.reverseOrder()).toList();
+        return null;
+    }
+
+    @Override
+    public List<MarketResponse> getCedearsOrderedByPriceFilteredBySpecieList(OrderType orderType,
+        List<FCISpeciePosition> speciesPosition) {
+        return getEquityOrderedByPrice(orderType).stream()
+            .filter(equity -> speciesPosition.stream()
+                .anyMatch(specie -> specie.getSymbol().equals(equity.getMarketSymbol())))
+            .toList();
     }
 
     @Override

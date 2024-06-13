@@ -70,7 +70,7 @@ public class FCIPositionAdviceProportionalService implements FCIPositionAdvisorS
                         Double fciSpecieOverSpecieTypeValued =
                                 DomainExtractionHelper.findFciSpeciePosition(regulationLagOutcomeVO.getSpecieValueWeightRelativeToFCISpecieType(), fciSpeciePosition).getValue();
 
-                        Double fciSpecieQuantity =  Math.abs(fciSpecieOverSpecieTypeValued * fciSpecieTypeBiasOverRegulationValued / fciSpeciePosition.getCurrentMarketPrice());
+                            Double fciSpecieQuantity =  Math.abs(fciSpecieOverSpecieTypeValued * fciSpecieTypeBiasOverRegulationValued / fciSpeciePosition.getCurrentMarketPrice());
 
                         return new OperationAdviceVO(index.getAndIncrement(), fciSpeciePosition.getSymbol(), OperationAdvice.getOperationAdvice(fciSpecieTypeBiasOverRegulationPercentage),
                                 fciSpecieQuantity, fciSpeciePosition.getCurrentMarketPrice(), fciSpecieQuantity * fciSpeciePosition.getCurrentMarketPrice());

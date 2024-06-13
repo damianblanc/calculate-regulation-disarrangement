@@ -116,7 +116,7 @@ public interface FCISpecieTypeGroupService {
     /**
      * Deletes, unbind an association between a specie and a specie type within a specie group
      */
-    void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol);
+    void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieSymbol);
 
     /**
      * Changes a specie to other specie type within a specie group

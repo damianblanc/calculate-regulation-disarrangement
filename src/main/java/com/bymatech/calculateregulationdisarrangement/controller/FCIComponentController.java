@@ -59,7 +59,7 @@ public class FCIComponentController {
     }
 
     @PutMapping("/specie-type-group/{specie-type-group-name}/specie-type")
-    public FCISpecieType updateSpecieType(@PathVariable ("specie-type-group-name" )String FCISpecieTypeGroupName, @RequestBody FCISpecieType fciSpecieType) {
+    public FCISpecieType updateSpecieType(@PathVariable ("specie-type-group-name" ) String FCISpecieTypeGroupName, @RequestBody FCISpecieType fciSpecieType) {
         return fciSpecieTypeGroupService.updateFCISpecieType(FCISpecieTypeGroupName, fciSpecieType);
     }
 
@@ -95,10 +95,10 @@ public class FCIComponentController {
         return fciSpecieTypeGroupService.upsertSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
     }
 
-    @DeleteMapping("specie-type-group/{specieTypeGroupName}/specie-type/{specieTypeName}/specie/{specieSymbol}/bind")
-    public void deleteSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName,
-                                                                         @PathVariable String specieTypeName, @PathVariable String specieSymbol) {
-        fciSpecieTypeGroupService.deleteSpecieToSpecieTypeAssociation(specieTypeGroupName, specieTypeName, specieSymbol);
+
+    @DeleteMapping("specie-type-group/{specieTypeGroupName}/specie/{specieSymbol}/bind")
+    public void deleteSpecieToSpecieTypeAssociation(@PathVariable String specieTypeGroupName, @PathVariable String specieSymbol) {
+        fciSpecieTypeGroupService.deleteSpecieToSpecieTypeAssociation(specieTypeGroupName, specieSymbol);
     }
 
     @GetMapping("/specie-type-group/{specieTypeGroupName}/bind")

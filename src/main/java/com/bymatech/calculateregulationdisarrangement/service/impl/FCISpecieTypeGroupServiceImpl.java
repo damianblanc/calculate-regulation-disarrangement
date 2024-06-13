@@ -202,36 +202,56 @@ public class FCISpecieTypeGroupServiceImpl implements FCISpecieTypeGroupService 
 
     @Override
     public SpecieToSpecieTypeVO upsertSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
-        StringBuffer referencedPositions = new StringBuffer();
-
         FCISpecieTypeGroup fciSpecieTypeGroup = fciSpecieTypeGroupRepository.findByName(specieTypeGroupName)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
-        FCISpecieType f = fciSpecieTypeGroup.getFciSpecieTypes().stream().filter(FCISpecieType -> FCISpecieType.getName().equals(specieTypeName)).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
+            .orElseThrow(() -> new EntityNotFoundException(String.format(ExceptionMessage.SPECIE_TYPE_GROUP_ENTITY_NOT_FOUND.msg, specieTypeGroupName)));
+        Optional<FCISpecieType> optionalFciSpecieType = fciSpecieTypeGroup.getFciSpecieTypes().stream().filter(FCISpecieType -> FCISpecieType.getName().equals(specieTypeName)).findFirst();
 
-        /* FCI Position Reference Restriction */
-        fciSpecieToSpecieTypeRepository.findByName(specieSymbol).ifPresent(bind -> {
-            List<FCISpecieToSpecieTypePosition> positionReferences = bind.getPositions();
-            if (!positionReferences.isEmpty()) {
-                List<FCISpecieToSpecieTypePosition> firstPositionReferences = positionReferences.stream().limit(5).toList();
-                firstPositionReferences.forEach(positionReference -> referencedPositions
-                    .append("#")
-                    .append(positionReference.getFciPositionId()).append(" - ")
-                    .append(positionReference.getFciPositionCreatedOn())
-                    .append(", "));
-                throw new FailedValidationException(String.format(ExceptionMessage.SPECIE_REFERENCED_BY_POSITION.msg,
-                    specieSymbol, positionReferences.size(), referencedPositions));
+        Optional<FCISpecieToSpecieType> specieToSpecieType = fciSpecieToSpecieTypeRepository.findByName(specieSymbol);
+        if (specieToSpecieType.isPresent()) {
+            if (optionalFciSpecieType.isPresent()) {
+                validatePositionReferences(specieToSpecieType.get(), specieSymbol);
+                FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(
+                    FCISpecieToSpecieType.builder().id(specieToSpecieType.get().getId())
+                        .specieSymbol(specieSymbol).fciSpecieType(optionalFciSpecieType.get()).build());
+                return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(),
+                    s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(),
+                    s.getFciSpecieType().getSpecieQuantity());
             }
-        });
+        } else {
+            if (optionalFciSpecieType.isPresent()) {
+                FCISpecieType fciSpecieType = optionalFciSpecieType.get();
+                fciSpecieType.setSpecieQuantity(fciSpecieType.getSpecieQuantity() + 1);
+                fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
+                FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(
+                    FCISpecieToSpecieType.builder().specieSymbol(specieSymbol)
+                        .fciSpecieType(fciSpecieType).build());
+                new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(),
+                    s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(),
+                    s.getFciSpecieType().getSpecieQuantity());
+            }
+        }
+        return SpecieToSpecieTypeVO.builder().build();
+    }
 
-        f.setSpecieQuantity(f.getSpecieQuantity() + 1);
-        fciSpecieTypeGroupRepository.save(fciSpecieTypeGroup);
-        FCISpecieToSpecieType s = fciSpecieToSpecieTypeRepository.save(FCISpecieToSpecieType.builder().specieSymbol(specieSymbol).fciSpecieType(f).build());
-        return new SpecieToSpecieTypeVO(s.getId(), s.getSpecieSymbol(), s.getFciSpecieType().getFciSpecieTypeId(), s.getFciSpecieType().getName(), s.getFciSpecieType().getSpecieQuantity());
+    private void validatePositionReferences(FCISpecieToSpecieType specieToSpecieType, String specieSymbol) {
+        StringBuffer referencedPositions = new StringBuffer();
+        List<FCISpecieToSpecieTypePosition> positionReferences = specieToSpecieType.getPositions();
+        if (!positionReferences.isEmpty()) {
+            List<FCISpecieToSpecieTypePosition> firstPositionReferences = positionReferences.stream()
+                .limit(5).toList();
+            firstPositionReferences.forEach(positionReference -> referencedPositions
+                .append("#")
+                .append(positionReference.getFciPositionId()).append(" - ")
+                .append(positionReference.getFciPositionCreatedOn())
+                .append(", "));
+            throw new FailedValidationException(
+                String.format(ExceptionMessage.SPECIE_REFERENCED_BY_POSITION.msg,
+                    specieSymbol, positionReferences.size(), referencedPositions));
+        }
     }
 
     @Override
-    public void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieTypeName, String specieSymbol) {
+    public void deleteSpecieToSpecieTypeAssociation(String specieTypeGroupName, String specieSymbol) {
         StringBuffer referencedPositions = new StringBuffer();
 
         findSpecieToSpecieTypeAssociationOptional(specieSymbol).ifPresent(bind -> {

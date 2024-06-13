@@ -38,7 +38,7 @@ public class AppCorsConfiguration {
            CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 //        config.setAllowedOrigins(List.of("*"));
-        config.setAllowedOrigins(List.of("http://192.168.0.253:3000", "https://polite-drinks-repair.loca.lt", "https://plain-camels-clean.loca.lt", "https://f7e9-2800-810-5dc-53-8460-f386-11e-6107.ngrok-free.app", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:8098"));
+        config.setAllowedOrigins(List.of("https://dark-doodles-happen.loca.lt", "https://spicy-moons-know.loca.lt", "https://f7e9-2800-810-5dc-53-8460-f386-11e-6107.ngrok-free.app", "http://192.168.0.253:3000", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:8098"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

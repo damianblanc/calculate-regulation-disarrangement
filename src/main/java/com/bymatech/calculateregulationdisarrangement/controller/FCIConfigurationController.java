@@ -1,6 +1,5 @@
 package com.bymatech.calculateregulationdisarrangement.controller;
 
-import com.bymatech.calculateregulationdisarrangement.domain.FCISpecieTypeGroup;
 import com.bymatech.calculateregulationdisarrangement.dto.ConfigurationPropertyDto;
 import com.bymatech.calculateregulationdisarrangement.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;

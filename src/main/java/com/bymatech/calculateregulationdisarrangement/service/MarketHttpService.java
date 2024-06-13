@@ -41,6 +41,10 @@ public interface MarketHttpService {
 
     List<MarketResponse> getEquityOrderedByPriceFilteredBySpecieList(OrderType orderType, List<FCISpeciePosition> speciesPosition);
 
+    List<MarketResponse> getCedearsOrderedByPrice(OrderType orderType);
+
+    List<MarketResponse> getCedearsOrderedByPriceFilteredBySpecieList(OrderType orderType, List<FCISpeciePosition> speciesPosition);
+
     List<MarketResponse> getAllWorkableSpecies();
 
     /**

@@ -50,6 +50,7 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
                 ImmutableMap.<SpecieTypeGroupEnum, Function<SpecieData, Multimap<SpecieTypeGroupEnum, OperationAdviceVO>>>builder()
                 .put(SpecieTypeGroupEnum.Bond, this::bond)
                 .put(SpecieTypeGroupEnum.Equity, this::equity)
+                    .put(SpecieTypeGroupEnum.Cedears, this::cedears)
                         .put(SpecieTypeGroupEnum.Cash, this::cash)
                 .build();
 
@@ -80,6 +81,24 @@ public class FCIPositionCriteriaPriceUniformDistributionService implements FCIPo
 //                .operationAdvicesVO(operationAdviceSpecieTypes)
 //                .build();
         return null;
+    }
+
+    private Multimap<SpecieTypeGroupEnum, OperationAdviceVO> cedears(SpecieData specieData) {
+        AtomicInteger index = new AtomicInteger();
+        Multimap<SpecieTypeGroupEnum, OperationAdviceVO> specieTypeAdvices = ArrayListMultimap.create();
+        marketHttpService.getEquityOrderedByPriceFilteredBySpecieList(specieData.getOrderType(), specieData.getFciPositionList())
+            .stream().limit(specieData.getParameters().getElementQuantity()).forEach(e -> {
+                    OperationAdviceVO operationAdviceVO = setSpecieTypeAdvice(
+                        index,
+                        calculatePercentageOverPriceToCoverValued(
+                            specieData.getSummarizedPosition(),
+                            specieData.getFciPositionList(),
+                            specieData.getSpeciePercentage(), specieData.getParameters().getElementQuantity()),
+                        e.getMarketSymbol(), e.getMarketPrice(), specieData.getOrderType().getOperationAdvice());
+                    specieTypeAdvices.put(SpecieTypeGroupEnum.Equity, operationAdviceVO);
+                }
+            );
+        return specieTypeAdvices;
     }
 
     @Override

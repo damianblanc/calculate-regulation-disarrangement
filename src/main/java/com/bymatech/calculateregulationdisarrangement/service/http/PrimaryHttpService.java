@@ -7,7 +7,7 @@ import retrofit2.http.Headers;
 
 import java.util.List;
 
-public interface    PrimaryHttpService {
+public interface PrimaryHttpService {
 
     @Headers("")
     @GET("/rest/instruments/details")

@@ -2,6 +2,7 @@ package com.bymatech.calculateregulationdisarrangement.dto;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.Objects;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -141,11 +142,20 @@ public class MarketBondResponse implements Market {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof MarketBondResponse.MarketBondResponseElement r)) return false;
+            return Objects.equals(getSymbol(), r.getSymbol());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getSymbol());
+        }
+
+        @Override
         public int compareTo(@NotNull MarketBondResponseElement e) {
-            if (Double.parseDouble(this.getMarketPrice()) >= Double.parseDouble(e.getMarketPrice())) {
-                return 1;
-            }
-            return -1;
+            return this.getSymbol().compareTo(e.getSymbol());
         }
     }
 }

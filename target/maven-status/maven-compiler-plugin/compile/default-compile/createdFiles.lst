@@ -84,7 +84,6 @@ com/bymatech/calculateregulationdisarrangement/dto/MarketTimeResponse.class
 com/bymatech/calculateregulationdisarrangement/service/impl/FCISpecieTypeGroupServiceImpl.class
 com/bymatech/calculateregulationdisarrangement/util/CalculationServiceHelper.class
 com/bymatech/calculateregulationdisarrangement/service/http/BymaHttpService.class
-com/bymatech/calculateregulationdisarrangement/config/AppCorsConfiguration$1.class
 com/bymatech/calculateregulationdisarrangement/dto/MarketCedearResponse.class
 com/bymatech/calculateregulationdisarrangement/service/UserService.class
 com/bymatech/calculateregulationdisarrangement/dto/MarketCedearAuthBean.class

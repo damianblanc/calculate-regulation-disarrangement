@@ -30,7 +30,7 @@ public class FCISpecieToSpecieType {
     @JoinColumn(name = "fci_specie_type_id")
     private FCISpecieType fciSpecieType;
 
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "specie_to_specie_type_position_Id", referencedColumnName = "id")
     private List<FCISpecieToSpecieTypePosition> positions;
 }
